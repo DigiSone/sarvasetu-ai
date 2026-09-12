@@ -1,0 +1,9 @@
+{
+  "short_name": "सर्वसेतु",
+  "name": "सर्वसेतु AI - नागरिक सेवा सेतु",
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#ea580c",
+  "display": "standalone",
+  "orientation": "portrait"
+}
