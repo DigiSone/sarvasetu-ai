@@ -23,16 +23,17 @@ import {
   Square,
   ChevronDown,
   PhoneCall,
-  ShieldAlert,
   HelpCircle,
-  Check
+  Headphones,
+  Download,
+  Users
 } from 'lucide-react';
 
 import { GovernmentService } from './core/governmentDirectory';
 import { DirectoryEngine, CategorySummary } from './core/directoryEngine';
 import { SUPPORTED_STATES, StateConfig } from './core/stateDirectory';
+import { LeadManager, CitizenLead } from './core/leadManager';
 
-// राष्ट्रीय 1-टैप आपातकालीन हेल्पलाइन डेटा
 interface EmergencyLine {
   number: string;
   name: string;
@@ -97,6 +98,16 @@ export default function App() {
   // मोडल स्टेट्स
   const [showHelplineDrawer, setShowHelplineDrawer] = useState(false);
   const [showTrustShieldModal, setShowTrustShieldModal] = useState(false);
+  const [showLeadModal, setShowLeadModal] = useState(false);
+  const [targetLeadService, setTargetLeadService] = useState<GovernmentService | null>(null);
+
+  // लीड फॉर्म इनपुट स्टेट्स
+  const [leadName, setLeadName] = useState('');
+  const [leadMobile, setLeadMobile] = useState('');
+  const [leadDistrict, setLeadDistrict] = useState('');
+  const [hasConsent, setHasConsent] = useState(true);
+  const [leadSubmittedSuccess, setLeadSubmittedSuccess] = useState(false);
+  const [leadCount, setLeadCount] = useState(0);
 
   // संस्थापक परिचय सहित डिजिटल मित्र वॉइस संदेश
   const [voiceBriefing, setVoiceBriefing] = useState(
@@ -114,6 +125,7 @@ export default function App() {
 
   useEffect(() => {
     speak(voiceBriefing);
+    setLeadCount(LeadManager.getAllLeads().length);
   }, []);
 
   const triggerHaptic = (pattern: number[]) => {
@@ -221,6 +233,49 @@ export default function App() {
     window.print();
   };
 
+  // लीड फॉर्म सबमिशन हैंडलर
+  const handleLeadSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!leadName || !leadMobile || !leadDistrict) {
+      alert('कृपया नाम, मोबाइल नंबर और ज़िला सही से भरें।');
+      return;
+    }
+    if (!hasConsent) {
+      alert('कृपया सहायता प्राप्त करने हेतु सहमति बॉक्स पर टिक करें।');
+      return;
+    }
+
+    triggerHaptic([100, 50, 100]);
+    const serviceTitle = targetLeadService ? targetLeadService.title : 'सामान्य सरकारी योजना सहायता';
+    const serviceCategory = targetLeadService ? targetLeadService.category : 'GENERAL';
+
+    // 1. डेटाबेस/लोकल स्टोरेज में सेव
+    LeadManager.saveLead({
+      name: leadName,
+      mobile: leadMobile,
+      district: leadDistrict,
+      serviceTitle,
+      serviceCategory
+    });
+
+    setLeadCount(LeadManager.getAllLeads().length);
+    setLeadSubmittedSuccess(true);
+
+    // 2. तुरंत एडमिन व्हाट्सएप पर अलर्ट मैसेज लिंक
+    const adminAlertText = `*🔔 नई सेवा सहायता अनुरोध (सर्वसेतु AI Lead)*%0A%0A*नाम:* ${leadName}%0A*मोबाइल:* ${leadMobile}%0A*ज़िला:* ${leadDistrict}%0A*सेवा:* ${serviceTitle}%0A%0A_नागरिक ने फॉर्म भरने में सहायता का अनुरोध किया है।_`;
+
+    setTimeout(() => {
+      window.open(`https://api.whatsapp.com/send?text=${adminAlertText}`, '_blank');
+    }, 1200);
+  };
+
+  const openLeadCaptureForService = (service?: GovernmentService) => {
+    triggerHaptic([80]);
+    setTargetLeadService(service || null);
+    setLeadSubmittedSuccess(false);
+    setShowLeadModal(true);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col justify-between selection:bg-orange-100">
       {/* 1. शीर्ष आधिकारिक हेडर */}
@@ -245,8 +300,17 @@ export default function App() {
             </div>
           </div>
 
-          {/* राज्य चयन और त्वरित सहायता बटन */}
+          {/* हेडर बटन्स */}
           <div className="flex items-center gap-2">
+            {/* सहायता व फॉर्म भरवाएं बटन */}
+            <button
+              onClick={() => openLeadCaptureForService()}
+              className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 shadow-xs"
+            >
+              <Headphones className="w-4 h-4 text-emerald-100" />
+              <span className="hidden sm:inline">फॉर्म भरवाएं / सहायता</span>
+            </button>
+
             <button
               onClick={() => {
                 triggerHaptic([80]);
@@ -256,9 +320,10 @@ export default function App() {
               title="आपातकालीन हेल्पलाइन"
             >
               <PhoneCall className="w-4 h-4 text-red-600 animate-bounce" />
-              <span className="hidden sm:inline">हेल्पलाइन 1930 / 1915</span>
+              <span className="hidden sm:inline">1930 / 1915</span>
             </button>
 
+            {/* राज्य चयन */}
             <div className="relative">
               <select
                 value={selectedStateCode}
@@ -298,7 +363,6 @@ export default function App() {
                 <Sparkles className="w-4 h-4" /> डिजिटल मित्र वॉयस साथी | सक्रिय राज्य: {currentState.hindiName}
               </span>
             </div>
-            {/* लिखित संस्थापक पहचान पट्टी */}
             <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-xl">
               <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0" />
               <span>परिकल्पना व निर्माण: <strong>विकास कुमार मिश्रा</strong> | रॉबर्ट्सगंज, सोनभद्र (उ.प्र.)</span>
@@ -318,7 +382,30 @@ export default function App() {
           </div>
         </section>
 
-        {/* एंटी-फ्रॉड सुरक्षा शील्ड बैनर (.gov.in Anti-Fraud Badge) */}
+        {/* नागरिक सहायता व लीड जनरेशन कॉल-आउट कार्ड */}
+        <div className="bg-orange-50/80 border-2 border-orange-200 rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+          <div className="space-y-1 text-center sm:text-left">
+            <span className="text-xs font-black uppercase text-orange-800 tracking-wider flex items-center justify-center sm:justify-start gap-1.5">
+              <Headphones className="w-4 h-4 text-orange-600" /> ऑनलाइन फॉर्म भरने या दस्तावेज़ में मदद चाहिए?
+            </span>
+            <p className="text-sm font-black text-slate-900">
+              हमारे अधिकृत सहायता केंद्र से सीधा मार्गदर्शन या आवेदन में मदद पाएं
+            </p>
+            <span className="text-xs font-bold text-slate-600 block">
+              जीएसटी, पैन, आय-जाति, आयुष्मान, राशन कार्ड, पेंशन या व्यापार लोन का काम आसानी से कराएं।
+            </span>
+          </div>
+
+          <button
+            onClick={() => openLeadCaptureForService()}
+            className="w-full sm:w-auto px-5 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl text-xs font-black transition active:scale-95 flex items-center justify-center gap-2 shadow-xs shrink-0"
+          >
+            <Users className="w-4 h-4" />
+            सहायक से कॉल बैक पाएं
+          </button>
+        </div>
+
+        {/* एंटी-फ्रॉड सुरक्षा शील्ड बैनर */}
         <div
           onClick={() => {
             triggerHaptic([60]);
@@ -336,14 +423,14 @@ export default function App() {
                 <span className="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.2 rounded-md font-bold">सत्यापित</span>
               </div>
               <span className="text-[11px] font-bold text-emerald-800 block">
-                साइबर ठगों और नकली वेबसाइटों से बचें। असली सरकारी वेबसाइट की पहचान जानने के लिए यहाँ छूएं।
+                साइबर ठगों से बचें। असली सरकारी वेबसाइट की पहचान जानने के लिए यहाँ छूएं।
               </span>
             </div>
           </div>
           <HelpCircle className="w-4 h-4 text-emerald-700 shrink-0" />
         </div>
 
-        {/* सर्च व वॉयस इनपुट बार (स्मार्ट फ़ज़ी सर्च सक्षम) */}
+        {/* सर्च व वॉयस इनपुट बार */}
         <div className="relative flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -351,7 +438,7 @@ export default function App() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`सेवा या कागज़ात खोजें (उदा: aadhar, pan, rasan, bijli meter, kisan loan, ppo)...`}
+              placeholder={`सेवा या कागज़ात खोजें (उदा: aadhar, pan, rasan, bijli meter, kisan loan)...`}
               className="w-full pl-11 pr-10 py-3.5 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-orange-500 shadow-xs transition"
             />
             {searchQuery && (
@@ -377,7 +464,7 @@ export default function App() {
           </button>
         </div>
 
-        {/* श्रेणियां (Category Pills) */}
+        {/* श्रेणियां */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {categories.map((cat) => (
             <button
@@ -403,15 +490,15 @@ export default function App() {
           ))}
         </div>
 
-        {/* परिणाम गणना व राज्य सूचना */}
+        {/* परिणाम गणना */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs font-bold text-slate-500 px-1 gap-1">
-          <span>कुल उपलब्ध सेवाएं: {filteredServices.length} (फ़ज़ी व बहुभाषी इंजन सक्रिय)</span>
+          <span>कुल उपलब्ध सेवाएं: {filteredServices.length}</span>
           <span className="flex items-center gap-1 text-emerald-700">
             <CheckCircle2 className="w-3.5 h-3.5" /> राज्य: {currentState.hindiName} पोर्टल लिंक सक्रिय हैं
           </span>
         </div>
 
-        {/* सेवाओं का ग्रिड (Service Grid) */}
+        {/* सेवाओं का ग्रिड */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredServices.map((service) => (
             <div
@@ -449,41 +536,152 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex items-center gap-2 mt-4">
-                <button
-                  onClick={() => openServiceModal(service)}
-                  className="flex-1 py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-black transition active:scale-95 flex items-center justify-center gap-1.5"
-                >
-                  <FileText className="w-3.5 h-3.5 text-orange-600" />
-                  कागज़ात चेकलिस्ट
-                </button>
+              {/* कार्ड एक्शन बटन */}
+              <div className="pt-4 border-t border-slate-100 flex flex-col gap-2 mt-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => openServiceModal(service)}
+                    className="flex-1 py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-black transition active:scale-95 flex items-center justify-center gap-1.5"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-orange-600" />
+                    कागज़ात चेकलिस्ट
+                  </button>
 
-                <a
-                  href={service.officialApplyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-2.5 px-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-black transition active:scale-95 flex items-center justify-center gap-1.5 shadow-xs"
+                  <a
+                    href={service.officialApplyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2.5 px-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-black transition active:scale-95 flex items-center justify-center gap-1.5 shadow-xs"
+                  >
+                    सीधा पोर्टल खोलें
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                {/* सेवा विशेष फॉर्म सहायता बटन */}
+                <button
+                  onClick={() => openLeadCaptureForService(service)}
+                  className="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-[11px] font-black transition active:scale-95 flex items-center justify-center gap-1.5"
                 >
-                  सीधा पोर्टल खोलें
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
+                  <Headphones className="w-3.5 h-3.5 text-emerald-600" />
+                  इस सेवा के लिए सहायक से कॉल बैक लें
+                </button>
               </div>
             </div>
           ))}
         </div>
-
-        {filteredServices.length === 0 && (
-          <div className="bg-white rounded-3xl p-8 text-center border border-slate-200 space-y-3">
-            <AlertCircle className="w-10 h-10 text-orange-500 mx-auto" />
-            <h3 className="text-base font-black text-slate-900">कोई संबंधित सरकारी सेवा नहीं मिली</h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              कृपया अन्य कीवर्ड खोजें (जैसे 'आधार', 'पैन', 'खतौनी', 'बिजली', 'पेंशन') या श्रेणी बदलें।
-            </p>
-          </div>
-        )}
       </main>
 
-      {/* 3. आपातकालीन हेल्पलाइन हब मोडल (1-Tap Dial Hub) */}
+      {/* 3. लीड कैप्चर व विशेषज्ञ सहायता मोडल (DPDP Act 2023 Compliant) */}
+      {showLeadModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full max-h-[92vh] overflow-y-auto p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center">
+                  <Headphones className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">सहायक से फॉर्म भरवाएं</h3>
+                  <span className="text-xs text-slate-500 font-bold">
+                    {targetLeadService ? targetLeadService.title : 'सरकारी सेवा मार्गदर्शन व सहायता'}
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowLeadModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {leadSubmittedSuccess ? (
+              <div className="p-6 text-center space-y-3">
+                <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h4 className="text-base font-black text-slate-900">अनुरोध सफलतापूर्वक दर्ज हुआ!</h4>
+                <p className="text-xs text-slate-600 font-medium">
+                  आपके विवरण हमारे निकटतम अधिकृत सहायता केंद्र को भेज दिए गए हैं। प्रतिनिधि जल्द ही आपसे संपर्क करेंगे।
+                </p>
+                <button
+                  onClick={() => setShowLeadModal(false)}
+                  className="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-black transition"
+                >
+                  पूर्ण (Close)
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleLeadSubmit} className="space-y-3.5">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">आपका पूरा नाम:</label>
+                  <input
+                    type="text"
+                    required
+                    value={leadName}
+                    onChange={(e) => setLeadName(e.target.value)}
+                    placeholder="उदा. राहुल शर्मा"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-hidden focus:border-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">मोबाइल नंबर (WhatsApp सक्रिय):</label>
+                  <input
+                    type="tel"
+                    required
+                    maxLength={10}
+                    value={leadMobile}
+                    onChange={(e) => setLeadMobile(e.target.value)}
+                    placeholder="उदा. 9876543210"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-hidden focus:border-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">आपका ज़िला व राज्य:</label>
+                  <input
+                    type="text"
+                    required
+                    value={leadDistrict}
+                    onChange={(e) => setLeadDistrict(e.target.value)}
+                    placeholder="उदा. सोनभद्र, उत्तर प्रदेश"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-hidden focus:border-orange-500"
+                  />
+                </div>
+
+                {/* DPDP Act 2023 सहमति चेकमार्क */}
+                <div
+                  onClick={() => setHasConsent(!hasConsent)}
+                  className="flex items-start gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-left"
+                >
+                  <div className="mt-0.5">
+                    {hasConsent ? (
+                      <CheckSquare className="w-4 h-4 text-emerald-600 shrink-0" />
+                    ) : (
+                      <Square className="w-4 h-4 text-slate-400 shrink-0" />
+                    )}
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-600 leading-tight">
+                    मैं सरकारी योजना की जानकारी व आवेदन सहायता हेतु सर्वसेतु अधिकृत प्रतिनिधि द्वारा संपर्क करने की सहमति देता/देती हूँ।
+                  </span>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-black transition active:scale-95 shadow-md flex items-center justify-center gap-1.5"
+                >
+                  कॉल बैक अनुरोध सबमिट करें
+                  <ArrowUpRight className="w-4 h-4" />
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 4. आपातकालीन हेल्पलाइन हब मोडल */}
       {showHelplineDrawer && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
@@ -544,7 +742,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 4. एंटी-फ्रॉड सुरक्षा शील्ड मोडल (.gov.in Security Guidelines) */}
+      {/* 5. एंटी-फ्रॉड सुरक्षा शील्ड मोडल */}
       {showTrustShieldModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
@@ -577,7 +775,7 @@ export default function App() {
               <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl space-y-1 text-red-950">
                 <span className="font-black text-sm block">2. इन फर्जी वेबसाइटों से सावधान रहें:</span>
                 <p>
-                  किसी भी सरकारी योजना के नाम पर बनी ऐसी वेबसाइटें जिनके अंत में <strong>.com, .org, .net, .in, .xyz</strong> हो, वे निजी या फर्जी हो सकती हैं। उन पर कभी भी अपने बैंक या आधार का ब्योरा न दें।
+                  किसी भी सरकारी योजना के नाम पर बनी ऐसी वेबसाइटें जिनके अंत में <strong>.com, .org, .net, .in, .xyz</strong> हो, वे निजी या फर्जी हो सकती हैं। उन पर कभी भी अपने बैंक या व्यक्तिगत दस्तावेज न दें।
                 </p>
               </div>
 
@@ -599,7 +797,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 5. सेवा विस्तार, इंटरएक्टिव चेकलिस्ट, व्हाट्सएप शेयर व प्रिंट पर्ची मोडल */}
+      {/* 6. सेवा विस्तार मोडल */}
       {selectedService && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
@@ -703,25 +901,36 @@ export default function App() {
               </div>
             </div>
 
-            {/* शेयर व प्रिंट */}
-            <div className="grid grid-cols-2 gap-2 pt-1">
+            {/* एक्शन बटन */}
+            <div className="space-y-2 pt-1">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={shareOnWhatsApp}
+                  className="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 shadow-xs"
+                >
+                  <Share2 className="w-3.5 h-3.5" /> व्हाट्सएप पर शेयर
+                </button>
+
+                <button
+                  onClick={handlePrintSlip}
+                  className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 border border-slate-200"
+                >
+                  <Printer className="w-3.5 h-3.5 text-orange-600" /> प्रिंट पर्ची
+                </button>
+              </div>
+
+              {/* सहायक से कॉल बैक बटन */}
               <button
-                onClick={shareOnWhatsApp}
-                className="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 shadow-xs"
+                onClick={() => {
+                  setSelectedService(null);
+                  openLeadCaptureForService(selectedService);
+                }}
+                className="w-full py-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl text-xs font-black flex items-center justify-center gap-2 transition"
               >
-                <Share2 className="w-3.5 h-3.5" /> व्हाट्सएप पर शेयर करें
+                <Headphones className="w-4 h-4 text-amber-700" />
+                इस सेवा का फॉर्म भरने में मदद चाहिए? कॉल बैक लें
               </button>
 
-              <button
-                onClick={handlePrintSlip}
-                className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 border border-slate-200"
-              >
-                <Printer className="w-3.5 h-3.5 text-orange-600" /> प्रिंट पर्ची
-              </button>
-            </div>
-
-            {/* आधिकारिक लिंक */}
-            <div className="pt-2 space-y-2">
               <a
                 href={selectedService.officialApplyUrl}
                 target="_blank"
@@ -731,17 +940,13 @@ export default function App() {
                 आधिकारिक पोर्टल पर सीधे आवेदन करें
                 <ExternalLink className="w-4 h-4" />
               </a>
-
-              <p className="text-[11px] text-center font-bold text-slate-400">
-                सुरक्षा नोट: यह लिंक आपको सीधे सत्यापित सरकारी पोर्टल पर ले जाएगा।
-              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* 6. पादलेख */}
-      <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-2.5">
+      {/* 7. पादलेख (Footer - एडमिन डेटा एक्सपोर्टर व संस्थापक क्रेडिट) */}
+      <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-3">
         <div className="max-w-xl mx-auto p-3 bg-orange-50/70 border border-orange-200 rounded-2xl">
           <p className="font-black text-slate-900 text-sm">
             सर्वसेतु AI (राष्ट्रीय डिजिटल नागरिक सेवा सेतु)
@@ -755,11 +960,23 @@ export default function App() {
           </p>
         </div>
 
+        {/* संस्थापक / एडमिन लीड डाउनलोडर (डेटा बैकअप) */}
+        <div className="flex items-center justify-center gap-2 pt-1">
+          <button
+            onClick={() => LeadManager.exportLeadsToCSV()}
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition active:scale-95"
+            title="प्राप्त सभी नागरिक लीड्स को एक्सेल/CSV में डाउनलोड करें"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-600" />
+            <span>कुल दर्ज लीड्स ({leadCount}) - Excel/CSV डाउनलोड</span>
+          </button>
+        </div>
+
         <p className="font-bold text-slate-500">
           डिजिटल इंडिया एवं नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप
         </p>
         <p className="text-[11px] text-slate-400">
-          सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत 100% सुरक्षित व निःशुल्क नागरिक मंच
+          सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत 100% सुरक्षित नागरिक मंच
         </p>
       </footer>
     </div>
