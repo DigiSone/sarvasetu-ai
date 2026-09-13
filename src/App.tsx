@@ -12,11 +12,9 @@ import {
   ShieldCheck,
   Sparkles,
   X,
-  Building2,
   ArrowUpRight,
   AlertCircle,
   MapPin,
-  UserCheck,
   Share2,
   Printer,
   CheckSquare,
@@ -95,13 +93,11 @@ export default function App() {
   const [checkedDocs, setCheckedDocs] = useState<Record<string, boolean>>({});
   const [isListening, setIsListening] = useState(false);
 
-  // मोडल स्टेट्स
   const [showHelplineDrawer, setShowHelplineDrawer] = useState(false);
   const [showTrustShieldModal, setShowTrustShieldModal] = useState(false);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [targetLeadService, setTargetLeadService] = useState<GovernmentService | null>(null);
 
-  // लीड फॉर्म इनपुट स्टेट्स
   const [leadName, setLeadName] = useState('');
   const [leadMobile, setLeadMobile] = useState('');
   const [leadDistrict, setLeadDistrict] = useState('');
@@ -109,7 +105,6 @@ export default function App() {
   const [leadSubmittedSuccess, setLeadSubmittedSuccess] = useState(false);
   const [leadCount, setLeadCount] = useState(0);
 
-  // संस्थापक परिचय सहित डिजिटल मित्र वॉइस संदेश
   const [voiceBriefing, setVoiceBriefing] = useState(
     'प्रणाम! सर्वसेतु AI में आपका स्वागत है। इसके संस्थापक विकास कुमार मिश्रा, रॉबर्ट्सगंज, सोनभद्र, उत्तर प्रदेश हैं। बोलकर बताइए या नीचे खोजें: आपको किस सरकारी सेवा या दस्तावेज़ के लिए सीधे आवेदन करना है?'
   );
@@ -233,8 +228,8 @@ export default function App() {
     window.print();
   };
 
-  // लीड फॉर्म सबमिशन हैंडलर
-  const handleLeadSubmit = (e: React.FormEvent) => {
+  // Google Sheets में ऑटो-सिंक व WhatsApp पर 1-टैप डिस्पैच
+  const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!leadName || !leadMobile || !leadDistrict) {
       alert('कृपया नाम, मोबाइल नंबर और ज़िला सही से भरें।');
@@ -249,8 +244,8 @@ export default function App() {
     const serviceTitle = targetLeadService ? targetLeadService.title : 'सामान्य सरकारी योजना सहायता';
     const serviceCategory = targetLeadService ? targetLeadService.category : 'GENERAL';
 
-    // 1. डेटाबेस/लोकल स्टोरेज में सेव
-    LeadManager.saveLead({
+    // 1. Google Sheets व LocalStorage में सेव
+    const createdLead = await LeadManager.saveLead({
       name: leadName,
       mobile: leadMobile,
       district: leadDistrict,
@@ -261,11 +256,10 @@ export default function App() {
     setLeadCount(LeadManager.getAllLeads().length);
     setLeadSubmittedSuccess(true);
 
-    // 2. तुरंत एडमिन व्हाट्सएप पर अलर्ट मैसेज लिंक
-    const adminAlertText = `*🔔 नई सेवा सहायता अनुरोध (सर्वसेतु AI Lead)*%0A%0A*नाम:* ${leadName}%0A*मोबाइल:* ${leadMobile}%0A*ज़िला:* ${leadDistrict}%0A*सेवा:* ${serviceTitle}%0A%0A_नागरिक ने फॉर्म भरने में सहायता का अनुरोध किया है।_`;
-
+    // 2. संस्थापक के WhatsApp पर सीधा अलर्ट लिंक
+    const waUrl = LeadManager.getWhatsAppAlertUrl(createdLead);
     setTimeout(() => {
-      window.open(`https://api.whatsapp.com/send?text=${adminAlertText}`, '_blank');
+      window.open(waUrl, '_blank');
     }, 1200);
   };
 
@@ -300,9 +294,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* हेडर बटन्स */}
           <div className="flex items-center gap-2">
-            {/* सहायता व फॉर्म भरवाएं बटन */}
             <button
               onClick={() => openLeadCaptureForService()}
               className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 shadow-xs"
@@ -323,7 +315,6 @@ export default function App() {
               <span className="hidden sm:inline">1930 / 1915</span>
             </button>
 
-            {/* राज्य चयन */}
             <div className="relative">
               <select
                 value={selectedStateCode}
@@ -536,7 +527,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* कार्ड एक्शन बटन */}
               <div className="pt-4 border-t border-slate-100 flex flex-col gap-2 mt-4">
                 <div className="flex items-center gap-2">
                   <button
@@ -558,7 +548,6 @@ export default function App() {
                   </a>
                 </div>
 
-                {/* सेवा विशेष फॉर्म सहायता बटन */}
                 <button
                   onClick={() => openLeadCaptureForService(service)}
                   className="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-[11px] font-black transition active:scale-95 flex items-center justify-center gap-1.5"
@@ -572,7 +561,7 @@ export default function App() {
         </div>
       </main>
 
-      {/* 3. लीड कैप्चर व विशेषज्ञ सहायता मोडल (DPDP Act 2023 Compliant) */}
+      {/* 3. लीड कैप्चर व विशेषज्ञ सहायता मोडल */}
       {showLeadModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full max-h-[92vh] overflow-y-auto p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
@@ -603,7 +592,7 @@ export default function App() {
                 </div>
                 <h4 className="text-base font-black text-slate-900">अनुरोध सफलतापूर्वक दर्ज हुआ!</h4>
                 <p className="text-xs text-slate-600 font-medium">
-                  आपके विवरण हमारे निकटतम अधिकृत सहायता केंद्र को भेज दिए गए हैं। प्रतिनिधि जल्द ही आपसे संपर्क करेंगे।
+                  आपके विवरण सीधे हमारी सुरक्षित Google Sheet में दर्ज हो चुके हैं और संस्थापक के WhatsApp पर भेज दिए गए हैं।
                 </p>
                 <button
                   onClick={() => setShowLeadModal(false)}
@@ -651,7 +640,6 @@ export default function App() {
                   />
                 </div>
 
-                {/* DPDP Act 2023 सहमति चेकमार्क */}
                 <div
                   onClick={() => setHasConsent(!hasConsent)}
                   className="flex items-start gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer text-left"
@@ -819,7 +807,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* तैयारी मीटर */}
             <div className="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 space-y-2">
               <div className="flex items-center justify-between text-xs font-black">
                 <span className="text-slate-700">कागज़ात तैयारी मीटर:</span>
@@ -848,7 +835,6 @@ export default function App() {
               )}
             </div>
 
-            {/* चेकलिस्ट सूची */}
             <div className="space-y-2.5">
               <span className="text-xs font-black uppercase text-slate-400 tracking-wider block">
                 आवश्यक कागज़ात (छूकर टिक करें):
@@ -889,7 +875,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* समय व शुल्क */}
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl">
                 <span className="text-slate-500 font-bold block mb-1">सरकारी शुल्क:</span>
@@ -901,7 +886,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* एक्शन बटन */}
             <div className="space-y-2 pt-1">
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -919,7 +903,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* सहायक से कॉल बैक बटन */}
               <button
                 onClick={() => {
                   setSelectedService(null);
@@ -945,7 +928,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. पादलेख (Footer - एडमिन डेटा एक्सपोर्टर व संस्थापक क्रेडिट) */}
+      {/* 7. पादलेख */}
       <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-3">
         <div className="max-w-xl mx-auto p-3 bg-orange-50/70 border border-orange-200 rounded-2xl">
           <p className="font-black text-slate-900 text-sm">
@@ -960,7 +943,6 @@ export default function App() {
           </p>
         </div>
 
-        {/* संस्थापक / एडमिन लीड डाउनलोडर (डेटा बैकअप) */}
         <div className="flex items-center justify-center gap-2 pt-1">
           <button
             onClick={() => LeadManager.exportLeadsToCSV()}
