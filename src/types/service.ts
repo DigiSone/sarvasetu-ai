@@ -8,17 +8,17 @@ export interface GovServiceItem {
   title: string;
   department: string;
   ministryOrState: string;
-  scope: 'CENTRAL' | 'UP_STATE';
+  scope: 'ALL_INDIA' | 'UP_STATE';
   category: 
+    | 'IDENTITY' 
     | 'REVENUE_LAND' 
     | 'CERTIFICATES' 
-    | 'FOOD_RATION' 
-    | 'ELECTRICITY_UTILITY' 
-    | 'POLICE_LEGAL' 
+    | 'BUSINESS_TAX' 
     | 'HEALTH_WELFARE' 
     | 'FARMER_AGRICULTURE' 
-    | 'BUSINESS_TAX' 
-    | 'IDENTITY';
+    | 'TRANSPORT' 
+    | 'EDUCATION_CAREER' 
+    | 'FINANCE_LEGAL';
   benefitSummary: string;
   officialApplyUrl: string;
   portalName: string;
