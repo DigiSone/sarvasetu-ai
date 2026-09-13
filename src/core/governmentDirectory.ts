@@ -30,7 +30,7 @@ export interface GovernmentService {
 
 export const GOVERNMENT_SERVICES: GovernmentService[] = [
   // ==========================================
-  // 1. व्यापार, कंपनी, उद्योग व कराधान (BUSINESS_TAX)
+  // 1. व्यापार, कंपनी, उद्योग, स्टार्टअप व कराधान (BUSINESS_TAX)
   // ==========================================
   {
     id: 'gst-registration',
@@ -71,6 +71,229 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     ],
     voiceBriefing: 'छोटे उद्योगों और दुकानों के लिए उद्यम एमएसएमई सर्टिफिकेट उद्यम पोर्टल पर केवल आधार और पैन से तुरंत बनता है।',
     keywords: ['msme', 'udyam', 'उद्यम', 'उद्योग आधार', 'msme certificate', 'छोटा व्यापार']
+  },
+  {
+    id: 'pm-vishwakarma',
+    title: 'पीएम विश्वकर्मा योजना (PM Vishwakarma Toolkit & Loan)',
+    department: 'सूक्ष्म, लघु और मध्यम उद्यम मंत्रालय',
+    ministry: 'एमएसएमई मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: '18 पारंपरिक कारीगरों (बढ़ई, लोहार, दर्जी, मोची) को ₹15,000 टूलकिट व ₹3 लाख का सस्ता लोन',
+    officialApplyUrl: 'https://pmvishwakarma.gov.in/',
+    portalName: 'PM Vishwakarma Portal',
+    estimatedDays: 'ग्राम पंचायत व नगर निगम सत्यापन अनुसार',
+    govtFee: '₹0 (प्रशिक्षण व प्रमाण पत्र निःशुल्क)',
+    requiredDocuments: [
+      { name: 'कारीगर का आधार कार्ड व मोबाइल नंबर', mandatory: true },
+      { name: 'बैंक पासबुक (डीबीटी सक्रिय)', mandatory: true },
+      { name: 'पारंपरिक व्यवसाय श्रेणी चयन', mandatory: true }
+    ],
+    voiceBriefing: 'पारंपरिक कारीगरों और दस्तकारों को 15000 रुपये टूलकिट और सस्ते लोन के लिए पीएम विश्वकर्मा पोर्टल पर पंजीकरण करना होता है।',
+    keywords: ['vishwakarma', 'विश्वकर्मा', 'pm vishwakarma', 'toolkit yojana', 'darzi lohar karigar']
+  },
+  {
+    id: 'pmegp-loan',
+    title: 'पीएमईजीपी ऋण योजना (PMEGP Subsidy Loan ₹50 Lakh)',
+    department: 'खादी एवं ग्रामोद्योग आयोग (KVIC)',
+    ministry: 'एमएसएमई मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: 'विनिर्माण इकाई हेतु ₹50 लाख और सेवा क्षेत्र हेतु ₹20 लाख तक 35% सरकारी सब्सिडी',
+    officialApplyUrl: 'https://www.kviconline.gov.in/pmegpeportal/pmegphome/index.jsp',
+    portalName: 'PMEGP e-Portal',
+    estimatedDays: 'जिला टास्क फोर्स कमेटी द्वारा 30 दिन में',
+    govtFee: '₹0 (ऑनलाइन आवेदन निःशुल्क)',
+    requiredDocuments: [
+      { name: 'विस्तृत प्रोजेक्ट रिपोर्ट (DPR)', mandatory: true },
+      { name: 'आधार कार्ड व पैन कार्ड', mandatory: true },
+      { name: 'जाति प्रमाण पत्र व शैक्षणिक योग्यता प्रमाण (8वीं पास)', mandatory: true }
+    ],
+    voiceBriefing: 'नया कारखाना या सेवा व्यवसाय शुरू करने हेतु 35 प्रतिशत तक सरकारी सब्सिडी पाने के लिए पीएमईजीपी पोर्टल पर आवेदन करें।',
+    keywords: ['pmegp', 'kvic', 'खादी ग्रामोद्योग', 'pmegp loan', 'कारखाना सब्सिडी']
+  },
+  {
+    id: 'startup-india',
+    title: 'स्टार्टअप इंडिया मान्यता (Startup India DPIIT Recognition)',
+    department: 'उद्योग संवर्धन और आंतरिक व्यापार विभाग (DPIIT)',
+    ministry: 'वाणिज्य एवं उद्योग मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: '3 वर्ष आयकर छूट (धारा 80-IAC), एंजेल टैक्स छूट और पेटेंट शुल्क में 80% छूट',
+    officialApplyUrl: 'https://www.startupindia.gov.in/',
+    portalName: 'Startup India National Hub',
+    estimatedDays: '2 से 4 कार्यदिवस',
+    govtFee: '₹0 (निःशुल्क मान्यता)',
+    requiredDocuments: [
+      { name: 'कंपनी इनकॉर्पोरेशन सर्टिफिकेट (CIN/LLPIN)', mandatory: true },
+      { name: 'इनोवेटिव बिजनेस आइडिया व पिच डेक', mandatory: true },
+      { name: 'कंपनी पैन कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'नए इनोवेटिव स्टार्टअप्स को 3 साल टैक्स छूट और सरकारी फंड के लिए स्टार्टअप इंडिया पोर्टल से मान्यता मिलती है।',
+    keywords: ['startup india', 'dpiit', 'स्टार्टअप', 'angel tax exemption', 'startup grant']
+  },
+  {
+    id: 'cgtmse-credit-guarantee',
+    title: 'सीजीटीएमएसई क्रेडिट गारंटी योजना (CGTMSE Collateral-Free Loan)',
+    department: 'सिडबी (SIDBI) / एमएसएमई मंत्रालय',
+    ministry: 'एमएसएमई मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: 'सूक्ष्म एवं लघु उद्योगों को बिना किसी तीसरी पार्टी गारंटी के ₹5 करोड़ तक का बैंक लोन',
+    officialApplyUrl: 'https://www.cgtmse.in/',
+    portalName: 'CGTMSE Portal',
+    estimatedDays: 'सदस्य बैंक अनुमोदन अनुसार',
+    govtFee: 'वार्षिक गारंटी शुल्क (AGF)',
+    requiredDocuments: [
+      { name: 'उद्यम पंजीकरण प्रमाण पत्र', mandatory: true },
+      { name: 'व्यापार पैन व ऑडिटेड बैलेंस शीट', mandatory: true },
+      { name: 'बैंक लोन प्रपोजल', mandatory: true }
+    ],
+    voiceBriefing: 'बिना जमीन या मकान गिरवी रखे 5 करोड़ तक के बिजनेस लोन के लिए सीजीटीएमएसई गारंटी स्कीम के तहत बैंक में आवेदन करें।',
+    keywords: ['cgtmse', 'collateral free loan', 'बिना गारंटी लोन', 'sidbi', 'msme guarantee']
+  },
+  {
+    id: 'eway-bill-gst',
+    title: 'ई-वे बिल पोर्टल (e-Way Bill System for Goods Transport)',
+    department: 'राष्ट्रीय सूचना विज्ञान केंद्र (NIC) / GSTN',
+    ministry: 'वित्त मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: '₹50,000 से अधिक के माल परिवहन हेतु कानूनी रूप से अनिवार्य इलेक्ट्रॉनिक वे-बिल',
+    officialApplyUrl: 'https://ewaybillgst.gov.in/',
+    portalName: 'e-Way Bill National Portal',
+    estimatedDays: 'तत्काल 1 मिनट में जनरेट',
+    govtFee: '₹0 (जीएसटी पंजीकृत करदाताओं हेतु)',
+    requiredDocuments: [
+      { name: 'टैक्स इनवॉइस / बिल ऑफ सप्लाई', mandatory: true },
+      { name: 'ट्रांसपोर्टर आईडी अथवा वाहन संख्या', mandatory: true }
+    ],
+    voiceBriefing: 'व्यापारिक माल गाड़ी से भेजने के लिए 50 हजार से ऊपर के सामान पर ई-वे बिल पोर्टल से ई-वे बिल जनरेट किया जाता है।',
+    keywords: ['eway bill', 'ईवे बिल', 'gst eway', 'माल परिवहन', 'transport bill']
+  },
+  {
+    id: 'einvoice-system',
+    title: 'ई-इनवॉइसिंग पोर्टल (e-Invoicing System / IRP Portal)',
+    department: 'केंद्रीय अप्रत्यक्ष कर बोर्ड (CBIC)',
+    ministry: 'वित्त मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: 'बी2बी इनवॉइस के लिए आईआरएन (IRN) और क्यूआर कोड का इलेक्ट्रॉनिक सत्यापन',
+    officialApplyUrl: 'https://einvoice1.gst.gov.in/',
+    portalName: 'e-Invoice System (IRP)',
+    estimatedDays: 'तत्काल मिलीसेकंड में प्रमाणीकरण',
+    govtFee: '₹0',
+    requiredDocuments: [
+      { name: 'जीएसटी नंबर (GSTIN) व ई-इनवॉइसिंग क्रेडेंशियल', mandatory: true },
+      { name: 'जेसन इनवॉइस डेटा पेलोड', mandatory: true }
+    ],
+    voiceBriefing: 'बी2बी व्यापार के लिए ई-इनवॉइसिंग पोर्टल से इनवॉइस रेफरेंस नंबर आईआरएन तुरंत सत्यापित होता है।',
+    keywords: ['einvoice', 'e-invoice', 'ई इनवॉइस', 'irn portal', 'gst invoice']
+  },
+  {
+    id: 'tan-application',
+    title: 'नया टैन नंबर आवेदन (TAN Application - Form 49B)',
+    department: 'आयकर विभाग (Income Tax Department)',
+    ministry: 'वित्त मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: 'टीडीएस (TDS) काटने और सरकारी खाते में जमा करने हेतु अनिवार्य 10 अंकों का टैन',
+    officialApplyUrl: 'https://www.tin-nsdl.com/services/tan/tan-introduction.html',
+    portalName: 'Protean TIN-NSDL Portal',
+    estimatedDays: '7 से 10 कार्यदिवस',
+    govtFee: '₹65 (सरकारी शुल्क व टैक्स)',
+    requiredDocuments: [
+      { name: 'फर्म / कंपनी / कटौतीकर्ता का पैन कार्ड', mandatory: true },
+      { name: 'कार्यालय का पता प्रमाण', mandatory: true }
+    ],
+    voiceBriefing: 'कर्मचारियों या ठेकेदारों का टीडीएस काटने के लिए टैन नंबर अनिवार्य होता है, जिसे फॉर्म 49B भरकर लिया जाता है।',
+    keywords: ['tan', 'form 49b', 'टैन नंबर', 'tds number', 'tin nsdl tan']
+  },
+  {
+    id: 'lei-code-india',
+    title: 'लीगल एंटिटी आइडेंटिफ़ायर (LEI Code India)',
+    department: 'भारतीय रिजर्व बैंक (RBI) / CCIL',
+    ministry: 'वित्त मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: '₹50 करोड़ या अधिक के बड़े बैंकिंग लेनदेन और विदेशी मुद्रा व्यापार हेतु 20 अंकों का वैश्विक कोड',
+    officialApplyUrl: 'https://www.ccilindia-lei.co.in/',
+    portalName: 'Legal Entity Identifier India (LEIL)',
+    estimatedDays: '2 से 3 कार्यदिवस',
+    govtFee: '₹4,250 + GST (प्रथम वर्ष)',
+    requiredDocuments: [
+      { name: 'कंपनी का पैन कार्ड व सर्टिफिकेट ऑफ इनकॉर्पोरेशन', mandatory: true },
+      { name: 'बोर्ड संकल्प (Board Resolution)', mandatory: true },
+      { name: 'ऑडिटेड वित्तीय विवरण', mandatory: true }
+    ],
+    voiceBriefing: 'बड़े औद्योगिक लोन और बैंकिंग लेनदेन के लिए आरबीआई द्वारा अनिवार्य एलईआई कोड एलईआईएल पोर्टल से जारी होता है।',
+    keywords: ['lei', 'lei code', 'legal entity identifier', 'rbi lei', 'बड़े लोन कोड']
+  },
+  {
+    id: 'apeda-rcmc',
+    title: 'अपीडा कृषि निर्यात पंजीकरण (APEDA RCMC Exporter Registration)',
+    department: 'कृषि और प्रसंस्कृत खाद्य उत्पाद निर्यात विकास प्राधिकरण',
+    ministry: 'वाणिज्य एवं उद्योग मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: 'चावल, फल, सब्जियां और कृषि उत्पाद विदेशों में निर्यात करने हेतु अनिवार्य RCMC',
+    officialApplyUrl: 'https://apeda.gov.in/apedawebsite/RCMC/RCMC_Index.htm',
+    portalName: 'APEDA National Exporter Portal',
+    estimatedDays: '3 से 5 कार्यदिवस',
+    govtFee: '₹5,000 + GST',
+    requiredDocuments: [
+      { name: 'आयात-निर्यात कोड (IEC)', mandatory: true },
+      { name: 'बैंक प्रमाण पत्र / कैंसिल्ड चेक', mandatory: true },
+      { name: 'फर्म का पैन कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'अनाज, बासमती चावल और फल-सब्जियां विदेशों में एक्सपोर्ट करने के लिए अपीडा पोर्टल से आरसीएमसी सर्टिफिकेट प्राप्त करें।',
+    keywords: ['apeda', 'rcmc', 'कृषि निर्यात', 'apeda registration', 'rice export']
+  },
+  {
+    id: 'copyright-registration',
+    title: 'कॉपीराइट पंजीकरण (Copyright Office e-Filing)',
+    department: 'कॉपीराइट कार्यालय (Copyright Office)',
+    ministry: 'वाणिज्य एवं उद्योग मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: 'किताब, संगीत, सॉफ्टवेयर कोड, वीडियो व कलात्मक कृतियों पर कानूनी बौद्धिक संपदा अधिकार',
+    officialApplyUrl: 'https://copyright.gov.in/',
+    portalName: 'Copyright e-Filing Portal',
+    estimatedDays: '30 दिन आपत्ति अवधि उपरांत',
+    govtFee: 'साहित्य/सॉफ्टवेयर ₹500 / कलात्मक कार्य ₹2,000',
+    requiredDocuments: [
+      { name: 'रचना की मूल प्रति (PDF/Source Code/Audio)', mandatory: true },
+      { name: 'लेखक/निर्माता का पहचान प्रमाण व एनओसी', mandatory: true }
+    ],
+    voiceBriefing: 'अपनी लिखी किताब, सॉफ्टवेयर कोड या संगीत को चोरी होने से बचाने के लिए कॉपीराइट पोर्टल पर ऑनलाइन पंजीकरण करें।',
+    keywords: ['copyright', 'कॉपीराइट', 'book copyright', 'software copyright', 'रचना चोरी']
+  },
+  {
+    id: 'design-registration',
+    title: 'औद्योगिक डिज़ाइन पंजीकरण (Design Registration - IP India)',
+    department: 'पेटेंट, डिजाइन और ट्रेडमार्क महानियंत्रक (CGPDTM)',
+    ministry: 'वाणिज्य एवं उद्योग मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: 'उत्पाद के अनोखे बाहरी आकार, पैटर्न या डिजाइन की 15 वर्षों तक कानूनी सुरक्षा',
+    officialApplyUrl: 'https://ipindiaonline.gov.in/',
+    portalName: 'IP India Design Portal',
+    estimatedDays: '2 से 4 माह',
+    govtFee: 'प्राकृतिक व्यक्ति/स्टार्टअप ₹1,000 / कंपनी ₹4,000',
+    requiredDocuments: [
+      { name: 'उत्पाद की 4 तरफा स्पष्ट तस्वीरें (2D/3D)', mandatory: true },
+      { name: 'नवीनता का संक्षिप्त विवरण (Statement of Novelty)', mandatory: true }
+    ],
+    voiceBriefing: 'अपने बनाए उत्पाद के बाहरी रूप और डिजाइन को पेटेंट कराने हेतु डिजाइन रजिस्ट्रेशन के लिए आवेदन करें।',
+    keywords: ['design registration', 'औद्योगिक डिजाइन', 'ip india design', 'product shape']
+  },
+  {
+    id: 'mca-din-dir3',
+    title: 'निदेशक पहचान संख्या (Director Identification Number - DIN / DIR-3)',
+    department: 'कॉर्पोरेट कार्य मंत्रालय (MCA)',
+    ministry: 'कॉर्पोरेट कार्य मंत्रालय',
+    category: 'BUSINESS_TAX',
+    benefitSummary: 'किसी भी भारतीय कंपनी में डायरेक्टर बनने हेतु अनिवार्य 8 अंकों का DIN',
+    officialApplyUrl: 'https://www.mca.gov.in/',
+    portalName: 'MCA21 Services',
+    estimatedDays: 'तत्काल 1 कार्यदिवस में',
+    govtFee: '₹500 (सरकारी फॉर्म फीस)',
+    requiredDocuments: [
+      { name: 'आवेदक का पैन कार्ड', mandatory: true },
+      { name: 'आधार कार्ड / पासपोर्ट / मतदाता पहचान', mandatory: true },
+      { name: 'डिजिटल सिग्नेचर सर्टिफिकेट (DSC)', mandatory: true }
+    ],
+    voiceBriefing: 'कंपनी में डायरेक्टर बनने के लिए एमसीए पोर्टल पर फॉर्म DIR-3 भरकर डिन नंबर प्राप्त करें।',
+    keywords: ['din', 'dir3', 'director identification number', 'कंपनी डायरेक्टर', 'mca din']
   },
   {
     id: 'itr-filing',
@@ -229,6 +452,81 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     keywords: ['aadhaar', 'aadhar', 'आधार', 'uidai', 'myaadhaar', 'pvc aadhaar']
   },
   {
+    id: 'transgender-id-card',
+    title: 'ट्रांसजेंडर राष्ट्रीय पहचान पत्र (National Portal for Transgender Persons)',
+    department: 'सामाजिक न्याय और अधिकारिता मंत्रालय',
+    ministry: 'सामाजिक न्याय और अधिकारिता मंत्रालय',
+    category: 'IDENTITY',
+    benefitSummary: 'बिना किसी भौतिक परीक्षण के स्व-घोषणा आधारित आधिकारिक पहचान पत्र व प्रमाण पत्र',
+    officialApplyUrl: 'https://transgender.dosje.gov.in/',
+    portalName: 'National Transgender Portal',
+    estimatedDays: '30 कार्यदिवस में जिला मजिस्ट्रेट द्वारा',
+    govtFee: '₹0 (पूर्णतः निःशुल्क)',
+    requiredDocuments: [
+      { name: 'स्व-घोषणा शपथ पत्र (Affidavit)', mandatory: true },
+      { name: 'आधार कार्ड अथवा जन्म प्रमाण पत्र', mandatory: true },
+      { name: 'पासपोर्ट साइज रंगीन फोटो', mandatory: true }
+    ],
+    voiceBriefing: 'किन्नर और ट्रांसजेंडर व्यक्तियों के आधिकारिक पहचान पत्र के लिए नेशनल ट्रांसजेंडर पोर्टल पर ऑनलाइन आवेदन करें।',
+    keywords: ['transgender', 'किन्नर पहचान पत्र', 'transgender id', 'kinnar card', 'dosje']
+  },
+  {
+    id: 'oci-card-service',
+    title: 'प्रवासी भारतीय नागरिकता (OCI Card Registration)',
+    department: 'आप्रवासन ब्यूरो (BoI)',
+    ministry: 'गृह मंत्रालय',
+    category: 'IDENTITY',
+    benefitSummary: 'विदेशी नागरिकता प्राप्त भारतीय मूल के व्यक्तियों हेतु आजीवन भारत प्रवेश वीजा',
+    officialApplyUrl: 'https://ociservices.gov.in/',
+    portalName: 'OCI Services Portal',
+    estimatedDays: '45 से 60 कार्यदिवस',
+    govtFee: '$275 अथवा समकक्ष भारतीय मुद्रा',
+    requiredDocuments: [
+      { name: 'विदेशी पासपोर्ट की प्रति', mandatory: true },
+      { name: 'पूर्व भारतीय नागरिकता का प्रमाण (पुराना पासपोर्ट/जन्म प्रमाण)', mandatory: true },
+      { name: 'वैवाहिक प्रमाण पत्र (यदि लागू हो)', mandatory: false }
+    ],
+    voiceBriefing: 'विदेशों में बसे भारतीय मूल के नागरिकों को ओसीआई कार्ड लेने के लिए ओसीआई सर्विसेज पोर्टल पर ऑनलाइन आवेदन करना होता है।',
+    keywords: ['oci', 'oci card', 'overseas citizen of india', 'प्रवासी भारतीय', 'nri card']
+  },
+  {
+    id: 'e-frro-visa',
+    title: 'विदेशी नागरिक पंजीकरण व वीजा विस्तार (e-FRRO Portal)',
+    department: 'आप्रवासन ब्यूरो (BoI)',
+    ministry: 'गृह मंत्रालय',
+    category: 'IDENTITY',
+    benefitSummary: 'भारत आने वाले विदेशियों का ऑनलाइन पंजीकरण, वीजा एक्सटेंशन और एग्जिट परमिट',
+    officialApplyUrl: 'https://eservices.immigration.gov.in/',
+    portalName: 'e-FRRO Online Portal',
+    estimatedDays: '3 से 7 कार्यदिवस',
+    govtFee: 'सेवा अनुसार सरकारी वीजा शुल्क',
+    requiredDocuments: [
+      { name: 'वैध पासपोर्ट व भारतीय वीजा प्रति', mandatory: true },
+      { name: 'भारत में निवास प्रमाण / फॉर्म सी (होटल/किरायानामा)', mandatory: true }
+    ],
+    voiceBriefing: 'भारत में रुके विदेशी नागरिकों के वीजा विस्तार और पंजीकरण के लिए ई-एफआरआरओ पोर्टल पर बिना दफ्तर जाए आवेदन करें।',
+    keywords: ['e-frro', 'frro', 'visa extension', 'विदेशी पंजीकरण', 'exit permit']
+  },
+  {
+    id: 'egazette-name-change',
+    title: 'भारत का राजपत्र नाम परिवर्तन (e-Gazette Name Change Publication)',
+    department: 'प्रकाशन विभाग (Department of Publication)',
+    ministry: 'आवासन और शहरी कार्य मंत्रालय',
+    category: 'IDENTITY',
+    benefitSummary: 'पासपोर्ट, बैंक और शैक्षणिक मार्कशीट में नाम सुधारने हेतु कानूनी राजपत्र अधिसूचना',
+    officialApplyUrl: 'https://egazette.gov.in/',
+    portalName: 'eGazette National Portal',
+    estimatedDays: '15 से 20 कार्यदिवस',
+    govtFee: '₹1,100 से ₹1,700 (अधिसूचना अनुसार)',
+    requiredDocuments: [
+      { name: 'नोटरी द्वारा प्रमाणित शपथ पत्र (Name Change Affidavit)', mandatory: true },
+      { name: 'दो समाचार पत्रों में प्रकाशित मूल विज्ञापन', mandatory: true },
+      { name: 'आधार कार्ड व पैन कार्ड प्रति', mandatory: true }
+    ],
+    voiceBriefing: 'अपना नाम बदलने या सुधारने के लिए भारत के आधिकारिक ई-गज़ट पोर्टल पर सरकारी गजट प्रकाशित कराया जाता है।',
+    keywords: ['egazette', 'name change', 'नाम परिवर्तन', 'राजपत्र', 'gazette notification']
+  },
+  {
     id: 'pan-new',
     title: 'नया पैन कार्ड (Form 49A / Instant e-PAN)',
     department: 'आयकर विभाग (Income Tax Department)',
@@ -322,8 +620,99 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
   },
 
   // ==========================================
-  // 3. स्वास्थ्य एवं सामाजिक सुरक्षा (HEALTH_WELFARE)
+  // 3. स्वास्थ्य, चिकित्सा एवं सामाजिक सुरक्षा (HEALTH_WELFARE)
   // ==========================================
+  {
+    id: 'ors-aiims-appointment',
+    title: 'एम्स व सरकारी अस्पताल ओपीडी पर्चा (ORS Patient Portal)',
+    department: 'राष्ट्रीय सूचना विज्ञान केंद्र (NIC) / स्वास्थ्य मंत्रालय',
+    ministry: 'स्वास्थ्य एवं परिवार कल्याण मंत्रालय',
+    category: 'HEALTH_WELFARE',
+    benefitSummary: 'एम्स (AIIMS) और केंद्र/राज्य के बड़े सरकारी अस्पतालों में लंबी लाइन से बचकर घर बैठे ओपीडी पर्चा बुक करना',
+    officialApplyUrl: 'https://ors.gov.in/',
+    portalName: 'Online Registration System (ORS)',
+    estimatedDays: 'तत्काल डिजिटल ओपीडी पर्ची',
+    govtFee: '₹0 से ₹10 (अस्पताल नियमानुसार)',
+    requiredDocuments: [
+      { name: 'मरीज का आधार कार्ड / आभा आईडी', mandatory: true },
+      { name: 'मोबाइल नंबर (ओटीपी हेतु)', mandatory: true }
+    ],
+    voiceBriefing: 'एम्स या बड़े सरकारी अस्पताल में डॉक्टर को दिखाने के लिए ओआरएस पोर्टल से घर बैठे ओपीडी पर्चा बुक करें।',
+    keywords: ['ors', 'aiims appointment', 'ओपीडी पर्चा', 'सरकारी अस्पताल पर्ची', 'ehospital']
+  },
+  {
+    id: 'cara-child-adoption',
+    title: 'कानूनी बच्चा गोद लेना (CARA Central Adoption Resource Authority)',
+    department: 'महिला एवं बाल विकास मंत्रालय',
+    ministry: 'महिला एवं बाल विकास मंत्रालय',
+    category: 'HEALTH_WELFARE',
+    benefitSummary: 'भारत में अनाथ या परित्यक्त बच्चों को कानूनी व पारदर्शी तरीके से गोद लेने का एकमात्र आधिकारिक मंच',
+    officialApplyUrl: 'https://cara.wcd.gov.in/',
+    portalName: 'CARINGS Portal (CARA)',
+    estimatedDays: 'दत्तक ग्रहण समिति एवं अदालत के माध्यम से',
+    govtFee: 'कारा के आधिकारिक दिशा-निर्देश अनुसार',
+    requiredDocuments: [
+      { name: 'दंपति/अभिभावक का पैन व आधार कार्ड', mandatory: true },
+      { name: 'विवाह प्रमाण पत्र व पारिवारिक आय प्रमाण', mandatory: true },
+      { name: 'मेडिकल फिटनेस प्रमाण पत्र', mandatory: true }
+    ],
+    voiceBriefing: 'बच्चा कानूनी रूप से गोद लेने के लिए महिला एवं बाल विकास मंत्रालय के आधिकारिक कारा पोर्टल पर पंजीकरण करें।',
+    keywords: ['cara', 'child adoption', 'बच्चा गोद लेना', 'carings', 'dattak grahan']
+  },
+  {
+    id: 'rashtriya-arogya-nidhi',
+    title: 'राष्ट्रीय आरोग्य निधि (Rashtriya Arogya Nidhi - RAN Treatment Grant)',
+    department: 'स्वास्थ्य एवं परिवार कल्याण विभाग',
+    ministry: 'स्वास्थ्य एवं परिवार कल्याण मंत्रालय',
+    category: 'HEALTH_WELFARE',
+    benefitSummary: 'गरीबी रेखा से नीचे के मरीजों को कैंसर, हृदय व दुर्लभ बीमारियों के इलाज हेतु ₹15 लाख तक की सीधी सरकारी आर्थिक मदद',
+    officialApplyUrl: 'https://mohfw.gov.in/',
+    portalName: 'MoHFW Financial Assistance Portal',
+    estimatedDays: 'अस्पताल मेडिकल बोर्ड संस्तुति अनुसार',
+    govtFee: '₹0 (पूर्णतः निःशुल्क)',
+    requiredDocuments: [
+      { name: 'बीपीएल राशन कार्ड अथवा आय प्रमाण पत्र', mandatory: true },
+      { name: 'सरकारी सुपर-स्पेशलिटी अस्पताल का इलाज प्राक्कलन (Cost Estimate)', mandatory: true },
+      { name: 'मरीज का आधार कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'गंभीर बीमारियों के इलाज के लिए 15 लाख रुपये तक की सरकारी सहायता पाने हेतु राष्ट्रीय आरोग्य निधि में आवेदन किया जाता है।',
+    keywords: ['ran', 'arogya nidhi', 'आरोग्य निधि', 'cancer sahayata', 'muft ilaj grant']
+  },
+  {
+    id: 'one-stop-centre-sakhi',
+    title: 'वन स्टॉप सेंटर सखी (Sakhi One Stop Centre for Women in Distress)',
+    department: 'महिला एवं बाल विकास मंत्रालय',
+    ministry: 'महिला एवं बाल विकास मंत्रालय',
+    category: 'HEALTH_WELFARE',
+    benefitSummary: 'हिंसा, प्रताड़ना या संकटग्रस्त महिलाओं को एक ही छत के नीचे 24x7 पुलिस, कानूनी, चिकित्सा व आश्रय सहायता',
+    officialApplyUrl: 'https://wcd.nic.in/',
+    portalName: 'Sakhi Women Helpline 181',
+    estimatedDays: 'तत्काल 24 घंटे आपात सेवा',
+    govtFee: '₹0 (पूर्णतः निःशुल्क व गोपनीय)',
+    requiredDocuments: [
+      { name: 'पीड़िता की मौखिक अथवा लिखित सूचना', mandatory: true }
+    ],
+    voiceBriefing: 'किसी भी संकट या प्रताड़ना से पीड़ित महिला की तत्काल मदद के लिए 181 पर कॉल करें या सखी वन स्टॉप सेंटर से संपर्क करें।',
+    keywords: ['sakhi', 'one stop centre', 'महिला हेल्पलाइन 181', 'mahila sahayata', 'women crisis']
+  },
+  {
+    id: 'poshan-tracker',
+    title: 'पोषण ट्रैकर (Poshan Tracker Anganwadi Services)',
+    department: 'महिला एवं बाल विकास मंत्रालय',
+    ministry: 'महिला एवं बाल विकास मंत्रालय',
+    category: 'HEALTH_WELFARE',
+    benefitSummary: 'गर्भवती महिलाओं, धात्री माताओं और 0-6 वर्ष के बच्चों को आंगनवाड़ी से गर्म भोजन, राशन व वृद्धि निगरानी',
+    officialApplyUrl: 'https://www.poshantracker.in/',
+    portalName: 'Poshan Tracker National Portal',
+    estimatedDays: 'निकटतम आंगनवाड़ी केंद्र पर तत्काल',
+    govtFee: '₹0 (पूर्णतः निःशुल्क)',
+    requiredDocuments: [
+      { name: 'माता/पिता का आधार कार्ड', mandatory: true },
+      { name: 'बच्चे का जन्म प्रमाण / टीकाकरण कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'बच्चों और गर्भवती महिलाओं के मुफ्त आंगनवाड़ी राशन और पोषण हेतु पोषण ट्रैकर पोर्टल पर पंजीकृत कराएं।',
+    keywords: ['poshan tracker', 'पोषण ट्रैकर', 'anganwadi ration', 'आंगनवाड़ी पोषाहार', 'dhatri mata']
+  },
   {
     id: 'ayushman-card',
     title: 'आयुष्मान भारत कार्ड (PM-JAY Golden Card)',
@@ -472,15 +861,91 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
   },
 
   // ==========================================
-  // 4. कृषि, पशुपालन एवं ग्रामीण विकास (AGRICULTURE)
+  // 4. कृषि, पशुपालन, बागवानी व किसान कल्याण (AGRICULTURE)
   // ==========================================
+  {
+    id: 'pm-krishi-sinchayee',
+    title: 'पीएम कृषि सिंचाई योजना (PMKSY ड्रिप/स्प्रिंकलर 55% सब्सिडी)',
+    department: 'कृषि एवं किसान कल्याण विभाग',
+    ministry: 'कृषि एवं किसान कल्याण मंत्रालय',
+    category: 'AGRICULTURE',
+    benefitSummary: 'खेतों में ड्रिप और फव्वारा सिंचाई उपकरण लगाने हेतु लघु/सीमांत किसानों को 55% सरकारी सब्सिडी',
+    officialApplyUrl: 'https://pmksy.gov.in/',
+    portalName: 'PMKSY National Portal',
+    estimatedDays: 'जिला कृषि अधिकारी सत्यापन उपरांत',
+    govtFee: 'केवल कृषक अंश (45%)',
+    requiredDocuments: [
+      { name: 'किसान का आधार कार्ड', mandatory: true },
+      { name: 'खतौनी (कृषि भूमि प्रमाण)', mandatory: true },
+      { name: 'बैंक पासबुक व सिंचाई स्रोत प्रमाण (बोरवेल/नलकूप)', mandatory: true }
+    ],
+    voiceBriefing: 'फव्वारा और ड्रिप सिंचाई उपकरण पर 55% सब्सिडी पाने के लिए पीएम कृषि सिंचाई पोर्टल पर ऑनलाइन आवेदन करें।',
+    keywords: ['pmksy', 'ड्रिप सिंचाई', 'drip irrigation', 'fawwara sinchai', 'sprinkler subsidy']
+  },
+  {
+    id: 'midh-horticulture',
+    title: 'एकीकृत बागवानी विकास मिशन (MIDH Horticulture Subsidy)',
+    department: 'कृषि एवं किसान कल्याण विभाग',
+    ministry: 'कृषि एवं किसान कल्याण मंत्रालय',
+    category: 'AGRICULTURE',
+    benefitSummary: 'पॉलीहाउस, शेडनेट, मशरूम उत्पादन और आम/अमरूद के नए बाग लगाने पर 50% तक पूंजीगत अनुदान',
+    officialApplyUrl: 'https://midh.gov.in/',
+    portalName: 'MIDH Horticulture Portal',
+    estimatedDays: 'बागवानी विभाग भौतिक सत्यापन अनुसार',
+    govtFee: '₹0 (आवेदन निःशुल्क)',
+    requiredDocuments: [
+      { name: 'खतौनी की नकल', mandatory: true },
+      { name: 'आधार कार्ड व बैंक खाता विवरण', mandatory: true },
+      { name: 'विस्तृत बागवानी प्रोजेक्ट प्रस्ताव', mandatory: true }
+    ],
+    voiceBriefing: 'पॉलीहाउस लगाने और फलों-सब्जियों के नए बाग लगाने पर 50 प्रतिशत तक सरकारी अनुदान हेतु बागवानी पोर्टल पर आवेदन करें।',
+    keywords: ['midh', 'polyhouse', 'बागवानी सब्सिडी', 'mushroom farming', 'fal bagh']
+  },
+  {
+    id: 'honey-mission-beekeeping',
+    title: 'राष्ट्रीय मधुमक्खी पालन मिशन (Honey Mission / Beekeeping KVIC)',
+    department: 'खादी एवं ग्रामोद्योग आयोग (KVIC)',
+    ministry: 'एमएसएमई मंत्रालय',
+    category: 'AGRICULTURE',
+    benefitSummary: 'किसानों को 10 मधुमक्खी बॉक्स, कॉलोनी व टूलकिट 80% सरकारी अनुदान पर उपलब्ध कराना',
+    officialApplyUrl: 'https://www.kviconline.gov.in/',
+    portalName: 'KVIC Honey Mission Portal',
+    estimatedDays: 'प्रशिक्षण बैच उपरांत',
+    govtFee: 'मात्र 20% कृषक अंश',
+    requiredDocuments: [
+      { name: 'आधार कार्ड', mandatory: true },
+      { name: 'कृषि भूमि प्रमाण अथवा निवास प्रमाण', mandatory: true },
+      { name: 'बैंक पासबुक', mandatory: true }
+    ],
+    voiceBriefing: 'शहद उत्पादन और मधुमक्खी पालन का व्यवसाय शुरू करने के लिए हनी मिशन पोर्टल पर आवेदन करके सरकारी बक्से प्राप्त करें।',
+    keywords: ['honey mission', 'मधुमक्खी पालन', 'beekeeping', 'kvic honey', 'shahad palan']
+  },
+  {
+    id: 'kisan-drone-subsidy',
+    title: 'किसान ड्रोन सब्सिडी योजना (Kisan Drone Subsidy Scheme)',
+    department: 'कृषि एवं किसान कल्याण विभाग',
+    ministry: 'कृषि एवं किसान कल्याण मंत्रालय',
+    category: 'AGRICULTURE',
+    benefitSummary: 'खेतों में कीटनाशक और नैनो यूरिया छिड़काव हेतु ड्रोन खरीद पर ₹5 लाख (50%) तक अनुदान',
+    officialApplyUrl: 'https://agricoop.gov.in/',
+    portalName: 'Agri Cooperation Portal',
+    estimatedDays: 'कृषि यंत्रीकरण समिति अनुमोदन अनुसार',
+    govtFee: 'नियम अनुसार',
+    requiredDocuments: [
+      { name: 'ड्रोन पायलट लाइसेंस (DGCA मान्यता प्राप्त)', mandatory: true },
+      { name: 'आधार व पैन कार्ड', mandatory: true },
+      { name: 'कृषि भूमि खतौनी / एफपीओ प्रमाण पत्र', mandatory: true }
+    ],
+    voiceBriefing: 'खेती में खाद छिड़कने वाले कृषि ड्रोन पर 50 प्रतिशत तक की सरकारी सब्सिडी पाने हेतु किसान ड्रोन योजना में आवेदन करें।',
+    keywords: ['kisan drone', 'कृषि ड्रोन', 'drone subsidy', 'nano urea drone', 'chhidkaw drone']
+  },
   {
     id: 'pm-kisan',
     title: 'पीएम किसान सम्मान निधि (नया किसान पंजीकरण / e-KYC)',
     department: 'कृषि एवं किसान कल्याण विभाग',
     ministry: 'कृषि एवं किसान कल्याण मंत्रालय',
     category: 'AGRICULTURE',
-    benefitSummary: 'हर 4 माह में ₹2,000 की किस्त (सालाना ₹6,000 सीधे बैंक खाते में)',
+    benefitSummary: 'हर 4 माह में ₹2,00,0 की किस्त (सालाना ₹6,000 सीधे बैंक खाते में)',
     officialApplyUrl: 'https://pmkisan.gov.in/',
     portalName: 'PM-Kisan National Portal',
     estimatedDays: 'सत्यापन उपरांत आगामी किस्त में देय',
@@ -626,8 +1091,136 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
   },
 
   // ==========================================
-  // 5. राजस्व, भूमि, आवास व नागरिक प्रमाण पत्र (REVENUE_HOUSING)
+  // 5. भूमि, राजस्व, आवास व शहरी/ग्रामीण प्रशासन (REVENUE_HOUSING)
   // ==========================================
+  {
+    id: 'swamitva-property-card',
+    title: 'स्वामित्व योजना घरौनी (SWAMITVA Rural Property Card)',
+    department: 'पंचायती राज मंत्रालय',
+    ministry: 'पंचायती राज मंत्रालय',
+    category: 'REVENUE_HOUSING',
+    benefitSummary: 'गांव की आबादी भूमि पर बने मकानों का ड्रोन सर्वे द्वारा कानूनी मालिकाना हक (घरौनी प्रमाण पत्र)',
+    officialApplyUrl: 'https://swamitva.nic.in/',
+    portalName: 'SWAMITVA National Portal',
+    estimatedDays: 'ग्राम ड्रोन सर्वे उपरांत',
+    govtFee: '₹0 (पूर्णतः निःशुल्क)',
+    requiredDocuments: [
+      { name: 'ग्राम प्रधान / पंचायत सचिव सत्यापन', mandatory: true },
+      { name: 'परिवार के मुखिया का आधार कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'गांव में अपने पैतृक मकान की सरकारी घरौनी और कानूनी दस्तावेज देखने हेतु स्वामित्व पोर्टल पर जांच करें।',
+    keywords: ['swamitva', 'घरौनी', 'स्वामित्व योजना', 'gharauni', 'gramin makan registry']
+  },
+  {
+    id: 'up-rera-complaint',
+    title: 'रेरा बिल्डर शिकायत (RERA Real Estate Consumer Complaint)',
+    department: 'रियल एस्टेट विनियामक प्राधिकरण (RERA)',
+    ministry: 'आवासन और शहरी कार्य मंत्रालय',
+    category: 'REVENUE_HOUSING',
+    benefitSummary: 'फ्लैट/प्लॉट का पजेशन न मिलने या बिल्डर धोखाधड़ी पर ब्याज सहित पूरा पैसा वापस पाना',
+    officialApplyUrl: 'https://www.up-rera.in/',
+    portalName: 'UP RERA Citizen Portal',
+    estimatedDays: 'अदालती सुनवाई 60 दिन में',
+    govtFee: '₹1,000 (शिकायत शुल्क)',
+    requiredDocuments: [
+      { name: 'बिल्डर बायर एग्रीमेंट (BBA Copy)', mandatory: true },
+      { name: 'भुगतान रसीदें / बैंक स्टेटमेंट', mandatory: true },
+      { name: 'शिकायतकर्ता का आधार कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'अगर बिल्डर ने फ्लैट पर कब्जा नहीं दिया है या धोखाधड़ी की है, तो रेरा पोर्टल पर ऑनलाइन केस दर्ज कराएं।',
+    keywords: ['rera', 'रेरा', 'builder complaint', 'flat possession', 'up rera']
+  },
+  {
+    id: 'encumbrance-certificate',
+    title: 'भारमुक्त प्रमाण पत्र (Encumbrance Certificate - EC 12/15 Year)',
+    department: 'स्टाम्प एवं पंजीकरण विभाग',
+    ministry: 'राजस्व विभाग',
+    category: 'REVENUE_HOUSING',
+    benefitSummary: 'जमीन या मकान खरीदने से पहले यह जांचना कि उस पर कोई बैंक लोन या मुकदमा तो नहीं है',
+    officialApplyUrl: 'https://igrsup.gov.in/',
+    portalName: 'State IGRS Portal',
+    estimatedDays: '3 से 7 कार्यदिवस',
+    govtFee: '₹100 से ₹200 (वर्षों की अवधि अनुसार)',
+    requiredDocuments: [
+      { name: 'संपत्ति का पूरा पता, खसरा संख्या या बाउंड्री चौहद्दी', mandatory: true },
+      { name: 'आवेदक का आधार कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'प्लॉट या मकान पर कोई बैंक कर्ज या विवाद तो नहीं है, यह पक्का करने के लिए आईजीआरएस से भारमुक्त प्रमाण पत्र निकालें।',
+    keywords: ['encumbrance certificate', 'ec', 'भारमुक्त प्रमाण पत्र', 'no loan on property', 'igrs ec']
+  },
+  {
+    id: 'certified-registry-copy',
+    title: 'बैनामा प्रमाणित नकल (Certified Copy of Registered Deed)',
+    department: 'स्टाम्प एवं पंजीकरण विभाग',
+    ministry: 'राजस्व विभाग',
+    category: 'REVENUE_HOUSING',
+    benefitSummary: 'पुराने बैनामे, दानपत्र या वसीयत की उप-निबंधक कार्यालय द्वारा सत्यापित आधिकारिक डिजिटल कॉपी',
+    officialApplyUrl: 'https://igrsup.gov.in/',
+    portalName: 'IGRS Certified Copy Service',
+    estimatedDays: 'तत्काल ऑनलाइन डाउनलोड',
+    govtFee: '₹100 प्रति विलेख',
+    requiredDocuments: [
+      { name: 'रजिस्ट्री विलेख संख्या (Deed No) व वर्ष', mandatory: true },
+      { name: 'उप-निबंधक कार्यालय (SRO) का नाम', mandatory: true }
+    ],
+    voiceBriefing: 'खोए हुए बैनामे या पुरानी रजिस्ट्री की कानूनी सत्यापित नकल आईजीआरएस पोर्टल से तुरंत ऑनलाइन प्राप्त करें।',
+    keywords: ['registry copy', 'बैनामा नकल', 'certified copy', 'igrs bainama', 'deed copy']
+  },
+  {
+    id: 'section-80-143-land-conversion',
+    title: 'गैर-कृषि भूमि परिवर्तन (Land Conversion - 143/Section 80)',
+    department: 'राजस्व परिषद (Board of Revenue)',
+    ministry: 'राजस्व विभाग',
+    category: 'REVENUE_HOUSING',
+    benefitSummary: 'खेती की जमीन को व्यावसायिक, आवासीय या औद्योगिक घोषित कराने हेतु एसडीएम न्यायालय आदेश',
+    officialApplyUrl: 'https://vaad.up.nic.in/',
+    portalName: 'Revenue Court Management (Vaad Portal)',
+    estimatedDays: '45 कार्यदिवस (तहसीलदार जांच उपरांत)',
+    govtFee: 'सर्किल रेट अनुसार निर्धारित गैर-कृषि शुल्क',
+    requiredDocuments: [
+      { name: 'मूल खतौनी नकल व खसरा नक्शा', mandatory: true },
+      { name: 'प्रस्तावित निर्माण का ब्लूप्रिंट', mandatory: true },
+      { name: 'खातेदार का आधार कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'खेती की जमीन पर दुकान, पेट्रोल पंप या मकान बनाने के लिए धारा 80 या 143 के तहत गैर-कृषि दर्ज कराने हेतु आवेदन करें।',
+    keywords: ['section 80', 'धारा 143', 'गैर कृषि', 'land conversion', '143 aadesh']
+  },
+  {
+    id: 'online-property-tax',
+    title: 'नगर निगम गृहकर ऑनलाइन भुगतान (Municipal Property Tax)',
+    department: 'नगर विकास विभाग (समस्त नगर निगम / पालिका)',
+    ministry: 'आवासन और शहरी कार्य मंत्रालय',
+    category: 'REVENUE_HOUSING',
+    benefitSummary: 'घर या दुकान का वार्षिक हाउस टैक्स, वाटर टैक्स देखना और 10% छूट के साथ ऑनलाइन रसीद पाना',
+    officialApplyUrl: 'https://e-nagarsewaup.gov.in/',
+    portalName: 'e-NagarSewa Municipal Portal',
+    estimatedDays: 'तत्काल 1 सेकंड में रसीद',
+    govtFee: 'असेसमेंट अनुसार गृहकर',
+    requiredDocuments: [
+      { name: 'भवन संख्या (House No) अथवा संपत्ति आईडी', mandatory: true },
+      { name: 'वार्ड व जोन का नाम', mandatory: true }
+    ],
+    voiceBriefing: 'अपने घर का म्युनिसिपल हाउस टैक्स ऑनलाइन जमा करने और सरकारी रसीद पाने के लिए ई-नगरसेवा पोर्टल पर जाएं।',
+    keywords: ['property tax', 'गृहकर', 'house tax', 'nagar nigam tax', 'water tax']
+  },
+  {
+    id: 'water-sewerage-connection',
+    title: 'नया जल व सीवर कनेक्शन (Municipal Water & Sewerage Line)',
+    department: 'जल संस्थान / नगर पालिका परिषद',
+    ministry: 'आवासन और शहरी कार्य मंत्रालय',
+    category: 'REVENUE_HOUSING',
+    benefitSummary: 'घर या प्रतिष्ठान में नगर निगम की शुद्ध पेयजल पाइपलाइन व सीवरेज लाइन कनेक्शन',
+    officialApplyUrl: 'https://e-nagarsewaup.gov.in/',
+    portalName: 'e-NagarSewa Jal Sansthan',
+    estimatedDays: '15 कार्यदिवस',
+    govtFee: 'दूरी व पाइप साइज अनुसार',
+    requiredDocuments: [
+      { name: 'मकान का गृहकर बिल अथवा रजिस्ट्री प्रति', mandatory: true },
+      { name: 'आवेदक का आधार कार्ड व पासपोर्ट फोटो', mandatory: true }
+    ],
+    voiceBriefing: 'सरकारी मीठे पानी का नल और सीवर कनेक्शन लगवाने के लिए नगर निगम के पोर्टल पर ऑनलाइन आवेदन करें।',
+    keywords: ['water connection', 'जल कनेक्शन', 'sewer connection', 'nal connection', 'jal sansthan']
+  },
   {
     id: 'birth-certificate',
     title: 'जन्म प्रमाण पत्र (Online Birth Certificate - CRS)',
@@ -812,8 +1405,80 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
   },
 
   // ==========================================
-  // 6. परिवहन एवं वाहन सेवाएं (TRANSPORT)
+  // 6. परिवहन, वाहन, फास्टैग व राजमार्ग सेवाएं (TRANSPORT)
   // ==========================================
+  {
+    id: 'fastag-online',
+    title: 'फास्टैग रिचार्ज व ऑनलाइन विवाद समाधान (IHMCL NETC FASTag)',
+    department: 'भारतीय राष्ट्रीय राजमार्ग प्राधिकरण (NHAI)',
+    ministry: 'सड़क परिवहन और राजमार्ग मंत्रालय',
+    category: 'TRANSPORT',
+    benefitSummary: 'टोल प्लाजा पर गलत कटे टोल का रिफंड पाना, फास्टैग स्टेटस चेक और ब्लैकलिस्ट हटाना',
+    officialApplyUrl: 'https://ihmcl.co.in/',
+    portalName: 'IHMCL FASTag Portal',
+    estimatedDays: 'तत्काल ऑनलाइन',
+    govtFee: '₹0 (विवाद निवारण निःशुल्क)',
+    requiredDocuments: [
+      { name: 'वाहन पंजीकरण संख्या (गाड़ी नंबर)', mandatory: true },
+      { name: 'फास्टैग बारकोड आईडी अथवा पंजीकृत मोबाइल', mandatory: true }
+    ],
+    voiceBriefing: 'टोल पर गलत कटे पैसे वापस पाने या फास्टैग स्टेटस चेक करने के लिए आईएचएमसीएल फास्टैग पोर्टल पर शिकायत दर्ज करें।',
+    keywords: ['fastag', 'फास्टैग', 'toll refund', 'ihmcl fastag', 'netc']
+  },
+  {
+    id: 'national-goods-permit',
+    title: 'ऑल इंडिया राष्ट्रीय माल परमिट (National Permit for Goods Vehicles)',
+    department: 'सड़क परिवहन और राजमार्ग मंत्रालय',
+    ministry: 'सड़क परिवहन और राजमार्ग मंत्रालय',
+    category: 'TRANSPORT',
+    benefitSummary: 'ट्रक, ट्रेलर और व्यावसायिक मालवाहक गाड़ियों को पूरे भारत में बिना रुकावट चलने का राष्ट्रीय परमिट',
+    officialApplyUrl: 'https://vahan.parivahan.gov.in/npermit/',
+    portalName: 'National Permit Online Portal',
+    estimatedDays: 'फीस जमा करते ही तत्काल डिजिटल परमिट',
+    govtFee: 'समेकित राष्ट्रीय शुल्क ₹16,500/वर्ष',
+    requiredDocuments: [
+      { name: 'वाहन आरसी व वैध फिटनेस प्रमाण पत्र', mandatory: true },
+      { name: 'व्यावसायिक बीमा व टैक्स रसीद', mandatory: true }
+    ],
+    voiceBriefing: 'ट्रकों के लिए ऑल इंडिया नेशनल परमिट वाहन पोर्टल से ऑनलाइन फीस जमा करके तत्काल निकाला जाता है।',
+    keywords: ['national permit', 'truck permit', 'ऑल इंडिया परमिट', 'goods permit', 'parivahan permit']
+  },
+  {
+    id: 'puc-certificate-verification',
+    title: 'प्रदूषण प्रमाण पत्र ऑनलाइन जांच (PUC Certificate Verification)',
+    department: 'सड़क परिवहन और राजमार्ग मंत्रालय',
+    ministry: 'सड़क परिवहन और राजमार्ग मंत्रालय',
+    category: 'TRANSPORT',
+    benefitSummary: 'गाड़ी के धुएं के प्रदूषण प्रमाण पत्र की वैधता तिथि जांचना और ₹10,000 के चालान से बचना',
+    officialApplyUrl: 'https://vahan.parivahan.gov.in/puc/',
+    portalName: 'Vahan PUC Portal',
+    estimatedDays: 'तत्काल 1 सेकंड में',
+    govtFee: 'जांच ₹0',
+    requiredDocuments: [
+      { name: 'गाड़ी संख्या (Registration Number)', mandatory: true },
+      { name: 'चेसिस नंबर के अंतिम 5 अंक', mandatory: true }
+    ],
+    voiceBriefing: 'अपनी गाड़ी का प्रदूषण प्रमाण पत्र कब तक मान्य है, यह जानने के लिए वाहन पीयूसी पोर्टल पर गाड़ी नंबर डालकर चेक करें।',
+    keywords: ['puc', 'प्रदूषण पर्चा', 'pollution certificate', 'vahan puc']
+  },
+  {
+    id: 'fancy-number-auction',
+    title: 'वीआईपी / फैंसी गाड़ी नंबर नीलामी (Fancy Vehicle Number Booking)',
+    department: 'सड़क परिवहन और राजमार्ग मंत्रालय',
+    ministry: 'सड़क परिवहन और राजमार्ग मंत्रालय',
+    category: 'TRANSPORT',
+    benefitSummary: 'अपनी नई कार या बाइक के लिए मनपसंद या वीआईपी नंबर (जैसे 0001, 0786, 9999) की ऑनलाइन बुकिंग',
+    officialApplyUrl: 'https://vahan.parivahan.gov.in/fancy/',
+    portalName: 'Parivahan Fancy Number Auction',
+    estimatedDays: 'साप्ताहिक ई-नीलामी परिणाम अनुसार',
+    govtFee: 'नंबर श्रेणी अनुसार बेस प्राइस (उदा. ₹5,000 से ₹1,00,000)',
+    requiredDocuments: [
+      { name: 'आवेदक का आधार व मोबाइल नंबर', mandatory: true },
+      { name: 'नई गाड़ी की बुकिंग रसीद', mandatory: true }
+    ],
+    voiceBriefing: 'गाड़ी के लिए मनपसंद वीआईपी नंबर बुक करने हेतु परिवहन विभाग के फैंसी नंबर पोर्टल पर ई-नीलामी में भाग लें।',
+    keywords: ['fancy number', 'vip number', 'गाड़ी का वीआईपी नंबर', '0001 number', 'vahan fancy']
+  },
   {
     id: 'driving-license',
     title: 'ड्राइविंग लाइसेंस (लर्नर / स्थायी DL / नवीनीकरण)',
@@ -908,8 +1573,115 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
   },
 
   // ==========================================
-  // 7. पेंशन, बैंकिंग, ऋण एवं सामाजिक कल्याण (FINANCE_PENSION)
+  // 7. पेंशन, डाकघर बचत, ऋण, बीमा व जन सुरक्षा (FINANCE_PENSION)
   // ==========================================
+  {
+    id: 'public-provident-fund',
+    title: 'पब्लिक प्रॉविडेंट फंड (PPF Account - 7.1% Tax Free Return)',
+    department: 'डाक विभाग / राष्ट्रीय बचत संस्थान (NSI)',
+    ministry: 'वित्त मंत्रालय',
+    category: 'FINANCE_PENSION',
+    benefitSummary: '15 वर्ष की सरकारी गारंटीड सुरक्षित बचत, धारा 80C आयकर छूट और पूर्णतः टैक्स-फ्री ब्याज',
+    officialApplyUrl: 'https://www.ippbonline.com/',
+    portalName: 'India Post / National Savings',
+    estimatedDays: 'तत्काल डाकघर अथवा बैंक शाखा में',
+    govtFee: 'न्यूनतम ₹500 वार्षिक जमा से शुरुआत',
+    requiredDocuments: [
+      { name: 'आवेदक का आधार कार्ड व पैन कार्ड', mandatory: true },
+      { name: 'पासपोर्ट साइज रंगीन फोटो', mandatory: true }
+    ],
+    voiceBriefing: 'सुरक्षित और टैक्स-फ्री ब्याज पाने के लिए डाकघर या सरकारी बैंक में पीपीएफ यानी पब्लिक प्रॉविडेंट फंड खाता खुलवाएं।',
+    keywords: ['ppf', 'public provident fund', 'पीपीएफ', 'tax free savings', '80c investment']
+  },
+  {
+    id: 'senior-citizens-savings-scheme',
+    title: 'वरिष्ठ नागरिक बचत योजना (SCSS Senior Citizens 8.2% Interest)',
+    department: 'डाक विभाग / वित्तीय सेवाएं विभाग',
+    ministry: 'वित्त मंत्रालय',
+    category: 'FINANCE_PENSION',
+    benefitSummary: '60 वर्ष से अधिक उम्र के बुजुर्गों को ₹30 लाख तक की जमा पर त्रैमासिक निश्चित 8.2% पेंशन ब्याज',
+    officialApplyUrl: 'https://www.indiapost.gov.in/',
+    portalName: 'India Post Senior Citizen Portal',
+    estimatedDays: 'तत्काल डाकघर / बैंक शाखा में',
+    govtFee: 'न्यूनतम ₹1,000 जमा',
+    requiredDocuments: [
+      { name: 'उम्र 60 वर्ष प्रमाण (आधार/पैन/पेंशन पीपीओ)', mandatory: true },
+      { name: 'बैंक/डाकघर बचत खाता पासबुक', mandatory: true }
+    ],
+    voiceBriefing: '60 वर्ष से अधिक उम्र के नागरिकों को सबसे अधिक 8.2 प्रतिशत तिमाही पेंशन ब्याज हेतु डाकघर में एससीएसएस खाता खोलना चाहिए।',
+    keywords: ['scss', 'senior citizen scheme', 'वरिष्ठ नागरिक बचत', 'bujurg pension byaj']
+  },
+  {
+    id: 'mahila-samman-certificate',
+    title: 'महिला सम्मान बचत प्रमाण पत्र (Mahila Samman Savings Certificate)',
+    department: 'डाक विभाग / राष्ट्रीय बचत संस्थान',
+    ministry: 'वित्त मंत्रालय',
+    category: 'FINANCE_PENSION',
+    benefitSummary: 'महिलाओं एवं बालिकाओं को 2 वर्ष की अल्पकालिक जमा पर 7.5% का आकर्षक ब्याज',
+    officialApplyUrl: 'https://www.indiapost.gov.in/',
+    portalName: 'India Post Savings Hub',
+    estimatedDays: 'तत्काल डाकघर शाखा में',
+    govtFee: 'अधिकतम ₹2 लाख तक जमा',
+    requiredDocuments: [
+      { name: 'महिला या बालिका का आधार कार्ड', mandatory: true },
+      { name: 'पैन कार्ड (यदि उपलब्ध हो)', mandatory: false }
+    ],
+    voiceBriefing: 'महिलाओं और बालिकाओं के लिए 2 साल में साढ़े सात प्रतिशत ब्याज देने वाली महिला सम्मान बचत योजना डाकघर में उपलब्ध है।',
+    keywords: ['mahila samman', 'महिला सम्मान बचत', 'mssc', 'women savings', 'post office mahila']
+  },
+  {
+    id: 'national-savings-certificate',
+    title: 'राष्ट्रीय बचत पत्र (NSC - National Savings Certificate VIII Issue)',
+    department: 'डाक विभाग (DoP)',
+    ministry: 'संचार एवं वित्त मंत्रालय',
+    category: 'FINANCE_PENSION',
+    benefitSummary: '5 वर्ष की सरकारी लॉक-इन बचत, 7.7% चक्रवृद्धि ब्याज और बैंक लोन हेतु कोलैटरल मान्यता',
+    officialApplyUrl: 'https://www.indiapost.gov.in/',
+    portalName: 'India Post NSC Portal',
+    estimatedDays: 'तत्काल डिजिटल पासबुक जारी',
+    govtFee: 'न्यूनतम ₹1,000 से शुरुआत (कोई अधिकतम सीमा नहीं)',
+    requiredDocuments: [
+      { name: 'आधार कार्ड व पैन कार्ड', mandatory: true }
+    ],
+    voiceBriefing: 'सरकारी गारंटीड 5 साल की बचत और बैंक लोन की सिक्योरिटी के लिए डाकघर से एनएससी यानी राष्ट्रीय बचत पत्र खरीदें।',
+    keywords: ['nsc', 'राष्ट्रीय बचत पत्र', 'national savings certificate', 'post office nsc']
+  },
+  {
+    id: 'post-office-mis',
+    title: 'डाकघर मासिक आय योजना (Post Office Monthly Income Scheme - MIS)',
+    department: 'डाक विभाग (DoP)',
+    ministry: 'संचार मंत्रालय',
+    category: 'FINANCE_PENSION',
+    benefitSummary: 'एकमुश्त जमा पर हर महीने खाते में निश्चित मासिक ब्याज (एकल खाता ₹9 लाख, संयुक्त ₹15 लाख तक)',
+    officialApplyUrl: 'https://www.indiapost.gov.in/',
+    portalName: 'India Post MIS Gateway',
+    estimatedDays: 'तत्काल',
+    govtFee: '7.4% प्रतिवर्ष मासिक देय ब्याज',
+    requiredDocuments: [
+      { name: 'आधार कार्ड व पैन कार्ड', mandatory: true },
+      { name: 'डाकघर बचत बैंक खाता', mandatory: true }
+    ],
+    voiceBriefing: 'हर महीने निश्चित ब्याज पेंशन की तरह पाने के लिए डाकघर में एमआईएस यानी मंथली इनकम स्कीम में खाता खोलें।',
+    keywords: ['mis', 'pomis', 'post office mis', 'मासिक आय योजना', 'monthly interest scheme']
+  },
+  {
+    id: 'jeevan-pramaan-patra',
+    title: 'जीवन प्रमाण पत्र (Jeevan Pramaan - Digital Life Certificate)',
+    department: 'पेंशन एवं पेंशनभोगी कल्याण विभाग',
+    ministry: 'कार्मिक, लोक शिकायत तथा पेंशन मंत्रालय',
+    category: 'FINANCE_PENSION',
+    benefitSummary: 'पेंशनरों को बैंक जाए बिना मोबाइल कैमरे के फेस-ऑथेंटिकेशन से घर बैठे वार्षिक जीवन प्रमाण पत्र जमा करना',
+    officialApplyUrl: 'https://jeevanpramaan.gov.in/',
+    portalName: 'Jeevan Pramaan National Portal',
+    estimatedDays: 'तत्काल 1 मिनट में डिजिटल पावती',
+    govtFee: '₹0 (पूर्णतः निःशुल्क)',
+    requiredDocuments: [
+      { name: 'पेंशनर का आधार कार्ड व पीपीओ नंबर (PPO Number)', mandatory: true },
+      { name: 'पेंशन वितरण बैंक खाता संख्या', mandatory: true }
+    ],
+    voiceBriefing: 'पेंशन जारी रखने के लिए जीवन प्रमाण पत्र जमा करना अनिवार्य है। जीवन प्रमाण पोर्टल से घर बैठे चेहरे से सत्यापन करें।',
+    keywords: ['jeevan pramaan', 'life certificate', 'जीवन प्रमाण पत्र', 'pensioner dlc', 'ppo life certificate']
+  },
   {
     id: 'pmjdy-jan-dhan',
     title: 'प्रधानमंत्री जन धन योजना (PMJDY Zero Balance Account)',
@@ -1078,8 +1850,120 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
   },
 
   // ==========================================
-  // 8. शिक्षा, छात्रवृत्ति एवं रोजगार (EDUCATION_SKILL)
+  // 8. शिक्षा, छात्रवृत्ति, प्रतियोगी परीक्षाएं व रोजगार (EDUCATION_SKILL)
   // ==========================================
+  {
+    id: 'upsc-otr-portal',
+    title: 'यूपीएससी वन-टाइम रजिस्ट्रेशन (UPSC OTR Portal)',
+    department: 'संघ लोक सेवा आयोग (UPSC)',
+    ministry: 'कार्मिक, लोक शिकायत तथा पेंशन मंत्रालय',
+    category: 'EDUCATION_SKILL',
+    benefitSummary: 'आईएएस (IAS), आईपीएस (IPS), एनडीए (NDA) और सीडीएस परीक्षाओं हेतु एक बार स्थायी प्रोफाइल पंजीकरण',
+    officialApplyUrl: 'https://upsconline.nic.in/upsc/OTRP/',
+    portalName: 'UPSC Online OTR Portal',
+    estimatedDays: 'तत्काल OTR आईडी जारी',
+    govtFee: 'पंजीकरण ₹0 / परीक्षा शुल्क ₹100 (महिला/SC/ST ₹0)',
+    requiredDocuments: [
+      { name: '10वीं बोर्ड प्रमाण पत्र (जन्म तिथि हेतु)', mandatory: true },
+      { name: 'फोटो पहचान पत्र (आधार कार्ड/वोटर आईडी)', mandatory: true },
+      { name: 'पासपोर्ट फोटो व हस्ताक्षर प्रति', mandatory: true }
+    ],
+    voiceBriefing: 'आईएएस, आईपीएस और एनडीए जैसी सिविल सेवा परीक्षाओं में बैठने के लिए यूपीएससी ओटीआर पोर्टल पर अपना प्रोफाइल बनाएं।',
+    keywords: ['upsc', 'upsc otr', 'यूपीएससी', 'civil services', 'ias ips form', 'nda cds']
+  },
+  {
+    id: 'ssc-otr-portal',
+    title: 'एसएससी वन-टाइम रजिस्ट्रेशन (SSC New OTR Portal)',
+    department: 'कर्मचारी चयन आयोग (SSC)',
+    ministry: 'कार्मिक, लोक शिकायत तथा पेंशन मंत्रालय',
+    category: 'EDUCATION_SKILL',
+    benefitSummary: 'सीजीएल (CGL), सीएचएसएल (CHSL), एमटीएस (MTS) और जीडी कांस्टेबल भर्ती हेतु अनिवार्य नया OTR',
+    officialApplyUrl: 'https://ssc.gov.in/',
+    portalName: 'Staff Selection Commission (SSC)',
+    estimatedDays: 'तत्काल लाइव रजिस्ट्रेशन',
+    govtFee: 'पंजीकरण ₹0 / परीक्षा फीस ₹100',
+    requiredDocuments: [
+      { name: 'आधार कार्ड नंबर', mandatory: true },
+      { name: '10वीं मार्कशीट रोल नंबर व उत्तीर्ण वर्ष', mandatory: true },
+      { name: 'लाइव वेबकैम फोटो व हस्ताक्षर', mandatory: true }
+    ],
+    voiceBriefing: 'एसएससी सीजीएल, जीडी और सीएचएसएल भर्ती में आवेदन करने के लिए एसएससी के नए पोर्टल पर ओटीआर पूरा करें।',
+    keywords: ['ssc', 'ssc otr', 'एसएससी', 'ssc cgl', 'ssc gd', 'chsl form']
+  },
+  {
+    id: 'jee-main-nta',
+    title: 'जेईई मेन इंजीनियरिंग प्रवेश परीक्षा (JEE Main NTA)',
+    department: 'राष्ट्रीय परीक्षा एजेंसी (NTA)',
+    ministry: 'शिक्षा मंत्रालय',
+    category: 'EDUCATION_SKILL',
+    benefitSummary: 'आईआईटी (IIT), एनआईटी (NIT) और देश के शीर्ष इंजीनियरिंग कॉलेजों में बीटेक प्रवेश परीक्षा',
+    officialApplyUrl: 'https://jeemain.nta.nic.in/',
+    portalName: 'JEE Main NTA Portal',
+    estimatedDays: 'अधिसूचित आवेदन सत्र अनुसार',
+    govtFee: '₹1,000 (छात्र) / ₹800 (छात्रा)',
+    requiredDocuments: [
+      { name: 'आधार कार्ड व 10वीं/12वीं मार्कशीट', mandatory: true },
+      { name: 'पासपोर्ट साइज रंगीन फोटो व हस्ताक्षर', mandatory: true },
+      { name: 'श्रेणी प्रमाण पत्र (EWS/OBC/SC/ST)', mandatory: false }
+    ],
+    voiceBriefing: 'आईआईटी और एनआईटी में बीटेक में दाखिले के लिए जेईई मेन का फॉर्म एनटीए पोर्टल से ऑनलाइन भरा जाता है।',
+    keywords: ['jee', 'jee main', 'जेईई मेन', 'iit entrance', 'btech admission', 'nta jee']
+  },
+  {
+    id: 'neet-ug-nta',
+    title: 'नीट यूजी मेडिकल प्रवेश परीक्षा (NEET UG Medical Exam)',
+    department: 'राष्ट्रीय परीक्षा एजेंसी (NTA)',
+    ministry: 'स्वास्थ्य एवं परिवार कल्याण मंत्रालय',
+    category: 'EDUCATION_SKILL',
+    benefitSummary: 'देशभर के सरकारी मेडिकल कॉलेजों में एमबीबीएस (MBBS) और बीडीएस (BDS) में प्रवेश का एकमात्र टेस्ट',
+    officialApplyUrl: 'https://exams.nta.ac.in/NEET/',
+    portalName: 'NEET UG NTA Portal',
+    estimatedDays: 'वार्षिक परीक्षा कैलेंडर अनुसार',
+    govtFee: '₹1,700 (सामान्य) / ₹1,600 (OBC) / ₹1,000 (SC/ST)',
+    requiredDocuments: [
+      { name: 'आधार कार्ड व 12वीं भौतिकी/रसायन/जीवविज्ञान मार्कशीट', mandatory: true },
+      { name: 'पोस्टकार्ड फोटो व दोनों हाथों के उंगलियों के निशान', mandatory: true }
+    ],
+    voiceBriefing: 'डॉक्टर बनने और एमबीबीएस में एडमिशन पाने के लिए नीट यूजी का ऑनलाइन फॉर्म एनटीए पोर्टल पर भरें।',
+    keywords: ['neet', 'neet ug', 'नीट परीक्षा', 'mbbs entrance', 'nta neet', 'doctor exam']
+  },
+  {
+    id: 'ugc-net-nta',
+    title: 'यूजीसी नेट प्रोफेसर व जेआरएफ पात्रता (UGC-NET Exam)',
+    department: 'विश्वविद्यालय अनुदान आयोग (UGC) / NTA',
+    ministry: 'शिक्षा मंत्रालय',
+    category: 'EDUCATION_SKILL',
+    benefitSummary: 'कॉलेजों में असिस्टेंट प्रोफेसर बनने और पीएचडी हेतु मासिक जेआरएफ फेलोशिप (₹37,000/माह)',
+    officialApplyUrl: 'https://ugcnet.nta.ac.in/',
+    portalName: 'UGC NET NTA Portal',
+    estimatedDays: 'वार्षिक जून व दिसंबर सत्र',
+    govtFee: '₹1,150 (सामान्य) / ₹600 (EWS/OBC) / ₹325 (SC/ST)',
+    requiredDocuments: [
+      { name: 'मास्टर्स/पीजी डिग्री अथवा अंतिम वर्ष का रोल नंबर', mandatory: true },
+      { name: 'आधार कार्ड व फोटो', mandatory: true }
+    ],
+    voiceBriefing: 'कॉलेज में प्रोफेसर बनने और पीएचडी स्कॉलरशिप पाने के लिए यूजीसी नेट का फॉर्म ऑनलाइन भरें।',
+    keywords: ['ugc net', 'यूजीसी नेट', 'jrf', 'assistant professor', 'phd fellowship']
+  },
+  {
+    id: 'pm-vidyalakshmi-loan',
+    title: 'पीएम विद्यालक्ष्मी एजुकेशन लोन (PM Vidya Lakshmi Education Loan)',
+    department: 'उच्च शिक्षा विभाग',
+    ministry: 'शिक्षा मंत्रालय',
+    category: 'EDUCATION_SKILL',
+    benefitSummary: 'भारत या विदेश में उच्च शिक्षा हेतु 40+ बैंकों से ₹7.5 लाख तक बिना किसी कोलैटरल गारंटी के पढ़ाई लोन',
+    officialApplyUrl: 'https://www.vidyalakshmi.co.in/',
+    portalName: 'Vidya Lakshmi Portal',
+    estimatedDays: 'बैंक शाखा द्वारा 15 दिन में',
+    govtFee: '₹0 (कॉमन एजुकेशन लोन फॉर्म)',
+    requiredDocuments: [
+      { name: 'कॉलेज एडमिशन ऑफर लेटर व फीस स्ट्रक्चर', mandatory: true },
+      { name: 'छात्र व अभिभावक का पैन व आधार कार्ड', mandatory: true },
+      { name: '10वीं, 12वीं व स्नातक मार्कशीट', mandatory: true }
+    ],
+    voiceBriefing: 'इंजीनियरिंग, मेडिकल या एमबीए की पढ़ाई के लिए बिना गारंटी बैंक लोन हेतु विद्यालक्ष्मी पोर्टल पर आवेदन करें।',
+    keywords: ['vidyalakshmi', 'education loan', 'पढ़ाई लोन', 'vidya lakshmi', 'student loan']
+  },
   {
     id: 'national-scholarship',
     title: 'राष्ट्रीय छात्रवृत्ति पोर्टल (National Scholarship Portal - NSP)',
@@ -1229,8 +2113,45 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
   },
 
   // ==========================================
-  // 9. कानूनी, पुलिस, शिकायत व नागरिक उपयोगिता (UTILITY_LEGAL)
+  // 9. कानूनी, पुलिस, उपभोक्ता, शिकायत व नागरिक उपयोगिता (UTILITY_LEGAL)
   // ==========================================
+  {
+    id: 'national-consumer-helpline',
+    title: 'राष्ट्रीय उपभोक्ता हेल्पलाइन (National Consumer Helpline - NCH 1915)',
+    department: 'उपभोक्ता मामले विभाग',
+    ministry: 'उपभोक्ता मामले, खाद्य और सार्वजनिक वितरण मंत्रालय',
+    category: 'UTILITY_LEGAL',
+    benefitSummary: 'ई-कॉमर्स, एयरलाइंस, बैंक या टेलीकॉम कंपनियों की धोखाधड़ी पर सीधे मध्यस्थता व पैसे वापसी',
+    officialApplyUrl: 'https://consumerhelpline.gov.in/',
+    portalName: 'National Consumer Helpline Portal',
+    estimatedDays: 'कंपनी द्वारा 15 से 30 दिन में समाधान',
+    govtFee: '₹0 (पूर्णतः निःशुल्क)',
+    requiredDocuments: [
+      { name: 'ऑर्डर आईडी / ट्रांजैक्शन रसीद', mandatory: true },
+      { name: 'कंपनी को की गई ईमेल शिकायत का विवरण', mandatory: true }
+    ],
+    voiceBriefing: 'किसी कंपनी या ऑनलाइन शॉपिंग में ठगी होने पर 1915 पर कॉल करें या उपभोक्ता हेल्पलाइन पर सीधी शिकायत दर्ज करें।',
+    keywords: ['nch', '1915', 'उपभोक्ता हेल्पलाइन', 'consumer helpline', 'shopping fraud']
+  },
+  {
+    id: 'nalsa-legal-aid',
+    title: 'नालसा निःशुल्क कानूनी सहायता (NALSA Free Legal Aid & Lawyer)',
+    department: 'राष्ट्रीय विधिक सेवा प्राधिकरण (NALSA)',
+    ministry: 'विधि एवं न्याय मंत्रालय',
+    category: 'UTILITY_LEGAL',
+    benefitSummary: 'गरीबों, महिलाओं, बच्चों व जेल बंदियों को अदालत में केस लड़ने हेतु मुफ्त सरकारी वकील',
+    officialApplyUrl: 'https://nalsa.gov.in/',
+    portalName: 'NALSA Legal Aid Portal',
+    estimatedDays: 'जिला विधिक सेवा प्राधिकरण द्वारा 7 दिन में',
+    govtFee: '₹0 (पूर्णतः निःशुल्क विधिक सेवा)',
+    requiredDocuments: [
+      { name: 'आवेदक का आधार कार्ड', mandatory: true },
+      { name: 'आय प्रमाण पत्र (वार्षिक आय ₹3 लाख से कम)', mandatory: true },
+      { name: 'अदालती मुकदमे का विवरण / नोटिस प्रति', mandatory: true }
+    ],
+    voiceBriefing: 'अगर वकील करने के पैसे नहीं हैं, तो अदालत में मुफ्त सरकारी वकील पाने के लिए नालसा पोर्टल पर ऑनलाइन अर्जी लगाएं।',
+    keywords: ['nalsa', 'free lawyer', 'मुफ्त सरकारी वकील', 'legal aid', 'कानूनी सहायता']
+  },
   {
     id: 'sanchar-saathi-ceir',
     title: 'संचार साथी / खोया मोबाइल ब्लॉक (Sanchar Saathi - CEIR Portal)',
@@ -1474,10 +2395,10 @@ export const CATEGORY_METADATA: Record<string, { title: string; icon: string; co
   BUSINESS_TAX: { title: 'जीएसटी, व्यापार व टैक्स', icon: '💼', color: 'emerald' },
   IDENTITY: { title: 'पहचान एवं नागरिकता', icon: '🪪', color: 'orange' },
   HEALTH_WELFARE: { title: 'स्वास्थ्य व सामाजिक सुरक्षा', icon: '🏥', color: 'red' },
-  AGRICULTURE: { title: 'कृषि एवं किसान कल्याण', icon: '🌾', color: 'lime' },
+  AGRICULTURE: { title: 'कृषि, पशुपालन व बागवानी', icon: '🌾', color: 'lime' },
   REVENUE_HOUSING: { title: 'भूमि, आवास एवं प्रमाण पत्र', icon: '🏡', color: 'amber' },
   TRANSPORT: { title: 'परिवहन एवं वाहन सेवा', icon: '🚗', color: 'blue' },
-  FINANCE_PENSION: { title: 'पेंशन, ऋण एवं जन सुरक्षा', icon: '💰', color: 'indigo' },
-  EDUCATION_SKILL: { title: 'शिक्षा, छात्रवृत्ति व रोजगार', icon: '🎓', color: 'cyan' },
+  FINANCE_PENSION: { title: 'पेंशन, बचत, ऋण व जन सुरक्षा', icon: '💰', color: 'indigo' },
+  EDUCATION_SKILL: { title: 'शिक्षा, परीक्षा व रोजगार', icon: '🎓', color: 'cyan' },
   UTILITY_LEGAL: { title: 'कानूनी, पुलिस व उपयोगिता', icon: '⚖️', color: 'purple' }
 };
