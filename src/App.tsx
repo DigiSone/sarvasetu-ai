@@ -1,72 +1,71 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
+  Search,
   Mic,
   MicOff,
-  Camera,
-  CheckCircle,
   Volume2,
-  RefreshCw,
-  Download,
-  ShieldCheck,
+  ExternalLink,
   FileText,
-  UserCheck,
-  ArrowRight,
-  RotateCcw,
-  Sparkles
+  CheckCircle2,
+  Clock,
+  Coins,
+  ShieldCheck,
+  Sparkles,
+  X,
+  Building2,
+  Filter,
+  ArrowUpRight,
+  Info,
+  ChevronRight,
+  AlertCircle
 } from 'lucide-react';
 
-import { ServiceType, StepState, ApplicationRecord } from './core/types';
-import { SecureScanner } from './core/secureScanner';
-import { BiometricVerifier } from './core/biometricVerifier';
-import { ReceiptGenerator } from './core/receiptGenerator';
+import { GovernmentService, GOVERNMENT_SERVICES } from './core/governmentDirectory';
+import { DirectoryEngine, CategorySummary } from './core/directoryEngine';
 
 export default function App() {
-  const [step, setStep] = useState<StepState>('HOME');
-  const [service, setService] = useState<ServiceType>('AYUSHMAN');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [selectedService, setSelectedService] = useState<GovernmentService | null>(null);
   const [isListening, setIsListening] = useState(false);
 
-  // फॉर्म डेटा स्टेट
-  const [fullName, setFullName] = useState('रामेश्वर प्रसाद');
-  const [dob, setDob] = useState('01/01/1974');
-  const [gender, setGender] = useState('पुरुष');
-  const [maskedAadhaar, setMaskedAadhaar] = useState('XXXX-XXXX-XXXX');
-  const [secondaryDocPhoto, setSecondaryDocPhoto] = useState<string | null>(null);
-  const [selfiePhoto, setSelfiePhoto] = useState<string | null>(null);
-  const [livenessScore, setLivenessScore] = useState(96);
-  const [ackId, setAckId] = useState('');
-
-  // वॉइस व कैमरा रेफ्स
-  const [voiceText, setVoiceText] = useState(
-    'प्रणाम! बोलकर बताइए या बटन दबाएं: आपको आयुष्मान गोल्डन कार्ड बनवाना है या नया पैन कार्ड?'
+  // वॉइस असिस्टेंट संदेश
+  const [voiceBriefing, setVoiceBriefing] = useState(
+    'प्रणाम! बोलकर बताइए या नीचे खोजें: आपको किस सरकारी विभाग या दस्तावेज़ के लिए सीधे आवेदन करना है?'
   );
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const hiddenCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const scannerTimerRef = useRef<any>(null);
 
   // टेक्स्ट-टू-स्पीच
   const speak = useCallback((text: string) => {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'hi-IN';
-    u.rate = 0.85;
-    window.speechSynthesis.speak(u);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'hi-IN';
+    utterance.rate = 0.88;
+    window.speechSynthesis.speak(utterance);
   }, []);
 
   useEffect(() => {
-    speak(voiceText);
+    speak(voiceBriefing);
   }, []);
 
   const triggerHaptic = (pattern: number[]) => {
     if ('vibrate' in navigator) navigator.vibrate(pattern);
   };
 
-  // वॉयस इनपुट (होम स्क्रीन)
-  const startSpeechRecognition = () => {
+  // श्रेणियां
+  const categories: CategorySummary[] = useMemo(() => DirectoryEngine.getCategories(), []);
+
+  // फ़िल्टर्ड सेवाएं
+  const filteredServices = useMemo(() => {
+    return DirectoryEngine.searchServices(searchQuery, selectedCategory);
+  }, [searchQuery, selectedCategory]);
+
+  // वॉयस इनपुट हैंडलर
+  const handleVoiceSearch = () => {
     triggerHaptic([100]);
     const SpeechRec = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     if (!SpeechRec) {
-      alert('ब्राउज़र वॉयस इंजन उपलब्ध नहीं है। कृपया बटन दबाकर चुनें।');
+      alert('ब्राउज़र वॉयस इनपुट को सपोर्ट नहीं करता। कृपया सर्च बार में लिखकर खोजें।');
       return;
     }
 
@@ -75,508 +74,328 @@ export default function App() {
     rec.onstart = () => setIsListening(true);
     rec.onend = () => setIsListening(false);
 
-    rec.onresult = (e: any) => {
-      const speech = e.results[0][0].transcript.toLowerCase();
-      if (speech.includes('पैन') || speech.includes('pan')) {
-        chooseService('PAN');
+    rec.onresult = (event: any) => {
+      triggerHaptic([150, 50, 150]);
+      const transcript = event.results[0][0].transcript;
+      setSearchQuery(transcript);
+
+      // सबसे सटीक सेवा की स्वतः पहचान
+      const matched = DirectoryEngine.matchVoiceIntent(transcript);
+      if (matched) {
+        setSelectedService(matched);
+        const msg = `${matched.title} मिल गया है। ${matched.voiceBriefing}`;
+        setVoiceBriefing(msg);
+        speak(msg);
       } else {
-        chooseService('AYUSHMAN');
+        const msg = `"${transcript}" से संबंधित परिणाम नीचे दिखाए जा रहे हैं।`;
+        setVoiceBriefing(msg);
+        speak(msg);
       }
     };
+
     rec.start();
   };
 
-  // 1. सेवा चयन
-  const chooseService = (selected: ServiceType) => {
-    triggerHaptic([120]);
-    setService(selected);
-    setStep('GUIDE');
-
-    const msg = selected === 'AYUSHMAN'
-      ? 'आयुष्मान भारत कार्ड से 5 लाख रुपये का अस्पताल में मुफ्त इलाज मिलता है। इसके लिए 2 कागज़ लगेंगे: पहला आपका आधार कार्ड और दूसरा राशन कार्ड। क्या आपके पास ये कागज़ अभी मौजूद हैं?'
-      : 'नया पैन कार्ड आयकर और बैंक कार्यों के लिए अनिवार्य है। इसके लिए 2 चीज़ें लगेंगी: पहला आधार कार्ड और दूसरा सादे कागज़ पर आपके हस्ताक्षर या अंगूठे का निशान। क्या ये कागज़ तैयार हैं?';
-
-    setVoiceText(msg);
-    speak(msg);
-  };
-
-  // 2. पहला कागज़: आधार कार्ड स्कैन चालू करना
-  const startAadhaarScanning = async () => {
-    triggerHaptic([100]);
-    setStep('DOC1_AADHAAR');
-    const msg = 'कृपया अपने आधार कार्ड के बारकोड को कैमरे के सामने चौकोर बॉक्स में लाएं। यह अपने आप स्कैन हो जाएगा।';
-    setVoiceText(msg);
-    speak(msg);
-
-    startCamera('environment', (canvas) => {
-      const decoded = SecureScanner.scanCanvasFrame(canvas);
-      if (decoded) {
-        stopCamera();
-        triggerHaptic([200, 100, 200]);
-        setFullName(decoded.name);
-        setDob(decoded.dob);
-        setGender(decoded.gender);
-        setMaskedAadhaar(decoded.maskedId);
-        startSecondaryDocScanning();
-      }
-    });
-  };
-
-  // 3. दूसरा कागज़: राशन कार्ड / हस्ताक्षर
-  const startSecondaryDocScanning = async () => {
-    setStep('DOC2_SECONDARY');
-    const docName = service === 'AYUSHMAN' ? 'राशन कार्ड या परिवार पर्ची' : 'सादे कागज़ पर किए गए हस्ताक्षर या अंगूठा';
-    const msg = `आधार कार्ड सत्यापित हो गया! अब अपना दूसरा कागज़, यानी ${docName} कैमरे के सामने रखें।`;
-    setVoiceText(msg);
-    speak(msg);
-
-    startCamera('environment');
-  };
-
-  const captureSecondaryDoc = () => {
-    triggerHaptic([150]);
-    if (videoRef.current && hiddenCanvasRef.current) {
-      const canvas = hiddenCanvasRef.current;
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        setSecondaryDocPhoto(canvas.toDataURL('image/jpeg', 0.8));
-      }
-    }
-    stopCamera();
-    startBiometricSelfie();
-  };
-
-  // 4. फ्रंट कैमरा: लाइवनेस e-KYC
-  const startBiometricSelfie = () => {
-    setStep('BIOMETRIC_SELFIE');
-    const msg = 'अब आपका चेहरा सत्यापित होगा। कृपया फ्रंट कैमरे के सामने देखें और एक बार अपनी पलकें झपकाएं।';
-    setVoiceText(msg);
-    speak(msg);
-
-    startCamera('user');
-  };
-
-  const captureLivenessSelfie = () => {
-    triggerHaptic([200, 100, 300]);
-    if (videoRef.current && hiddenCanvasRef.current) {
-      const canvas = hiddenCanvasRef.current;
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        const selfie = canvas.toDataURL('image/jpeg', 0.85);
-        setSelfiePhoto(selfie);
-        setLivenessScore(98);
-      }
-    }
-    stopCamera();
-
-    // 5. समीक्षा चरण
-    setStep('REVIEW');
-    const reviewMsg = `चेहरा 98% सत्यापित हुआ। आपका नाम ${fullName} है और जन्मतिथि ${dob} है। क्या यह जानकारी सही है?`;
-    setVoiceText(reviewMsg);
-    speak(reviewMsg);
-  };
-
-  // कैमरा सहायक फ़ंक्शन
-  const startCamera = async (facingMode: 'user' | 'environment', frameCallback?: (c: HTMLCanvasElement) => void) => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode, width: { ideal: 1280 } }
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-
-      if (frameCallback) {
-        scannerTimerRef.current = setInterval(() => {
-          if (videoRef.current && hiddenCanvasRef.current && videoRef.current.readyState === 4) {
-            const canvas = hiddenCanvasRef.current;
-            canvas.width = videoRef.current.videoWidth;
-            canvas.height = videoRef.current.videoHeight;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-              ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-              frameCallback(canvas);
-            }
-          }
-        }, 500);
-      }
-    } catch (err) {
-      speak('कैमरा शुरू करने की अनुमति दें।');
-    }
-  };
-
-  const stopCamera = () => {
-    if (scannerTimerRef.current) clearInterval(scannerTimerRef.current);
-    if (videoRef.current && videoRef.current.srcObject) {
-      (videoRef.current.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
-    }
-  };
-
-  // 6. अंतिम आवेदन सबमिशन
-  const submitFinalApplication = () => {
-    triggerHaptic([300, 100, 300]);
-    const generatedAck = `${service.slice(0, 3)}-${Date.now().toString().slice(-6)}`;
-    setAckId(generatedAck);
-    setStep('FINAL_RECEIPT');
-
-    const doneMsg = `बधाई हो! आपका ${service === 'AYUSHMAN' ? 'आयुष्मान गोल्डन कार्ड' : 'पैन कार्ड'} आवेदन 100% सफलता से दर्ज हो चुका है। नीचे दिए गए बटन से अपनी सरकारी रसीद डाउनलोड करें।`;
-    setVoiceText(doneMsg);
-    speak(doneMsg);
-  };
-
-  // रसीद डाउनलोड करना
-  const downloadOfficialReceipt = () => {
-    triggerHaptic([100]);
-    const record: ApplicationRecord = {
-      service,
-      fullName,
-      dob,
-      gender,
-      maskedAadhaar,
-      secondaryDocType: service === 'AYUSHMAN' ? 'राशन कार्ड (Verified)' : 'हस्ताक्षर प्रति (Attached)',
-      secondaryDocPhoto,
-      selfiePhoto,
-      ackNumber: ackId,
-      submittedAt: new Date().toLocaleDateString('hi-IN'),
-      livenessConfidence: livenessScore
-    };
-
-    const canvas = ReceiptGenerator.generateReceiptCanvas(record);
-    const link = document.createElement('a');
-    link.download = `SarvaSetu-Receipt-${ackId}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  };
-
-  const restartAll = () => {
-    stopCamera();
-    setStep('HOME');
-    const intro = 'प्रणाम! बोलकर बताइए या बटन दबाएं: आपको आयुष्मान गोल्डन कार्ड बनवाना है या नया पैन कार्ड?';
-    setVoiceText(intro);
-    speak(intro);
+  // सेवा विवरण खोलना
+  const openServiceModal = (service: GovernmentService) => {
+    triggerHaptic([80]);
+    setSelectedService(service);
+    setVoiceBriefing(service.voiceBriefing);
+    speak(service.voiceBriefing);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col justify-between">
-      {/* शीर्ष हेडर */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 px-4 py-3">
-        <div className="max-w-xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 bg-orange-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-sm">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col justify-between selection:bg-orange-100">
+      {/* 1. शीर्ष आधिकारिक हेडर (GIGW 3.0 लाइट थीम) */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-orange-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xs">
               से
             </div>
             <div>
-              <h1 className="text-base font-black text-slate-900 leading-none">सर्वसेतु AI</h1>
-              <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1 mt-1">
-                <ShieldCheck className="w-3.5 h-3.5" /> 100% फंक्शनल नागरिक सेवा सेतु
+              <div className="flex items-center gap-2">
+                <h1 className="text-base sm:text-lg font-black text-slate-900 leading-tight tracking-tight">
+                  सर्वसेतु AI
+                </h1>
+                <span className="text-[10px] font-black uppercase bg-orange-100 text-orange-800 px-2 py-0.5 rounded-md">
+                  DPI Portal
+                </span>
+              </div>
+              <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1 mt-0.5">
+                <ShieldCheck className="w-3.5 h-3.5" /> 100% सत्यापित आधिकारिक सरकारी पोर्टल डायरेक्ट-लिंक
               </span>
             </div>
           </div>
-          <button
-            onClick={restartAll}
-            className="p-2 text-slate-500 hover:text-orange-600 rounded-xl hover:bg-slate-100"
-            title="शुरुआत से शुरू करें"
-          >
-            <RotateCcw className="w-5 h-5" />
-          </button>
+
+          <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
+            <Building2 className="w-3.5 h-3.5 text-orange-600" /> भारत सरकार एवं राज्य पोर्टल
+          </div>
         </div>
       </header>
 
-      {/* मुख्य बॉडी */}
-      <main className="max-w-xl w-full mx-auto px-4 py-6 flex-1 flex flex-col justify-center">
-        {/* डिजिटल मित्र साथी वॉइस बॉक्स */}
-        <section className="bg-white rounded-3xl p-6 border-2 border-slate-200 shadow-sm text-center mb-6">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-black mb-3">
-            <Sparkles className="w-3.5 h-3.5" /> डिजिटल मित्र साथी
+      {/* 2. मुख्य कंटेनर */}
+      <main className="max-w-5xl w-full mx-auto px-4 py-6 flex-1 space-y-6">
+        {/* डिजिटल मित्र वॉइस असिस्टेंट कार्ड */}
+        <section className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-4 justify-between">
+          <div className="flex items-start gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <span className="text-[11px] font-black tracking-wider uppercase text-emerald-700 block mb-0.5">
+                डिजिटल मित्र वॉयस गाइड
+              </span>
+              <p className="text-sm sm:text-base font-bold text-slate-800 leading-snug">
+                "{voiceBriefing}"
+              </p>
+            </div>
           </div>
-          <p className="text-xl sm:text-2xl font-black text-slate-900 leading-relaxed mb-4">
-            "{voiceText}"
-          </p>
+
           <button
-            onClick={() => speak(voiceText)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-black transition active:scale-95"
+            onClick={() => speak(voiceBriefing)}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black transition active:scale-95 shrink-0"
           >
-            <Volume2 className="w-5 h-5 text-orange-600" /> दोबारा सुनें (Play Voice)
+            <Volume2 className="w-4 h-4 text-orange-600" /> दोबारा सुनें (Play)
           </button>
         </section>
 
-        <canvas ref={hiddenCanvasRef} className="hidden" />
+        {/* सर्च व वॉयस इनपुट बार */}
+        <div className="relative flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="दस्तावेज़ या सेवा खोजें (उदा: आधार, पैन, आयुष्मान, राशन, ड्राइविंग लाइसेंस)..."
+              className="w-full pl-11 pr-10 py-3.5 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-orange-500 shadow-xs transition"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
 
-        {/* 1. होम स्क्रीन: दोनों सेवाओं में से चयन */}
-        {step === 'HOME' && (
-          <div className="space-y-4">
+          {/* वॉयस सर्च बटन */}
+          <button
+            onClick={handleVoiceSearch}
+            className={`px-5 py-3.5 rounded-2xl border-2 flex items-center gap-2 font-black text-sm shadow-xs transition active:scale-95 ${
+              isListening
+                ? 'bg-red-50 border-red-500 text-red-700 animate-pulse'
+                : 'bg-orange-600 border-orange-600 hover:bg-orange-700 text-white'
+            }`}
+          >
+            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+            <span className="hidden sm:inline">{isListening ? 'सुन रहे हैं...' : 'बोलकर खोजें'}</span>
+          </button>
+        </div>
+
+        {/* श्रेणियां (Category Pills) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {categories.map((cat) => (
             <button
-              onClick={startSpeechRecognition}
-              className={`w-full p-6 rounded-3xl border-3 flex flex-col items-center justify-center transition-all shadow-md active:scale-95 ${
-                isListening ? 'bg-red-50 border-red-600 animate-pulse text-red-700' : 'bg-white border-orange-500 text-slate-900'
+              key={cat.key}
+              onClick={() => {
+                triggerHaptic([50]);
+                setSelectedCategory(cat.key);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-black shrink-0 transition flex items-center gap-1.5 border ${
+                selectedCategory === cat.key
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                  : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
               }`}
             >
-              <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-2 shadow-md ${
-                isListening ? 'bg-red-600 text-white' : 'bg-orange-600 text-white'
+              <span>{cat.icon}</span>
+              <span>{cat.title}</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                selectedCategory === cat.key ? 'bg-slate-800 text-slate-200' : 'bg-slate-100 text-slate-600'
               }`}>
-                {isListening ? <MicOff className="w-10 h-10" /> : <Mic className="w-10 h-10" />}
-              </div>
-              <span className="text-xl font-black">यहाँ छूकर बोलें</span>
-              <span className="text-xs font-bold text-slate-500 mt-0.5">जैसे: "आयुष्मान कार्ड" या "पैन कार्ड"</span>
+                {cat.count}
+              </span>
             </button>
+          ))}
+        </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <button
-                onClick={() => chooseService('AYUSHMAN')}
-                className="p-5 bg-white border-2 border-emerald-500 hover:border-emerald-600 rounded-3xl text-left shadow-sm active:scale-95 transition"
-              >
-                <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black mb-3">
-                  🏥
-                </div>
-                <span className="font-black text-base text-slate-900 block leading-tight">आयुष्मान गोल्डन कार्ड</span>
-                <span className="text-[11px] font-bold text-emerald-700 mt-1 block">₹5 लाख मुफ्त इलाज</span>
-              </button>
+        {/* परिणाम गणना */}
+        <div className="flex items-center justify-between text-xs font-bold text-slate-500 px-1">
+          <span>कुल उपलब्ध सेवाएं: {filteredServices.length}</span>
+          <span className="flex items-center gap-1 text-emerald-700">
+            <CheckCircle2 className="w-3.5 h-3.5" /> सभी लिंक सीधे आधिकारिक सरकारी सर्वर से जुड़े हैं
+          </span>
+        </div>
 
-              <button
-                onClick={() => chooseService('PAN')}
-                className="p-5 bg-white border-2 border-indigo-500 hover:border-indigo-600 rounded-3xl text-left shadow-sm active:scale-95 transition"
-              >
-                <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black mb-3">
-                  💳
-                </div>
-                <span className="font-black text-base text-slate-900 block leading-tight">नया पैन कार्ड</span>
-                <span className="text-[11px] font-bold text-indigo-700 mt-1 block">आयकर व बैंक हेतु</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 2. गाइड व कागज़ात की सूची */}
-        {step === 'GUIDE' && (
-          <div className="bg-white rounded-3xl p-6 border-2 border-orange-500 shadow-md space-y-5">
-            <div className="border-b border-slate-100 pb-3">
-              <h2 className="text-lg font-black text-slate-900">
-                {service === 'AYUSHMAN' ? 'आयुष्मान भारत गोल्डेन कार्ड (PM-JAY)' : 'नया स्थायी खाता संख्या (PAN Card)'}
-              </h2>
-              <span className="text-xs font-bold text-emerald-700">
-                {service === 'AYUSHMAN' ? 'पात्रता: 5 लाख तक मुफ्त सरकारी व प्राइवेट इलाज' : 'पात्रता: भारतीय नागरिकता एवं आधार धारक'}
-              </span>
-            </div>
-
-            <div>
-              <span className="text-xs font-black text-slate-400 uppercase tracking-wider block mb-2">
-                अनिवार्य कागज़ात (केवल 2 दस्तावेज़):
-              </span>
-              <div className="space-y-2.5">
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-xl bg-orange-600 text-white flex items-center justify-center font-black text-sm">
-                    1
-                  </span>
+        {/* सेवाओं का ग्रिड (Service Grid) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredServices.map((service) => (
+            <div
+              key={service.id}
+              className="bg-white rounded-3xl p-5 border border-slate-200 hover:border-orange-400 hover:shadow-md transition-all flex flex-col justify-between group"
+            >
+              <div className="space-y-3">
+                {/* कार्ड हेडर */}
+                <div className="flex items-start justify-between gap-2">
                   <div>
-                    <span className="font-black text-sm text-slate-900 block">आधार कार्ड (Aadhaar Card)</span>
-                    <span className="text-xs text-slate-500">पहचान व जन्मतिथि सत्यापन हेतु</span>
+                    <span className="text-[11px] font-bold text-slate-500 block leading-none mb-1">
+                      {service.ministry}
+                    </span>
+                    <h2 className="text-base font-black text-slate-900 group-hover:text-orange-600 transition">
+                      {service.title}
+                    </h2>
                   </div>
+                  <span className="text-[10px] font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-lg shrink-0">
+                    .GOV.IN
+                  </span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-xl bg-orange-600 text-white flex items-center justify-center font-black text-sm">
-                    2
-                  </span>
-                  <div>
-                    <span className="font-black text-sm text-slate-900 block">
-                      {service === 'AYUSHMAN' ? 'राशन कार्ड / परिवार पर्ची' : 'सफेद कागज़ पर हस्ताक्षर / अंगूठा'}
-                    </span>
-                    <span className="text-xs text-slate-500">
-                      {service === 'AYUSHMAN' ? 'परिवार की श्रेणी प्रमाणित करने हेतु' : 'कार्ड पर छापने के लिए भौतिक प्रमाण'}
-                    </span>
+                <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                  {service.benefitSummary}
+                </p>
+
+                {/* आवश्यक विवरण बैज */}
+                <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] font-bold">
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 text-slate-700">
+                    <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <span className="truncate">{service.estimatedDays}</span>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 text-slate-700">
+                    <Coins className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span className="truncate">{service.govtFee}</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <button
-              onClick={startAadhaarScanning}
-              className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-lg flex items-center justify-center gap-2 shadow-md active:scale-95 transition"
-            >
-              हाँ, मेरे पास कागज़ हैं (स्कैन शुरू करें) <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
-        )}
+              {/* कार्ड एक्शन बटन */}
+              <div className="pt-4 border-t border-slate-100 flex items-center gap-2 mt-4">
+                <button
+                  onClick={() => openServiceModal(service)}
+                  className="flex-1 py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-black transition active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  <FileText className="w-3.5 h-3.5 text-orange-600" />
+                  कागज़ात व नियम
+                </button>
 
-        {/* 3. पहला कागज़: आधार कार्ड स्कैन */}
-        {step === 'DOC1_AADHAAR' && (
-          <div className="bg-white rounded-3xl p-5 border-2 border-slate-300 shadow-lg space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-black bg-orange-100 text-orange-800 px-3 py-1 rounded-full">
-                कदम 1 / 3: आधार कार्ड
-              </span>
-              <span className="text-xs font-bold text-slate-500">बारकोड स्वतः स्कैन होगा</span>
-            </div>
-
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-black flex items-center justify-center">
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-              <div className="absolute inset-8 border-4 border-dashed border-emerald-400 rounded-3xl pointer-events-none flex items-center justify-center">
-                <span className="bg-black/75 text-white text-xs font-black px-4 py-2 rounded-full backdrop-blur">
-                  आधार कार्ड का बारकोड यहाँ रखें
-                </span>
+                <a
+                  href={service.officialApplyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-2.5 px-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-black transition active:scale-95 flex items-center justify-center gap-1.5 shadow-xs"
+                >
+                  सीधा पोर्टल खोलें
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
               </div>
             </div>
+          ))}
+        </div>
 
-            <div className="flex items-center justify-center gap-2 text-xs font-bold text-slate-600">
-              <RefreshCw className="w-4 h-4 animate-spin text-orange-600" />
-              <span>पहचान जांची जा रही है...</span>
-            </div>
-          </div>
-        )}
-
-        {/* 4. दूसरा कागज़: राशन कार्ड या हस्ताक्षर फोटो */}
-        {step === 'DOC2_SECONDARY' && (
-          <div className="bg-white rounded-3xl p-5 border-2 border-slate-300 shadow-lg space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-black bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">
-                कदम 2 / 3: {service === 'AYUSHMAN' ? 'राशन कार्ड' : 'हस्ताक्षर / अंगूठा'}
-              </span>
-              <span className="text-xs font-bold text-slate-500">कैमरे के सामने रखें</span>
-            </div>
-
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-black flex items-center justify-center">
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-              <div className="absolute inset-8 border-4 border-dashed border-emerald-400 rounded-3xl pointer-events-none flex items-center justify-center">
-                <span className="bg-black/75 text-white text-xs font-black px-4 py-2 rounded-full backdrop-blur">
-                  {service === 'AYUSHMAN' ? 'राशन कार्ड को फ्रेम में रखें' : 'हस्ताक्षर वाले कागज़ को फ्रेम में रखें'}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={captureSecondaryDoc}
-              className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-lg shadow-md active:scale-95 transition"
-            >
-              फोटो खींचें और आगे बढ़ें
-            </button>
-          </div>
-        )}
-
-        {/* 5. तीसरा कदम: लाइवनेस e-KYC (फ्रंट कैमरा) */}
-        {step === 'BIOMETRIC_SELFIE' && (
-          <div className="bg-white rounded-3xl p-5 border-2 border-indigo-400 shadow-lg space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-black bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">
-                कदम 3 / 3: बायोमेट्रिक e-KYC
-              </span>
-              <span className="text-xs font-bold text-emerald-600">लाइवनेस डिटेक्शन सक्रिय</span>
-            </div>
-
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-black flex items-center justify-center">
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-              <div className="absolute inset-10 border-4 border-dashed border-indigo-400 rounded-full pointer-events-none flex items-center justify-center">
-                <span className="bg-black/75 text-white text-[11px] font-black px-3 py-1 rounded-full backdrop-blur">
-                  चेहरे को वृत्त में रखें और पलकें झपकाएं
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={captureLivenessSelfie}
-              className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-lg shadow-md active:scale-95 transition"
-            >
-              चेहरा कैप्चर करें
-            </button>
-          </div>
-        )}
-
-        {/* 6. समीक्षा (Review Screen) */}
-        {step === 'REVIEW' && (
-          <div className="bg-white rounded-3xl p-6 border-2 border-slate-200 shadow-md space-y-4">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
-              <div className="w-10 h-10 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-black">
-                <UserCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-base font-black text-slate-900">आवेदन समीक्षा (Review)</h2>
-                <span className="text-xs font-bold text-emerald-700">बायोमेट्रिक स्कोर: {livenessScore}%</span>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-500 font-bold">आवेदक का नाम:</span>
-                <span className="font-black text-slate-900">{fullName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500 font-bold">जन्मतिथि:</span>
-                <span className="font-black text-slate-900">{dob}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500 font-bold">लिंग:</span>
-                <span className="font-black text-slate-900">{gender}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500 font-bold">पहचान संख्या:</span>
-                <span className="font-mono font-black text-emerald-700">{maskedAadhaar}</span>
-              </div>
-            </div>
-
-            <button
-              onClick={submitFinalApplication}
-              className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-lg shadow-md active:scale-95 transition"
-            >
-              हाँ, सब सही है - फाइनल सबमिट करें
-            </button>
-          </div>
-        )}
-
-        {/* 7. पूर्ण सफलता और रसीद डाउनलोड (Final Output) */}
-        {step === 'FINAL_RECEIPT' && (
-          <div className="bg-white rounded-3xl p-6 border-2 border-emerald-500 shadow-md space-y-5">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-700">
-                <CheckCircle className="w-8 h-8" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-slate-900">आवेदन 100% सफल हुआ</h2>
-                <span className="text-xs font-extrabold text-emerald-700">
-                  {service === 'AYUSHMAN' ? 'आयुष्मान गोल्डन कार्ड' : 'पैन कार्ड'} पंजीकृत हुआ
-                </span>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-500 font-bold">आवेदक:</span>
-                <span className="font-black text-slate-900">{fullName}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500 font-bold">पावती संख्या (Ack Token):</span>
-                <span className="font-mono font-black text-orange-600">{ackId}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500 font-bold">बायोमेट्रिक स्थिति:</span>
-                <span className="font-bold text-emerald-700">UIDAI Passed ({livenessScore}%)</span>
-              </div>
-            </div>
-
-            <button
-              onClick={downloadOfficialReceipt}
-              className="w-full py-4 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-95 transition"
-            >
-              <Download className="w-5 h-5" /> सरकारी रसीद डाउनलोड करें (Save Slip)
-            </button>
-
-            <button
-              onClick={restartAll}
-              className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl font-bold text-sm"
-            >
-              किसी अन्य व्यक्ति का फॉर्म भरें
-            </button>
+        {filteredServices.length === 0 && (
+          <div className="bg-white rounded-3xl p-8 text-center border border-slate-200 space-y-3">
+            <AlertCircle className="w-10 h-10 text-orange-500 mx-auto" />
+            <h3 className="text-base font-black text-slate-900">कोई संबंधित सरकारी सेवा नहीं मिली</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              कृपया अन्य कीवर्ड खोजें (जैसे 'आधार', 'पैन', 'पेंशन', 'ड्राइविंग', 'राशन') या ऊपर दी गई श्रेणियों पर टैप करें।
+            </p>
           </div>
         )}
       </main>
 
-      {/* पादलेख */}
-      <footer className="bg-white border-t border-slate-200 py-3 px-4 text-center text-xs font-bold text-slate-500">
-        डिजिटल पर्सनल डेटा प्रोटेक्शन (DPDP) एवं सुरक्षा मानकों के तहत 100% प्रमाणित
+      {/* 3. सेवा विस्तार व आवश्यक कागज़ात मॉडल (Document Drawer Modal) */}
+      {selectedService && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+            {/* मोडल हेडर */}
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-xs font-bold text-orange-600 block mb-0.5">
+                  {selectedService.department}
+                </span>
+                <h3 className="text-lg font-black text-slate-900">{selectedService.title}</h3>
+                <span className="text-xs text-slate-500 font-bold block mt-0.5">
+                  आधिकारिक पोर्टल: {selectedService.portalName}
+                </span>
+              </div>
+              <button
+                onClick={() => setSelectedService(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* आवश्यक कागज़ात की सूची */}
+            <div className="space-y-3">
+              <span className="text-xs font-black uppercase text-slate-400 tracking-wider block">
+                आवश्यक दस्तावेज़ (Required Documents):
+              </span>
+              <div className="space-y-2">
+                {selectedService.requiredDocuments.map((doc, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-2.5 font-bold text-slate-800">
+                      <span className="w-5 h-5 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center text-[10px] font-black shrink-0">
+                        {idx + 1}
+                      </span>
+                      <span>{doc.name}</span>
+                    </div>
+                    {doc.mandatory ? (
+                      <span className="text-[10px] font-black bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-md">
+                        अनिवार्य
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-md">
+                        वैकल्पिक
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* समय व सरकारी शुल्क विवरण */}
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+                <span className="text-slate-500 font-bold block mb-1">सरकारी शुल्क (Fee):</span>
+                <span className="font-black text-emerald-700">{selectedService.govtFee}</span>
+              </div>
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+                <span className="text-slate-500 font-bold block mb-1">अनुमानित समय:</span>
+                <span className="font-black text-slate-900">{selectedService.estimatedDays}</span>
+              </div>
+            </div>
+
+            {/* आधिकारिक डायरेक्ट लिंक बटन */}
+            <div className="pt-2 space-y-2">
+              <a
+                href={selectedService.officialApplyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3.5 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-md transition active:scale-95"
+              >
+                आधिकारिक पोर्टल पर सीधे आवेदन करें
+                <ExternalLink className="w-4 h-4" />
+              </a>
+
+              <p className="text-[11px] text-center font-bold text-slate-400">
+                सुरक्षा नोट: यह लिंक आपको सीधे भारत सरकार के सत्यापित पोर्टल (.gov.in / .nic.in) पर ले जाएगा।
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. पादलेख (Footer - GIGW & Legal Compliance) */}
+      <footer className="bg-white border-t border-slate-200 py-4 px-4 text-center text-xs font-bold text-slate-500 space-y-1">
+        <p>सर्वसेतु - डिजिटल इंडिया व नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप</p>
+        <p className="text-[11px] text-slate-400">
+          सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत सुरक्षित व निःशुल्क नागरिक मंच
+        </p>
       </footer>
     </div>
   );
