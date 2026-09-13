@@ -30,7 +30,7 @@ import {
 
 import { GovServiceItem } from './types/service';
 import { DirectoryEngine, CategoryTab } from './core/directoryEngine';
-import { LeadManager } from './core/leadManager';
+import { LeadManager } from './core/leadManager';\nimport { VoiceEngine } from './core/voiceEngine';
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -62,28 +62,17 @@ export default function App() {
   const hasInitiatedAudioRef = useRef(false);
 
   // शक्तिशाली और सुदृढ़ टेक्स्ट-टू-स्पीच इंजन
-  const speak = useCallback((text: string) => {
-    if (!('speechSynthesis' in window)) return;
-    
-    window.speechSynthesis.cancel(); // पूर्व आवाज़ को तुरंत रोकें
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'hi-IN';
-    utterance.rate = 0.90; // सहज और स्पष्ट भारतीय गति
-    utterance.pitch = 1.0;
+    const speak = useCallback((text: string) => {
+    VoiceEngine.speak(
+      text,
+      () => setIsSpeaking(true),
+      () => setIsSpeaking(false)
+    );
+  }, []);
 
-    // उपलब्ध भारतीय हिंदी आवाज़ का चयन
-    const voices = window.speechSynthesis.getVoices();
-    const hindiVoice = voices.find(v => v.lang === 'hi-IN' || v.lang.includes('hi'));
-    if (hindiVoice) {
-      utterance.voice = hindiVoice;
-    }
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
-    window.speechSynthesis.speak(utterance);
+  const stopSpeaking = useCallback(() => {
+    VoiceEngine.stop();
+    setIsSpeaking(false);
   }, []);
 
   const stopSpeaking = useCallback(() => {
@@ -94,25 +83,18 @@ export default function App() {
   }, []);
 
   // मोबाइल ऑटोप्ले अनलॉक: स्क्रीन पर पहले स्पर्श/टच पर तुरंत बोलना शुरू करना
+    // मोबाइल ब्राउज़र ऑडियो अनब्लॉक (पहले टच पर इंजन एक्टिव)
   useEffect(() => {
-    const handleFirstInteraction = () => {
-      if (!hasInitiatedAudioRef.current) {
-        hasInitiatedAudioRef.current = true;
-        speak(voiceBriefing);
-      }
+    const unlock = () => {
+      VoiceEngine.resumeEngine();
     };
-
-    window.addEventListener('click', handleFirstInteraction, { once: true });
-    window.addEventListener('touchstart', handleFirstInteraction, { once: true });
-
-    // यदि ब्राउज़र अनुमति दे तो तुरंत चलाएं
-    speak(voiceBriefing);
-
+    window.addEventListener('click', unlock, { passive: true });
+    window.addEventListener('touchstart', unlock, { passive: true });
     return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('click', unlock);
+      window.removeEventListener('touchstart', unlock);
     };
-  }, [speak, voiceBriefing]);
+  }, []);
 
   const triggerHaptic = (pattern: number[]) => {
     if ('vibrate' in navigator) navigator.vibrate(pattern);
