@@ -13,14 +13,13 @@ import {
   Sparkles,
   X,
   Building2,
-  Filter,
   ArrowUpRight,
-  Info,
-  ChevronRight,
-  AlertCircle
+  AlertCircle,
+  MapPin,
+  UserCheck
 } from 'lucide-react';
 
-import { GovernmentService, GOVERNMENT_SERVICES } from './core/governmentDirectory';
+import { GovernmentService } from './core/governmentDirectory';
 import { DirectoryEngine, CategorySummary } from './core/directoryEngine';
 
 export default function App() {
@@ -29,9 +28,9 @@ export default function App() {
   const [selectedService, setSelectedService] = useState<GovernmentService | null>(null);
   const [isListening, setIsListening] = useState(false);
 
-  // वॉइस असिस्टेंट संदेश
+  // 1. संस्थापक परिचय सहित डिजिटल मित्र वॉइस संदेश
   const [voiceBriefing, setVoiceBriefing] = useState(
-    'प्रणाम! बोलकर बताइए या नीचे खोजें: आपको किस सरकारी विभाग या दस्तावेज़ के लिए सीधे आवेदन करना है?'
+    'प्रणाम! सर्वसेतु AI में आपका स्वागत है। इसके संस्थापक विकास कुमार मिश्रा, रॉबर्ट्सगंज, सोनभद्र, उत्तर प्रदेश हैं। बोलकर बताइए या नीचे खोजें: आपको किस सरकारी सेवा या दस्तावेज़ के लिए सीधे आवेदन करना है?'
   );
 
   // टेक्स्ट-टू-स्पीच
@@ -40,7 +39,7 @@ export default function App() {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'hi-IN';
-    utterance.rate = 0.88;
+    utterance.rate = 0.86;
     window.speechSynthesis.speak(utterance);
   }, []);
 
@@ -52,10 +51,8 @@ export default function App() {
     if ('vibrate' in navigator) navigator.vibrate(pattern);
   };
 
-  // श्रेणियां
   const categories: CategorySummary[] = useMemo(() => DirectoryEngine.getCategories(), []);
 
-  // फ़िल्टर्ड सेवाएं
   const filteredServices = useMemo(() => {
     return DirectoryEngine.searchServices(searchQuery, selectedCategory);
   }, [searchQuery, selectedCategory]);
@@ -65,7 +62,7 @@ export default function App() {
     triggerHaptic([100]);
     const SpeechRec = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     if (!SpeechRec) {
-      alert('ब्राउज़र वॉयस इनपुट को सपोर्ट नहीं करता। कृपया सर्च बार में लिखकर खोजें।');
+      alert('ब्राउज़र वॉयस इनपुट को सपोर्ट नहीं करता। कृपया लिखकर खोजें।');
       return;
     }
 
@@ -79,7 +76,6 @@ export default function App() {
       const transcript = event.results[0][0].transcript;
       setSearchQuery(transcript);
 
-      // सबसे सटीक सेवा की स्वतः पहचान
       const matched = DirectoryEngine.matchVoiceIntent(transcript);
       if (matched) {
         setSelectedService(matched);
@@ -96,7 +92,6 @@ export default function App() {
     rec.start();
   };
 
-  // सेवा विवरण खोलना
   const openServiceModal = (service: GovernmentService) => {
     triggerHaptic([80]);
     setSelectedService(service);
@@ -106,11 +101,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col justify-between selection:bg-orange-100">
-      {/* 1. शीर्ष आधिकारिक हेडर (GIGW 3.0 लाइट थीम) */}
+      {/* 1. शीर्ष हेडर (GIGW 3.0 लाइट थीम + संस्थापक विवरण) */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xs">
+            <div className="w-11 h-11 bg-orange-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xs">
               से
             </div>
             <div>
@@ -123,41 +118,49 @@ export default function App() {
                 </span>
               </div>
               <span className="text-[11px] font-bold text-emerald-700 flex items-center gap-1 mt-0.5">
-                <ShieldCheck className="w-3.5 h-3.5" /> 100% सत्यापित आधिकारिक सरकारी पोर्टल डायरेक्ट-लिंक
+                <ShieldCheck className="w-3.5 h-3.5" /> 100% सत्यापित आधिकारिक सरकारी पोर्टल गेटवे
               </span>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
-            <Building2 className="w-3.5 h-3.5 text-orange-600" /> भारत सरकार एवं राज्य पोर्टल
+          {/* संस्थापक बैज (Header Desktop/Tablet) */}
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-700 bg-orange-50/80 px-3 py-1.5 rounded-xl border border-orange-200">
+            <UserCheck className="w-3.5 h-3.5 text-orange-600" />
+            <span>संस्थापक: <strong>विकास कुमार मिश्रा</strong></span>
+            <span className="text-[11px] text-slate-500 hidden sm:inline">(रॉबर्ट्सगंज, सोनभद्र)</span>
           </div>
         </div>
       </header>
 
-      {/* 2. मुख्य कंटेनर */}
+      {/* 2. मुख्य सामग्री */}
       <main className="max-w-5xl w-full mx-auto px-4 py-6 flex-1 space-y-6">
-        {/* डिजिटल मित्र वॉइस असिस्टेंट कार्ड */}
-        <section className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center gap-4 justify-between">
-          <div className="flex items-start gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="text-[11px] font-black tracking-wider uppercase text-emerald-700 block mb-0.5">
-                डिजिटल मित्र वॉयस गाइड
+        {/* डिजिटल मित्र व संस्थापक घोषणा कार्ड */}
+        <section className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
+              <span className="text-xs font-black tracking-wider uppercase text-emerald-700 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4" /> डिजिटल मित्र वॉयस साथी
               </span>
-              <p className="text-sm sm:text-base font-bold text-slate-800 leading-snug">
-                "{voiceBriefing}"
-              </p>
+            </div>
+            {/* लिखित संस्थापक पहचान पट्टी */}
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-xl">
+              <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+              <span>परिकल्पना व निर्माण: <strong>विकास कुमार मिश्रा</strong> | रॉबर्ट्सगंज, सोनभद्र (उ.प्र.)</span>
             </div>
           </div>
 
-          <button
-            onClick={() => speak(voiceBriefing)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black transition active:scale-95 shrink-0"
-          >
-            <Volume2 className="w-4 h-4 text-orange-600" /> दोबारा सुनें (Play)
-          </button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+            <p className="text-sm sm:text-base font-bold text-slate-800 leading-relaxed">
+              "{voiceBriefing}"
+            </p>
+            <button
+              onClick={() => speak(voiceBriefing)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black transition active:scale-95 shrink-0"
+            >
+              <Volume2 className="w-4 h-4 text-orange-600" /> दोबारा सुनें (Play Voice)
+            </button>
+          </div>
         </section>
 
         {/* सर्च व वॉयस इनपुट बार */}
@@ -225,7 +228,7 @@ export default function App() {
         <div className="flex items-center justify-between text-xs font-bold text-slate-500 px-1">
           <span>कुल उपलब्ध सेवाएं: {filteredServices.length}</span>
           <span className="flex items-center gap-1 text-emerald-700">
-            <CheckCircle2 className="w-3.5 h-3.5" /> सभी लिंक सीधे आधिकारिक सरकारी सर्वर से जुड़े हैं
+            <CheckCircle2 className="w-3.5 h-3.5" /> सभी लिंक सीधे आधिकारिक सरकारी सर्वर (.gov.in) से जुड़े हैं
           </span>
         </div>
 
@@ -237,7 +240,6 @@ export default function App() {
               className="bg-white rounded-3xl p-5 border border-slate-200 hover:border-orange-400 hover:shadow-md transition-all flex flex-col justify-between group"
             >
               <div className="space-y-3">
-                {/* कार्ड हेडर */}
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <span className="text-[11px] font-bold text-slate-500 block leading-none mb-1">
@@ -256,7 +258,6 @@ export default function App() {
                   {service.benefitSummary}
                 </p>
 
-                {/* आवश्यक विवरण बैज */}
                 <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] font-bold">
                   <div className="bg-slate-50 border border-slate-200 rounded-xl p-2 flex items-center gap-1.5 text-slate-700">
                     <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
@@ -269,7 +270,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* कार्ड एक्शन बटन */}
               <div className="pt-4 border-t border-slate-100 flex items-center gap-2 mt-4">
                 <button
                   onClick={() => openServiceModal(service)}
@@ -304,11 +304,10 @@ export default function App() {
         )}
       </main>
 
-      {/* 3. सेवा विस्तार व आवश्यक कागज़ात मॉडल (Document Drawer Modal) */}
+      {/* 3. सेवा विस्तार व आवश्यक कागज़ात मॉडल */}
       {selectedService && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
-            {/* मोडल हेडर */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="text-xs font-bold text-orange-600 block mb-0.5">
@@ -327,7 +326,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* आवश्यक कागज़ात की सूची */}
             <div className="space-y-3">
               <span className="text-xs font-black uppercase text-slate-400 tracking-wider block">
                 आवश्यक दस्तावेज़ (Required Documents):
@@ -358,7 +356,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* समय व सरकारी शुल्क विवरण */}
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl">
                 <span className="text-slate-500 font-bold block mb-1">सरकारी शुल्क (Fee):</span>
@@ -370,7 +367,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* आधिकारिक डायरेक्ट लिंक बटन */}
             <div className="pt-2 space-y-2">
               <a
                 href={selectedService.officialApplyUrl}
@@ -390,11 +386,26 @@ export default function App() {
         </div>
       )}
 
-      {/* 4. पादलेख (Footer - GIGW & Legal Compliance) */}
-      <footer className="bg-white border-t border-slate-200 py-4 px-4 text-center text-xs font-bold text-slate-500 space-y-1">
-        <p>सर्वसेतु - डिजिटल इंडिया व नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप</p>
+      {/* 4. पादलेख (Footer - संस्थापक क्रेडिट एवं वैधानिक अनुपालन) */}
+      <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-2.5">
+        <div className="max-w-xl mx-auto p-3 bg-orange-50/70 border border-orange-200 rounded-2xl">
+          <p className="font-black text-slate-900 text-sm">
+            सर्वसेतु AI (राष्ट्रीय डिजिटल नागरिक सेवा सेतु)
+          </p>
+          <p className="text-xs font-bold text-orange-800 mt-1">
+            संस्थापक एवं मुख्य परिकल्पनाकार: <strong>विकास कुमार मिश्रा</strong>
+          </p>
+          <p className="text-[11px] text-slate-600 mt-0.5 flex items-center justify-center gap-1">
+            <MapPin className="w-3 h-3 text-orange-600 inline" />
+            रॉबर्ट्सगंज, सोनभद्र, उत्तर प्रदेश, भारत
+          </p>
+        </div>
+
+        <p className="font-bold text-slate-500">
+          डिजिटल इंडिया एवं नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप
+        </p>
         <p className="text-[11px] text-slate-400">
-          सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत सुरक्षित व निःशुल्क नागरिक मंच
+          सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत 100% सुरक्षित व निःशुल्क नागरिक मंच
         </p>
       </footer>
     </div>
