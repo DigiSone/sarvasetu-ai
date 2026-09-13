@@ -1,81 +1,85 @@
-import { GOVERNMENT_SERVICES, GovernmentService, CATEGORY_METADATA } from './governmentDirectory';
-import { FuzzySearchEngine } from './fuzzySearch';
+import { GovServiceItem } from '../types/service';
+import { UTTER_PRADESH_SERVICES } from '../data/uttarPradeshServices';
+import { CENTRAL_GOVERNMENT_SERVICES } from '../data/centralServices';
 
-export interface CategorySummary {
+export interface CategoryTab {
   key: string;
   title: string;
   icon: string;
-  color: string;
   count: number;
 }
 
 export class DirectoryEngine {
-  public static searchServices(query: string, activeCategory: string = 'ALL'): GovernmentService[] {
-    const cleanQuery = query.trim().toLowerCase();
+  // 1. चयनित राज्य के आधार पर शुद्ध सेवाओं की सूची
+  public static getServicesByState(stateCode: string): GovServiceItem[] {
+    if (stateCode === 'UP') {
+      return [...UTTER_PRADESH_SERVICES, ...CENTRAL_GOVERNMENT_SERVICES];
+    }
+    // अन्य राज्यों के लिए केवल केंद्र की सत्यापित सेवाएं (जब तक उनका मॉड्यूल न जुड़े)
+    return CENTRAL_GOVERNMENT_SERVICES;
+  }
 
-    return GOVERNMENT_SERVICES.filter((service) => {
-      // श्रेणी फ़िल्टर
-      const matchesCategory = activeCategory === 'ALL' || service.category === activeCategory;
-      if (!matchesCategory) return false;
+  // 2. शुद्ध टेक्स्ट व कीवर्ड सर्च (No Loose Fuzzy Mismatches)
+  public static search(query: string, stateCode: string, category: string): GovServiceItem[] {
+    const list = this.getServicesByState(stateCode);
+    const cleanQ = query.trim().toLowerCase();
 
-      if (!cleanQuery) return true;
+    return list.filter((item) => {
+      const matchCat = category === 'ALL' || item.category === category;
+      if (!matchCat) return false;
 
-      // 1. प्राथमिक सटीक मिलान
-      const matchesTitle = service.title.toLowerCase().includes(cleanQuery);
-      const matchesDept = service.department.toLowerCase().includes(cleanQuery);
-      const matchesMinistry = service.ministry.toLowerCase().includes(cleanQuery);
-      const matchesKeywords = service.keywords.some((kw) => kw.toLowerCase().includes(cleanQuery));
+      if (!cleanQ) return true;
 
-      if (matchesTitle || matchesDept || matchesMinistry || matchesKeywords) return true;
+      // सटीक शीर्षक, विभाग व कीवर्ड्स मिलान
+      const inTitle = item.title.toLowerCase().includes(cleanQ);
+      const inDept = item.department.toLowerCase().includes(cleanQ);
+      const inKeywords = item.voiceKeywords.some((kw) => kw.toLowerCase().includes(cleanQ) || cleanQ.includes(kw.toLowerCase()));
 
-      // 2. फ़ज़ी मिलान (टाइपो या गलत स्पेलिंग सुधार)
-      const fuzzyTitle = FuzzySearchEngine.isFuzzyMatch(cleanQuery, service.title);
-      const fuzzyKeywords = service.keywords.some((kw) => FuzzySearchEngine.isFuzzyMatch(cleanQuery, kw));
-
-      return fuzzyTitle || fuzzyKeywords;
+      return inTitle || inDept || inKeywords;
     });
   }
 
-  public static matchVoiceIntent(spokenText: string): GovernmentService | null {
-    const text = spokenText.toLowerCase();
+  // 3. शुद्ध वॉइस इंटेंट मैचर (उच्च सटीकता)
+  public static matchVoiceStrict(spokenText: string, stateCode: string): GovServiceItem | null {
+    const cleanText = spokenText.trim().toLowerCase();
+    const list = this.getServicesByState(stateCode);
 
-    for (const service of GOVERNMENT_SERVICES) {
-      for (const kw of service.keywords) {
-        if (text.includes(kw.toLowerCase()) || FuzzySearchEngine.isFuzzyMatch(text, kw, 0.7)) {
-          return service;
+    // 1. सटीक कीवर्ड मिलान
+    for (const item of list) {
+      for (const kw of item.voiceKeywords) {
+        if (cleanText.includes(kw.toLowerCase())) {
+          return item;
         }
       }
     }
 
-    return (
-      GOVERNMENT_SERVICES.find((service) =>
-        text.includes(service.title.toLowerCase()) || FuzzySearchEngine.isFuzzyMatch(text, service.title, 0.65)
-      ) || null
-    );
+    // 2. शीर्षक मिलान
+    for (const item of list) {
+      const cleanTitle = item.title.toLowerCase();
+      if (cleanText.includes(cleanTitle) || cleanTitle.includes(cleanText)) {
+        return item;
+      }
+    }
+
+    return null;
   }
 
-  public static getCategories(): CategorySummary[] {
-    const categories: CategorySummary[] = [
-      {
-        key: 'ALL',
-        title: 'सभी सरकारी सेवाएं',
-        icon: '🏛️',
-        color: 'slate',
-        count: GOVERNMENT_SERVICES.length
-      }
+  // 4. श्रेणियां
+  public static getCategories(stateCode: string): CategoryTab[] {
+    const list = this.getServicesByState(stateCode);
+    const cats: CategoryTab[] = [
+      { key: 'ALL', title: 'सभी सेवाएं', icon: '🏛️', count: list.length },
+      { key: 'REVENUE_LAND', title: 'जमीन व खतौनी', icon: '🌾', count: list.filter((s) => s.category === 'REVENUE_LAND').length },
+      { key: 'CERTIFICATES', title: 'नागरिक प्रमाण पत्र', icon: '📜', count: list.filter((s) => s.category === 'CERTIFICATES').length },
+      { key: 'IDENTITY', title: 'पहचान (आधार/पैन/DL)', icon: '🪪', count: list.filter((s) => s.category === 'IDENTITY').length },
+      { key: 'FOOD_RATION', title: 'खाद्य व राशन', icon: '🍚', count: list.filter((s) => s.category === 'FOOD_RATION').length },
+      { key: 'ELECTRICITY_UTILITY', title: 'बिजली व सोलर', icon: '⚡', count: list.filter((s) => s.category === 'ELECTRICITY_UTILITY').length },
+      { key: 'POLICE_LEGAL', title: 'पुलिस व जनसुनवाई', icon: '⚖️', count: list.filter((s) => s.category === 'POLICE_LEGAL').length },
+      { key: 'HEALTH_WELFARE', title: 'स्वास्थ्य व पेंशन', icon: '🏥', count: list.filter((s) => s.category === 'HEALTH_WELFARE').length },
+      { key: 'BUSINESS_TAX', title: 'व्यापार व टैक्स (GST)', icon: '💼', count: list.filter((s) => s.category === 'BUSINESS_TAX').length },
+      { key: 'FARMER_AGRICULTURE', title: 'किसान कल्याण', icon: '🚜', count: list.filter((s) => s.category === 'FARMER_AGRICULTURE').length }
     ];
 
-    Object.entries(CATEGORY_METADATA).forEach(([key, meta]) => {
-      const count = GOVERNMENT_SERVICES.filter((s) => s.category === key).length;
-      categories.push({
-        key,
-        title: meta.title,
-        icon: meta.icon,
-        color: meta.color,
-        count
-      });
-    });
-
-    return categories;
+    return cats.filter((c) => c.count > 0 || c.key === 'ALL');
   }
 }
