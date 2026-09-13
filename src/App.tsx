@@ -21,27 +21,88 @@ import {
   Printer,
   CheckSquare,
   Square,
-  ChevronDown
+  ChevronDown,
+  PhoneCall,
+  ShieldAlert,
+  HelpCircle,
+  Check
 } from 'lucide-react';
 
 import { GovernmentService } from './core/governmentDirectory';
 import { DirectoryEngine, CategorySummary } from './core/directoryEngine';
 import { SUPPORTED_STATES, StateConfig } from './core/stateDirectory';
 
+// राष्ट्रीय 1-टैप आपातकालीन हेल्पलाइन डेटा
+interface EmergencyLine {
+  number: string;
+  name: string;
+  subtitle: string;
+  badge: string;
+  color: string;
+}
+
+const EMERGENCY_HELPLINES: EmergencyLine[] = [
+  {
+    number: '1930',
+    name: 'राष्ट्रीय वित्तीय साइबर अपराध',
+    subtitle: 'ऑनलाइन बैंक / यूपीआई ठगी तुरंत फ्रीज कराने हेतु',
+    badge: '24x7 तत्काल अलर्ट',
+    color: 'bg-red-50 border-red-200 text-red-700'
+  },
+  {
+    number: '1915',
+    name: 'राष्ट्रीय उपभोक्ता हेल्पलाइन',
+    subtitle: 'कंपनी, वारंटी व ऑनलाइन शॉपिंग धोखाधड़ी निवारण',
+    badge: 'उपभोक्ता मंत्रालय',
+    color: 'bg-indigo-50 border-indigo-200 text-indigo-700'
+  },
+  {
+    number: '14555',
+    name: 'आयुष्मान भारत सहायता केंद्र',
+    subtitle: 'गोल्डन कार्ड व ₹5 लाख मुफ्त अस्पताल इलाज जानकारी',
+    badge: 'टोल-फ्री',
+    color: 'bg-emerald-50 border-emerald-200 text-emerald-700'
+  },
+  {
+    number: '1912',
+    name: 'विद्युत आपातकालीन सेवा',
+    subtitle: 'बिजली फॉल्ट, नया कनेक्शन व बिलिंग शिकायत',
+    badge: 'डिस्कॉम टोल-फ्री',
+    color: 'bg-amber-50 border-amber-200 text-amber-700'
+  },
+  {
+    number: '181',
+    name: 'महिला हेल्पलाइन (सखी)',
+    subtitle: 'संकटग्रस्त महिलाओं हेतु 24 घंटे विधिक व पुलिस सुरक्षा',
+    badge: 'महिला सुरक्षा',
+    color: 'bg-rose-50 border-rose-200 text-rose-700'
+  },
+  {
+    number: '1076',
+    name: 'मुख्यमंत्री जनसुनवाई हेल्पलाइन',
+    subtitle: 'सरकारी दफ्तरों में अटके कार्यों की सीधी मुख्यमंत्री शिकायत',
+    badge: 'जन शिकायत',
+    color: 'bg-blue-50 border-blue-200 text-blue-700'
+  }
+];
+
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
-  const [selectedStateCode, setSelectedStateCode] = useState('UP'); // डिफ़ॉल्ट उत्तर प्रदेश
+  const [selectedStateCode, setSelectedStateCode] = useState('UP');
   const [selectedService, setSelectedService] = useState<GovernmentService | null>(null);
   const [checkedDocs, setCheckedDocs] = useState<Record<string, boolean>>({});
   const [isListening, setIsListening] = useState(false);
+
+  // मोडल स्टेट्स
+  const [showHelplineDrawer, setShowHelplineDrawer] = useState(false);
+  const [showTrustShieldModal, setShowTrustShieldModal] = useState(false);
 
   // संस्थापक परिचय सहित डिजिटल मित्र वॉइस संदेश
   const [voiceBriefing, setVoiceBriefing] = useState(
     'प्रणाम! सर्वसेतु AI में आपका स्वागत है। इसके संस्थापक विकास कुमार मिश्रा, रॉबर्ट्सगंज, सोनभद्र, उत्तर प्रदेश हैं। बोलकर बताइए या नीचे खोजें: आपको किस सरकारी सेवा या दस्तावेज़ के लिए सीधे आवेदन करना है?'
   );
 
-  // टेक्स्ट-टू-स्पीच
   const speak = useCallback((text: string) => {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
@@ -61,12 +122,10 @@ export default function App() {
 
   const categories: CategorySummary[] = useMemo(() => DirectoryEngine.getCategories(), []);
 
-  // वर्तमान चयनित राज्य
   const currentState: StateConfig = useMemo(() => {
     return SUPPORTED_STATES.find((s) => s.code === selectedStateCode) || SUPPORTED_STATES[0];
   }, [selectedStateCode]);
 
-  // राज्य-वार डायनामिक लिंक एवं नाम का निर्धारण
   const resolveServiceForState = useCallback(
     (service: GovernmentService) => {
       const stateOverride = currentState.servicesOverride[service.id];
@@ -87,7 +146,6 @@ export default function App() {
     return raw.map((s) => resolveServiceForState(s));
   }, [searchQuery, selectedCategory, resolveServiceForState]);
 
-  // वॉयस इनपुट हैंडलर
   const handleVoiceSearch = () => {
     triggerHaptic([100]);
     const SpeechRec = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -123,7 +181,6 @@ export default function App() {
     rec.start();
   };
 
-  // सेवा मोडल खोलना व चेकलिस्ट रीसेट
   const openServiceModal = (service: GovernmentService) => {
     triggerHaptic([80]);
     const resolved = resolveServiceForState(service);
@@ -133,16 +190,11 @@ export default function App() {
     speak(resolved.voiceBriefing);
   };
 
-  // चेकलिस्ट टिक टॉगल
   const toggleDocCheck = (docName: string) => {
     triggerHaptic([50]);
-    setCheckedDocs((prev) => {
-      const updated = { ...prev, [docName]: !prev[docName] };
-      return updated;
-    });
+    setCheckedDocs((prev) => ({ ...prev, [docName]: !prev[docName] }));
   };
 
-  // तैयारी मीटर (Readiness Percentage)
   const readinessMetrics = useMemo(() => {
     if (!selectedService) return { percentage: 0, checkedCount: 0, total: 0, isReady: false };
     const total = selectedService.requiredDocuments.length;
@@ -152,7 +204,6 @@ export default function App() {
     return { percentage, checkedCount, total, isReady };
   }, [selectedService, checkedDocs]);
 
-  // व्हाट्सएप शेयर जनरेटर
   const shareOnWhatsApp = () => {
     if (!selectedService) return;
     triggerHaptic([100]);
@@ -165,7 +216,6 @@ export default function App() {
     window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
   };
 
-  // प्रिंट पर्ची
   const handlePrintSlip = () => {
     triggerHaptic([100]);
     window.print();
@@ -173,7 +223,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col justify-between selection:bg-orange-100">
-      {/* 1. शीर्ष आधिकारिक हेडर (GIGW 3.0 लाइट थीम + राज्य चयन ड्रॉपडाउन) */}
+      {/* 1. शीर्ष आधिकारिक हेडर */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-3">
@@ -195,8 +245,20 @@ export default function App() {
             </div>
           </div>
 
-          {/* राज्य चयन ड्रॉपडाउन */}
+          {/* राज्य चयन और त्वरित सहायता बटन */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                triggerHaptic([80]);
+                setShowHelplineDrawer(true);
+              }}
+              className="p-2 sm:px-3 sm:py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-xl text-xs font-black flex items-center gap-1.5 transition active:scale-95 shadow-xs"
+              title="आपातकालीन हेल्पलाइन"
+            >
+              <PhoneCall className="w-4 h-4 text-red-600 animate-bounce" />
+              <span className="hidden sm:inline">हेल्पलाइन 1930 / 1915</span>
+            </button>
+
             <div className="relative">
               <select
                 value={selectedStateCode}
@@ -205,7 +267,7 @@ export default function App() {
                   triggerHaptic([80]);
                   const found = SUPPORTED_STATES.find((s) => s.code === e.target.value);
                   if (found) {
-                    const msg = `राज्य बदला गया: ${found.hindiName}। सभी राज्य सेवाएं अब ${found.hindiName} पोर्टल से जुड़ गई हैं।`;
+                    const msg = `राज्य बदला गया: ${found.hindiName}। सभी सेवाएं अब ${found.hindiName} पोर्टल से जुड़ गई हैं।`;
                     setVoiceBriefing(msg);
                     speak(msg);
                   }
@@ -221,17 +283,11 @@ export default function App() {
               <MapPin className="w-3.5 h-3.5 text-orange-600 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
-
-            {/* संस्थापक बैज (Desktop) */}
-            <div className="hidden lg:flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-orange-50/80 px-3 py-1.5 rounded-xl border border-orange-200">
-              <UserCheck className="w-3.5 h-3.5 text-orange-600" />
-              <span>संस्थापक: <strong>विकास कुमार मिश्रा</strong></span>
-            </div>
           </div>
         </div>
       </header>
 
-      {/* 2. मुख्य सामग्री */}
+      {/* 2. मुख्य कंटेनर */}
       <main className="max-w-5xl w-full mx-auto px-4 py-6 flex-1 space-y-6">
         {/* डिजिटल मित्र व संस्थापक घोषणा कार्ड */}
         <section className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs space-y-4">
@@ -262,7 +318,32 @@ export default function App() {
           </div>
         </section>
 
-        {/* सर्च व वॉयस इनपुट बार */}
+        {/* एंटी-फ्रॉड सुरक्षा शील्ड बैनर (.gov.in Anti-Fraud Badge) */}
+        <div
+          onClick={() => {
+            triggerHaptic([60]);
+            setShowTrustShieldModal(true);
+          }}
+          className="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-2xl p-3.5 cursor-pointer flex items-center justify-between gap-3 transition shadow-xs"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-black text-emerald-950">आधिकारिक सरकारी पोर्टल सुरक्षा शील्ड (.GOV.IN)</span>
+                <span className="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.2 rounded-md font-bold">सत्यापित</span>
+              </div>
+              <span className="text-[11px] font-bold text-emerald-800 block">
+                साइबर ठगों और नकली वेबसाइटों से बचें। असली सरकारी वेबसाइट की पहचान जानने के लिए यहाँ छूएं।
+              </span>
+            </div>
+          </div>
+          <HelpCircle className="w-4 h-4 text-emerald-700 shrink-0" />
+        </div>
+
+        {/* सर्च व वॉयस इनपुट बार (स्मार्ट फ़ज़ी सर्च सक्षम) */}
         <div className="relative flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -270,7 +351,7 @@ export default function App() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={`दस्तावेज़ खोजें (उदा: आधार, पैन, खतौनी, जाति, राशन, बिजली, पेंशन)...`}
+              placeholder={`सेवा या कागज़ात खोजें (उदा: aadhar, pan, rasan, bijli meter, kisan loan, ppo)...`}
               className="w-full pl-11 pr-10 py-3.5 bg-white border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-orange-500 shadow-xs transition"
             />
             {searchQuery && (
@@ -283,7 +364,6 @@ export default function App() {
             )}
           </div>
 
-          {/* वॉयस सर्च बटन */}
           <button
             onClick={handleVoiceSearch}
             className={`px-5 py-3.5 rounded-2xl border-2 flex items-center gap-2 font-black text-sm shadow-xs transition active:scale-95 ${
@@ -323,11 +403,11 @@ export default function App() {
           ))}
         </div>
 
-        {/* परिणाम गणना व सक्रिय राज्य सूचना */}
+        {/* परिणाम गणना व राज्य सूचना */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs font-bold text-slate-500 px-1 gap-1">
-          <span>कुल उपलब्ध सेवाएं: {filteredServices.length}</span>
+          <span>कुल उपलब्ध सेवाएं: {filteredServices.length} (फ़ज़ी व बहुभाषी इंजन सक्रिय)</span>
           <span className="flex items-center gap-1 text-emerald-700">
-            <CheckCircle2 className="w-3.5 h-3.5" /> राज्य: {currentState.hindiName} पोर्टल लिंक्स सक्रिय हैं
+            <CheckCircle2 className="w-3.5 h-3.5" /> राज्य: {currentState.hindiName} पोर्टल लिंक सक्रिय हैं
           </span>
         </div>
 
@@ -403,11 +483,126 @@ export default function App() {
         )}
       </main>
 
-      {/* 3. सेवा विस्तार, इंटरएक्टिव चेकलिस्ट, व्हाट्सएप शेयर व प्रिंट पर्ची मोडल */}
+      {/* 3. आपातकालीन हेल्पलाइन हब मोडल (1-Tap Dial Hub) */}
+      {showHelplineDrawer && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-700 flex items-center justify-center">
+                  <PhoneCall className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">राष्ट्रीय आपातकालीन सहायता हब</h3>
+                  <span className="text-xs text-slate-500 font-bold">1-टैप डायरेक्ट कॉलिंग सेवा (24x7 निःशुल्क)</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowHelplineDrawer(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2.5">
+              {EMERGENCY_HELPLINES.map((item) => (
+                <div
+                  key={item.number}
+                  className={`p-3.5 rounded-2xl border flex items-center justify-between gap-3 ${item.color}`}
+                >
+                  <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="font-mono font-black text-base leading-none">{item.number}</span>
+                      <span className="text-[10px] font-black uppercase bg-white/80 px-2 py-0.5 rounded-md border border-black/10">
+                        {item.badge}
+                      </span>
+                    </div>
+                    <span className="text-xs font-black block text-slate-900">{item.name}</span>
+                    <span className="text-[11px] font-bold text-slate-600 block">{item.subtitle}</span>
+                  </div>
+
+                  <a
+                    href={`tel:${item.number}`}
+                    onClick={() => triggerHaptic([100])}
+                    className="p-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black shrink-0 flex items-center gap-1.5 shadow-xs transition active:scale-95"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>कॉल करें</span>
+                  </a>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowHelplineDrawer(false)}
+              className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition"
+            >
+              बंद करें
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 4. एंटी-फ्रॉड सुरक्षा शील्ड मोडल (.gov.in Security Guidelines) */}
+      {showTrustShieldModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">असली सरकारी पोर्टल की पहचान</h3>
+                  <span className="text-xs text-emerald-700 font-bold">नागरिक साइबर सुरक्षा दिशा-निर्देश</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowTrustShieldModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs leading-relaxed text-slate-700">
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-1">
+                <span className="font-black text-emerald-950 text-sm block">1. डोमेन नेम हमेशा चेक करें:</span>
+                <p>
+                  भारत सरकार या किसी भी राज्य सरकार की आधिकारिक वेबसाइट का अंत हमेशा <strong>.gov.in</strong> या <strong>.nic.in</strong> से होता है।
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl space-y-1 text-red-950">
+                <span className="font-black text-sm block">2. इन फर्जी वेबसाइटों से सावधान रहें:</span>
+                <p>
+                  किसी भी सरकारी योजना के नाम पर बनी ऐसी वेबसाइटें जिनके अंत में <strong>.com, .org, .net, .in, .xyz</strong> हो, वे निजी या फर्जी हो सकती हैं। उन पर कभी भी अपने बैंक या आधार का ब्योरा न दें।
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-1">
+                <span className="font-black text-slate-900 text-sm block">3. सर्वसेतु AI की गारंटी:</span>
+                <p>
+                  सर्वसेतु AI केवल भारत सरकार और राज्य सरकारों के 100% परीक्षित और सत्यापित आधिकारिक सर्वरों के सीधे आवेदन लिंक ही नागरिकों को प्रदान करता है।
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowTrustShieldModal(false)}
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black transition active:scale-95"
+            >
+              समझ गया (सुरक्षित रहें)
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 5. सेवा विस्तार, इंटरएक्टिव चेकलिस्ट, व्हाट्सएप शेयर व प्रिंट पर्ची मोडल */}
       {selectedService && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
-            {/* मोडल हेडर */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
                 <span className="text-xs font-bold text-orange-600 block mb-0.5">
@@ -426,16 +621,15 @@ export default function App() {
               </button>
             </div>
 
-            {/* इंटरएक्टिव दस्तावेज़ तैयारी मीटर (Readiness Meter) */}
+            {/* तैयारी मीटर */}
             <div className="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 space-y-2">
               <div className="flex items-center justify-between text-xs font-black">
-                <span className="text-slate-700">कागज़ात तैयारी मीटर (Document Readiness):</span>
+                <span className="text-slate-700">कागज़ात तैयारी मीटर:</span>
                 <span className={readinessMetrics.isReady ? 'text-emerald-700 font-extrabold' : 'text-orange-600'}>
                   {readinessMetrics.percentage}% ({readinessMetrics.checkedCount}/{readinessMetrics.total} तैयार)
                 </span>
               </div>
 
-              {/* प्रोग्रेस बार */}
               <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-300 ${
@@ -447,7 +641,7 @@ export default function App() {
 
               {readinessMetrics.isReady ? (
                 <p className="text-[11px] font-bold text-emerald-700 flex items-center gap-1 pt-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> बधाई! आपके पास सभी आवश्यक दस्तावेज़ तैयार हैं। अब आप सीधे आवेदन कर सकते हैं।
+                  <CheckCircle2 className="w-3.5 h-3.5" /> बधाई! आपके पास सभी आवश्यक दस्तावेज़ तैयार हैं।
                 </p>
               ) : (
                 <p className="text-[11px] font-bold text-slate-500 pt-1">
@@ -456,7 +650,7 @@ export default function App() {
               )}
             </div>
 
-            {/* इंटरएक्टिव चेकलिस्ट सूची */}
+            {/* चेकलिस्ट सूची */}
             <div className="space-y-2.5">
               <span className="text-xs font-black uppercase text-slate-400 tracking-wider block">
                 आवश्यक कागज़ात (छूकर टिक करें):
@@ -497,10 +691,10 @@ export default function App() {
               </div>
             </div>
 
-            {/* समय व सरकारी शुल्क विवरण */}
+            {/* समय व शुल्क */}
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl">
-                <span className="text-slate-500 font-bold block mb-1">सरकारी शुल्क (Fee):</span>
+                <span className="text-slate-500 font-bold block mb-1">सरकारी शुल्क:</span>
                 <span className="font-black text-emerald-700">{selectedService.govtFee}</span>
               </div>
               <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl">
@@ -509,7 +703,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* शेयर व प्रिंट बटन रो */}
+            {/* शेयर व प्रिंट */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <button
                 onClick={shareOnWhatsApp}
@@ -522,11 +716,11 @@ export default function App() {
                 onClick={handlePrintSlip}
                 className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 border border-slate-200"
               >
-                <Printer className="w-3.5 h-3.5 text-orange-600" /> प्रिंट पर्ची (Slip)
+                <Printer className="w-3.5 h-3.5 text-orange-600" /> प्रिंट पर्ची
               </button>
             </div>
 
-            {/* आधिकारिक डायरेक्ट लिंक बटन */}
+            {/* आधिकारिक लिंक */}
             <div className="pt-2 space-y-2">
               <a
                 href={selectedService.officialApplyUrl}
@@ -546,7 +740,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 4. पादलेख (Footer - संस्थापक क्रेडिट एवं वैधानिक अनुपालन) */}
+      {/* 6. पादलेख */}
       <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-2.5">
         <div className="max-w-xl mx-auto p-3 bg-orange-50/70 border border-orange-200 rounded-2xl">
           <p className="font-black text-slate-900 text-sm">
