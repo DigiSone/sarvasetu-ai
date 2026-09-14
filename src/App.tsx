@@ -32,6 +32,8 @@ import { GovServiceItem } from './types/service';
 import { DirectoryEngine, CategoryTab } from './core/directoryEngine';
 import { LeadManager } from './core/leadManager';
 import { VoiceEngine } from './core/voiceEngine';
+import { LEGAL_TEMPLATES, LegalTemplate } from './data/legalTemplates';
+import { Download, FileCheck, SearchCode } from 'lucide-react';
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,6 +50,12 @@ export default function App() {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [targetLeadService, setTargetLeadService] = useState<GovServiceItem | null>(null);
   const [showLegalModal, setShowLegalModal] = useState(false);
+  const [showTrackerModal, setShowTrackerModal] = useState(false);
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
+  const [trackInput, setTrackInput] = useState('');
+  const [trackResult, setTrackResult] = useState<any | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<LegalTemplate | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   // फॉर्म इनपुट स्टेट्स
   const [leadName, setLeadName] = useState('');
@@ -63,6 +71,53 @@ export default function App() {
   );
 
   const hasInitiatedAudioRef = useRef(false);
+
+  // PWA इंस्टॉल लिसनर व सर्विस वर्कर पंजीकरण
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+  }, []);
+
+  const handleInstallPWA = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => setDeferredPrompt(null));
+    } else {
+      alert('सर्वसेतु AI ऐप आपके ब्राउज़र मेनू (⋮) में "Add to Home Screen / Install" के रूप में उपलब्ध है।');
+    }
+  };
+
+  const handleTrackQuery = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trackInput.trim()) return;
+    triggerHaptic([60]);
+    const leads = LeadManager.getAllLeads();
+    const clean = trackInput.trim().toUpperCase();
+    const found = leads.find(l => l.referenceId.toUpperCase() === clean || l.mobile.includes(clean));
+    
+    if (found) {
+      setTrackResult({
+        found: true,
+        refId: found.referenceId,
+        name: found.name,
+        service: found.serviceTitle,
+        date: found.timestamp,
+        status: found.status === 'NEW' ? 'सत्यापित एवं कतारबद्ध (डेस्क समीक्षा)' : 'सक्रिय संपर्क'
+      });
+      speak(`रेफरेंस नंबर ${found.referenceId} मिल गया है। स्थिति: सत्यापित एवं कतारबद्ध।`);
+    } else {
+      setTrackResult({
+        found: false,
+        message: 'इस रेफरेंस नंबर या मोबाइल से कोई सक्रिय अनुरोध दर्ज नहीं मिला। कृपया पुनः जांचें।'
+      });
+      speak('कोई रिकॉर्ड नहीं मिला। कृपया नंबर जांचें।');
+    }
+  };
 
   // वॉइस कंट्रोल हैंडलर्स
   const speak = useCallback((text: string) => {
@@ -264,9 +319,7 @@ export default function App() {
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 bg-orange-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white font-black text-lg sm:text-xl shadow-xs">
-              से
-            </div>
+            <img src="/logo.svg" alt="सर्वसेतु AI" className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl shadow-xs shrink-0 object-contain p-0.5 bg-white border border-slate-200" />
             <div>
               <div className="flex items-center gap-1.5">
                 <h1 className="text-sm sm:text-lg font-black text-slate-900 leading-tight tracking-tight">
@@ -284,6 +337,25 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* स्थिति जांचें बटन */}
+            <button
+              onClick={() => { triggerHaptic([60]); setShowTrackerModal(true); }}
+              className="hidden sm:flex px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 rounded-xl text-xs font-bold items-center gap-1.5 transition active:scale-95 shadow-xs"
+              title="अपने आवेदन व टोकन की स्थिति जांचें"
+            >
+              <SearchCode className="w-4 h-4 text-orange-600" />
+              <span>स्थिति जांचें</span>
+            </button>
+
+            {/* PWA ऐप इंस्टॉल बटन */}
+            <button
+              onClick={handleInstallPWA}
+              className="hidden lg:flex px-3 py-2 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-xl text-xs font-black items-center gap-1.5 transition active:scale-95 shadow-xs"
+            >
+              <Download className="w-4 h-4 text-orange-600" />
+              <span>ऐप इंस्टॉल करें</span>
+            </button>
+
             <button
               onClick={() => openLeadCaptureForService()}
               className="hidden md:flex px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black items-center gap-1.5 transition active:scale-95 shadow-xs"
@@ -362,6 +434,33 @@ export default function App() {
             </div>
           </div>
         </section>
+
+        {/* जनोपयोगी सेवाएं: स्थिति ट्रैकर व प्रारूप डाउनलोड */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-bold">
+          <button
+            onClick={() => { triggerHaptic([60]); setShowTrackerModal(true); }}
+            className="p-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-800 shadow-xs transition active:scale-95"
+          >
+            <SearchCode className="w-4 h-4 text-orange-600 shrink-0" />
+            <span className="truncate">टोकन स्थिति जांचें</span>
+          </button>
+
+          <button
+            onClick={() => { triggerHaptic([60]); setShowTemplatesModal(true); }}
+            className="p-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-800 shadow-xs transition active:scale-95"
+          >
+            <FileCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="truncate">शपथ पत्र / प्रारूप</span>
+          </button>
+
+          <button
+            onClick={handleInstallPWA}
+            className="col-span-2 sm:col-span-1 p-3 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-2xl flex items-center justify-center gap-2 text-orange-900 shadow-xs transition active:scale-95"
+          >
+            <Download className="w-4 h-4 text-orange-600 shrink-0" />
+            <span>मोबाइल ऐप डाउनलोड</span>
+          </button>
+        </div>
 
         {/* सर्च व वॉयस इनपुट बार */}
         <div className="relative flex items-center gap-2">
@@ -970,6 +1069,147 @@ export default function App() {
           सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत 100% सुरक्षित नागरिक मंच
         </p>
       </footer>
+      {/* 9. टोकन स्थिति ट्रैकर मोडल */}
+      {showTrackerModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full p-5 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center shrink-0">
+                  <SearchCode className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-black text-slate-900">आवेदन स्थिति जांचें</h3>
+                  <span className="text-[11px] text-slate-500 font-bold">नागरिक सहायता ट्रैकिंग</span>
+                </div>
+              </div>
+              <button
+                onClick={() => { setShowTrackerModal(false); setTrackResult(null); }}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleTrackQuery} className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">रेफरेंस टोकन (उदा: SS-849201) या मोबाइल:</label>
+                <input
+                  type="text"
+                  required
+                  value={trackInput}
+                  onChange={(e) => setTrackInput(e.target.value)}
+                  placeholder="SS-XXXXXX अथवा 10 अंकों का मोबाइल"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-orange-500 uppercase"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black transition active:scale-95 shadow-xs flex items-center justify-center gap-1.5"
+              >
+                स्थिति देखें (Check Status)
+              </button>
+            </form>
+
+            {trackResult && (
+              <div className={`p-3.5 rounded-2xl border text-xs space-y-1.5 ${
+                trackResult.found ? 'bg-emerald-50 border-emerald-200 text-emerald-950' : 'bg-red-50 border-red-200 text-red-950'
+              }`}>
+                {trackResult.found ? (
+                  <>
+                    <div className="flex justify-between border-b border-emerald-200/60 pb-1">
+                      <span className="font-bold text-slate-600">रेफरेंस:</span>
+                      <span className="font-mono font-black text-emerald-800">{trackResult.refId}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-emerald-200/60 pb-1">
+                      <span className="font-bold text-slate-600">नागरिक:</span>
+                      <span className="font-bold">{trackResult.name}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-emerald-200/60 pb-1">
+                      <span className="font-bold text-slate-600">सेवा:</span>
+                      <span className="font-bold truncate max-w-[180px]">{trackResult.service}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-bold text-slate-600">वर्तमान स्थिति:</span>
+                      <span className="font-black text-emerald-700">{trackResult.status}</span>
+                    </div>
+                  </>
+                ) : (
+                  <p className="font-bold">{trackResult.message}</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 10. कानूनी व सरकारी प्रारूप डाउनलोडर मोडल */}
+      {showTemplatesModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+            <div className="p-4 border-b border-slate-100 flex items-start justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                  <FileCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-black text-slate-900">शपथ पत्र व आवेदन प्रारूप</h3>
+                  <span className="text-[10px] text-slate-500 font-bold">सरकारी कार्यों हेतु मानक ड्राफ्ट</span>
+                </div>
+              </div>
+              <button
+                onClick={() => { setShowTemplatesModal(false); setSelectedTemplate(null); }}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto space-y-3 flex-1 text-xs">
+              {selectedTemplate ? (
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setSelectedTemplate(null)}
+                    className="text-orange-600 font-bold flex items-center gap-1 hover:underline"
+                  >
+                    ← सभी प्रारूपों पर वापस जाएं
+                  </button>
+                  <h4 className="font-black text-slate-900 text-sm">{selectedTemplate.title}</h4>
+                  <pre className="p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-[11px] whitespace-pre-wrap text-slate-800 leading-relaxed">
+                    {selectedTemplate.previewText}
+                  </pre>
+                  <button
+                    onClick={() => window.print()}
+                    className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-black flex items-center justify-center gap-1.5"
+                  >
+                    <Printer className="w-4 h-4 text-orange-400" />
+                    प्रारूप प्रिंट करें (Print Draft)
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {LEGAL_TEMPLATES.map((tmpl) => (
+                    <div
+                      key={tmpl.id}
+                      onClick={() => setSelectedTemplate(tmpl)}
+                      className="p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl cursor-pointer transition flex items-center justify-between"
+                    >
+                      <div>
+                        <span className="font-black text-slate-900 block">{tmpl.title}</span>
+                        <span className="text-[11px] text-slate-500">{tmpl.purpose}</span>
+                      </div>
+                      <span className="text-[11px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-1 rounded-lg">
+                        देखें ➔
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,17 @@
 {
-  "short_name": "सर्वसेतु",
-  "name": "सर्वसेतु AI - नागरिक सेवा सेतु",
+  "short_name": "सर्वसेतु AI",
+  "name": "सर्वसेतु AI - राष्ट्रीय डिजिटल नागरिक सेवा सेतु",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
   "start_url": "/",
-  "background_color": "#ffffff",
-  "theme_color": "#ea580c",
+  "background_color": "#F8FAFC",
+  "theme_color": "#EA580C",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "lang": "hi"
 }
