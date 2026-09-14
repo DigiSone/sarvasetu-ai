@@ -52,7 +52,7 @@ export default function App() {
   const [leadMobile, setLeadMobile] = useState('');
   const [leadDistrict, setLeadDistrict] = useState('');
   const [hasConsent, setHasConsent] = useState(true);
-  const [leadSubmittedSuccess, setLeadSubmittedSuccess] = useState(false);
+  const [leadSubmittedSuccess, setLeadSubmittedSuccess] = useState(false);\n  const [submittedRefId, setSubmittedRefId] = useState('');\n  const [showLegalModal, setShowLegalModal] = useState(false);
 
   // स्वागत संदेश
   const [voiceBriefing, setVoiceBriefing] = useState(
@@ -248,14 +248,10 @@ export default function App() {
       serviceCategory
     });
 
+        setSubmittedRefId(createdLead.referenceId);
     setLeadSubmittedSuccess(true);
-    const successSpeech = `धन्यवाद ${leadName} जी! आपका आवेदन अनुरोध दर्ज हो चुका है। प्रतिनिधि शीघ्र ही संपर्क करेंगे।`;
+    const successSpeech = `धन्यवाद ${leadName} जी! आपका सहायता अनुरोध संदर्भ संख्या ${createdLead.referenceId} के साथ सुरक्षित दर्ज हो गया है।`;
     speak(successSpeech);
-
-    const waUrl = LeadManager.getWhatsAppAlertUrl(createdLead);
-    setTimeout(() => {
-      window.open(waUrl, '_blank');
-    }, 1000);
   };
 
   const openLeadCaptureForService = (service?: GovServiceItem) => {
@@ -719,19 +715,44 @@ export default function App() {
             </div>
 
             {leadSubmittedSuccess ? (
-              <div className="p-4 text-center space-y-3">
-                <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+              <div className="p-4 text-center space-y-3.5">
+                <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-7 h-7" />
                 </div>
-                <h4 className="text-sm sm:text-base font-black text-slate-900">अनुरोध दर्ज हुआ!</h4>
-                <p className="text-xs text-slate-600">
-                  विवरण सीधे Google Sheet में सुरक्षित दर्ज हो चुके हैं और WhatsApp पर भेज दिए गए हैं।
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                    आधिकारिक पावती रसीद
+                  </span>
+                  <h4 className="text-base font-black text-slate-900">अनुरोध सुरक्षित दर्ज हुआ!</h4>
+                </div>
+
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-left space-y-1.5 text-xs">
+                  <div className="flex justify-between border-b border-slate-200 pb-1">
+                    <span className="text-slate-500 font-bold">रेफरेंस टोकन:</span>
+                    <span className="font-mono font-black text-orange-600">{submittedRefId}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-slate-200 pb-1">
+                    <span className="text-slate-500 font-bold">आवेदक:</span>
+                    <span className="font-black text-slate-900">{leadName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 font-bold">स्टेटस:</span>
+                    <span className="font-black text-emerald-700">सत्यापित एवं कतारबद्ध</span>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
+                  आपके विवरण हमारे अधिकृत सहायता डेस्क पर सुरक्षित प्रेषित कर दिए गए हैं। प्रतिनिधि 24 कार्य-घंटों के भीतर आपसे संपर्क करेंगे।
                 </p>
+
                 <button
-                  onClick={() => setShowLeadModal(false)}
-                  className="w-full py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black transition"
+                  onClick={() => {
+                    setShowLeadModal(false);
+                    setLeadSubmittedSuccess(false);
+                  }}
+                  className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black transition active:scale-95 shadow-xs"
                 >
-                  पूर्ण (Close)
+                  रसीद बंद करें (Done)
                 </button>
               </div>
             ) : (
@@ -880,6 +901,23 @@ export default function App() {
           </p>
         </div>
 
+                {/* वैधानिक सरकारी अनाबद्धता अस्वीकरण (Statutory Disclaimer - IT Act & DPDP Act Compliant) */}
+        <div className="max-w-3xl mx-auto p-3 bg-slate-100/90 border border-slate-200 rounded-2xl text-[11px] leading-relaxed text-slate-600 text-left space-y-1">
+          <span className="font-black text-slate-800 block">⚖️ वैधानिक अनाबद्धता अस्वीकरण (Non-Affiliation Disclaimer):</span>
+          <p>
+            सर्वसेतु AI एक स्वतंत्र, गैर-सरकारी डिजिटल पब्लिक गुड्स (DPI) नागरिक सेवा एग्रीगेटर पोर्टल है। यह पोर्टल भारत सरकार या किसी भी राज्य सरकार के किसी मंत्रालय या विभाग से आधिकारिक रूप से संबद्ध नहीं है। इस मंच का उद्देश्य केवल नागरिकों को सार्वजनिक रूप से उपलब्ध आधिकारिक सरकारी पोर्टलों (.gov.in / .nic.in) तक सीधी व सुरक्षित पहुंच प्रदान करना है।
+          </p>
+          <div className="flex items-center justify-between pt-1 border-t border-slate-200 text-[10px] font-bold text-slate-500">
+            <span>DPDP Act 2023 व IT Act 2000 (Rule 3) के तहत पूर्णतः सुरक्षित</span>
+            <button
+              onClick={() => setShowLegalModal(true)}
+              className="text-orange-600 hover:underline"
+            >
+              कानूनी नियम व नीतियां देखें ➔
+            </button>
+          </div>
+        </div>
+
         <p className="font-bold text-slate-500">
           डिजिटल इंडिया एवं नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप
         </p>
@@ -887,6 +925,60 @@ export default function App() {
           सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत 100% सुरक्षित नागरिक मंच
         </p>
       </footer>
+      {/* 8. कानूनी नियम, नीतियां व शिकायत निवारण मोडल */}
+      {showLegalModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 text-xs text-slate-700">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black">
+                  ⚖️
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-black text-slate-900">कानूनी नियम एवं नीतियां</h3>
+                  <span className="text-[10px] text-slate-500 font-bold">DPDP Act 2023 एवं IT Act 2000 अनुपालन</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowLegalModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 leading-relaxed">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                <span className="font-black text-slate-900 block">1. डेटा सुरक्षा एवं गोपनीयता (DPDP Act 2023):</span>
+                <p>
+                  नागरिकों द्वारा फॉर्म में दी गई जानकारी (नाम, संपर्क, ज़िला) केवल संबंधित सरकारी सेवा की आवेदन सहायता एवं मार्गदर्शन हेतु सुरक्षित रखी जाती है। यह जानकारी किसी भी तृतीय पक्ष को विज्ञापनों हेतु बेची नहीं जाती।
+                </p>
+              </div>
+
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                <span className="font-black text-slate-900 block">2. मध्यवर्ती सुरक्षा कवच (IT Act Section 79):</span>
+                <p>
+                  यह पोर्टल केवल आधिकारिक सरकारी पोर्टलों के सीधे लिंक प्रदान करने वाला मध्यस्थ (Intermediary Facilitator) है। किसी भी सरकारी सेवा की स्वीकृति, अस्वीकृति या समय-सीमा संबंधित सरकारी विभाग के अधिकार क्षेत्र में है।
+                </p>
+              </div>
+
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+                <span className="font-black text-slate-900 block">3. शिकायत निवारण संपर्क:</span>
+                <p>
+                  किसी भी डेटा सुधार या शिकायत हेतु नागरिक सहायता डेस्क पर लिखित अनुरोध भेज सकते हैं। डेटा को उपयोगकर्ता के अनुरोध पर 7 कार्यदिवसों में पूरी तरह हटाया जा सकता है।
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowLegalModal(false)}
+              className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black transition active:scale-95"
+            >
+              समझ गया (Agree & Close)
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
