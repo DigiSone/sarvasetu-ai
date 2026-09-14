@@ -32,6 +32,7 @@ import { GovServiceItem } from './types/service';
 import { DirectoryEngine, CategoryTab } from './core/directoryEngine';
 import { LeadManager } from './core/leadManager';
 import { VoiceEngine } from './core/voiceEngine';
+import { AutonomousFilingDesk } from './components/AutonomousFilingDesk';
 import { LEGAL_TEMPLATES, LegalTemplate } from './data/legalTemplates';
 import { Download, FileCheck, SearchCode } from 'lucide-react';
 
@@ -51,6 +52,7 @@ export default function App() {
   const [targetLeadService, setTargetLeadService] = useState<GovServiceItem | null>(null);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [showTrackerModal, setShowTrackerModal] = useState(false);
+  const [showAutonomousDesk, setShowAutonomousDesk] = useState(false);
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
   const [trackInput, setTrackInput] = useState('');
   const [trackResult, setTrackResult] = useState<any | null>(null);
@@ -435,6 +437,30 @@ export default function App() {
           </div>
         </section>
 
+                {/* AI ऑटोनॉमस नागरिक सुविधा केंद्र - 1-क्लिक सम्पूर्ण समाधान बैनर */}
+        <div className="bg-gradient-to-r from-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="space-y-1.5 text-center md:text-left">
+            <div className="inline-flex items-center gap-1.5 bg-white/20 px-3 py-1 rounded-full text-xs font-black backdrop-blur-xs">
+              <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+              <span>कुछ समझ नहीं आ रहा? ऑनलाइन फॉर्म भरना नहीं आता?</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-black leading-tight">
+              AI ऑटोनॉमस नागरिक डेस्क: दस्तावेज़ दें, तैयार प्रिंट व पावती पाएं
+            </h3>
+            <p className="text-xs text-orange-100 font-medium">
+              कागज़ात की फोटो अपलोड करें; सिस्टम स्वतः आवेदन डोकेट तैयार करेगा और आपके WhatsApp व प्रिंटर पर भेज देगा।
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowAutonomousDesk(true)}
+            className="px-5 py-3 bg-white hover:bg-orange-50 text-orange-800 rounded-2xl text-xs font-black transition active:scale-95 shadow-lg flex items-center justify-center gap-2 shrink-0"
+          >
+            <FileText className="w-4 h-4 text-orange-600" />
+            <span>यहाँ से सब करवाएं (Start Filing)</span>
+          </button>
+        </div>
+
         {/* जनोपयोगी सेवाएं: स्थिति ट्रैकर व प्रारूप डाउनलोड */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-bold">
           <button
@@ -617,11 +643,11 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => openLeadCaptureForService()}
-          className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
+          onClick={() => setShowAutonomousDesk(true)}
+          className="flex-1 py-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
         >
-          <Headphones className="w-4 h-4 text-emerald-100" />
-          <span className="text-[11px] font-black">फॉर्म भरवाएं</span>
+          <Sparkles className="w-4 h-4 text-amber-200" />
+          <span className="text-[11px] font-black">AI डेस्क</span>
         </button>
 
         <button
@@ -1210,6 +1236,12 @@ export default function App() {
           </div>
         </div>
       )}
+      {/* 11. AI ऑटोनॉमस सुविधा डेस्क मोडल */}
+      <AutonomousFilingDesk
+        services={filteredServices}
+        isOpen={showAutonomousDesk}
+        onClose={() => setShowAutonomousDesk(false)}
+      />
     </div>
   );
 }
