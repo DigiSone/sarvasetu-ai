@@ -33,6 +33,7 @@ import { DirectoryEngine, CategoryTab } from './core/directoryEngine';
 import { LeadManager } from './core/leadManager';
 import { VoiceEngine } from './core/voiceEngine';
 import { AutonomousFilingDesk } from './components/AutonomousFilingDesk';
+import { PowerToolsModal } from './components/PowerToolsModal';
 import { LEGAL_TEMPLATES, LegalTemplate } from './data/legalTemplates';
 import { Download, FileCheck, SearchCode } from 'lucide-react';
 
@@ -53,6 +54,8 @@ export default function App() {
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [showTrackerModal, setShowTrackerModal] = useState(false);
   const [showAutonomousDesk, setShowAutonomousDesk] = useState(false);
+  const [showPowerToolsModal, setShowPowerToolsModal] = useState(false);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
   const [trackInput, setTrackInput] = useState('');
   const [trackResult, setTrackResult] = useState<any | null>(null);
@@ -74,23 +77,54 @@ export default function App() {
 
   const hasInitiatedAudioRef = useRef(false);
 
-  // PWA इंस्टॉल लिसनर व सर्विस वर्कर पंजीकरण
+    // डायरेक्ट नेटिव PWA इंस्टॉलेशन इंजन
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    // जांचें कि क्या पहले से ऐप में खुला है
+    if (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone) {
+      setIsAppInstalled(true);
     }
-    window.addEventListener('beforeinstallprompt', (e) => {
+
+    const capturePrompt = (e: any) => {
       e.preventDefault();
+      (window as any)._deferredPwaPrompt = e;
       setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', capturePrompt);
+    window.addEventListener('appinstalled', () => {
+      setIsAppInstalled(true);
+      setDeferredPrompt(null);
+      (window as any)._deferredPwaPrompt = null;
     });
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', capturePrompt);
+    };
   }, []);
 
-  const handleInstallPWA = () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(() => setDeferredPrompt(null));
+  const handleInstallPWA = async () => {
+    triggerHaptic([80]);
+    const promptEvent = deferredPrompt || (window as any)._deferredPwaPrompt;
+    
+    if (promptEvent) {
+      promptEvent.prompt();
+      const choice = await promptEvent.userChoice;
+      if (choice.outcome === 'accepted') {
+        setIsAppInstalled(true);
+      }
+      setDeferredPrompt(null);
+      (window as any)._deferredPwaPrompt = null;
     } else {
-      alert('सर्वसेतु AI ऐप आपके ब्राउज़र मेनू (⋮) में "Add to Home Screen / Install" के रूप में उपलब्ध है।');
+      // यदि क्रोम ने प्रॉम्प्ट को साइलेंट कर रखा हो तो सीधे ब्राउज़र का नेटिव एड्रेसबार इंस्टॉल ट्रिगर
+      if ('serviceWorker' in navigator && window.matchMedia('(display-mode: browser)').matches) {
+        // डायरेक्ट यूजर एक्शन
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        if (isChrome) {
+          alert('सर्वसेतु AI का आधिकारिक PWA ऐप तैयार है। फोन के ब्राउज़र मेनू (⋮) पर टैप करके "Install App / ऐप इंस्टॉल करें" चुनें। यह 1 सेकंड में फोन में इंस्टॉल हो जाएगा!');
+        } else {
+          alert('ब्राउज़र शेयर बटन दबाकर "Add to Home Screen" चुनें।');
+        }
+      }
     }
   };
 
@@ -349,14 +383,29 @@ export default function App() {
               <span>स्थिति जांचें</span>
             </button>
 
-            {/* PWA ऐप इंस्टॉल बटन */}
+            {/* AI पात्रता व टूल्स */}
             <button
-              onClick={handleInstallPWA}
-              className="hidden lg:flex px-3 py-2 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-xl text-xs font-black items-center gap-1.5 transition active:scale-95 shadow-xs"
+              onClick={() => { triggerHaptic([60]); setShowPowerToolsModal(true); }}
+              className="hidden md:flex px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl text-xs font-black items-center gap-1.5 transition active:scale-95 shadow-xs"
             >
-              <Download className="w-4 h-4 text-orange-600" />
-              <span>ऐप इंस्टॉल करें</span>
+              <Sparkles className="w-4 h-4 text-amber-600" />
+              <span>AI पात्रता कैलकुलेटर</span>
             </button>
+
+            {/* डायरेक्ट PWA ऐप इंस्टॉल बटन */}
+            {!isAppInstalled ? (
+              <button
+                onClick={handleInstallPWA}
+                className="hidden lg:flex px-3.5 py-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl text-xs font-black items-center gap-1.5 transition active:scale-95 shadow-xs animate-pulse"
+              >
+                <Download className="w-4 h-4" />
+                <span>सीधा ऐप इंस्टॉल करें</span>
+              </button>
+            ) : (
+              <span className="hidden lg:flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-xl border border-emerald-200">
+                <CheckCircle2 className="w-3.5 h-3.5" /> ऐप सक्रिय है
+              </span>
+            )}
 
             <button
               onClick={() => openLeadCaptureForService()}
@@ -462,7 +511,14 @@ export default function App() {
         </div>
 
         {/* जनोपयोगी सेवाएं: स्थिति ट्रैकर व प्रारूप डाउनलोड */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-bold">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-bold">
+          <button
+            onClick={() => { triggerHaptic([60]); setShowPowerToolsModal(true); }}
+            className="p-3 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border border-amber-300 rounded-2xl flex items-center justify-center gap-2 text-amber-950 shadow-xs transition active:scale-95 font-black"
+          >
+            <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+            <span className="truncate">AI योजना पात्रता</span>
+          </button>
           <button
             onClick={() => { triggerHaptic([60]); setShowTrackerModal(true); }}
             className="p-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-800 shadow-xs transition active:scale-95"
@@ -1241,6 +1297,13 @@ export default function App() {
         services={filteredServices}
         isOpen={showAutonomousDesk}
         onClose={() => setShowAutonomousDesk(false)}
+      />
+      {/* 12. AI पात्रता व सरकारी फोटो कंप्रेसर टूल्स मोडल */}
+      <PowerToolsModal
+        services={filteredServices}
+        isOpen={showPowerToolsModal}
+        onClose={() => setShowPowerToolsModal(false)}
+        onSelectService={(srv) => openServiceModal(srv)}
       />
     </div>
   );

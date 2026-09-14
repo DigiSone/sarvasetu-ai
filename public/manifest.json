@@ -1,17 +1,34 @@
 {
+  "id": "com.digisone.sarvasetu",
   "short_name": "सर्वसेतु AI",
   "name": "सर्वसेतु AI - राष्ट्रीय डिजिटल नागरिक सेवा सेतु",
+  "description": "174+ सरकारी सेवाओं, भूलेख, प्रमाण पत्र, राशन व योजनाओं का आधिकारिक डिजिटल सेतु",
   "icons": [
     {
-      "src": "/logo.svg",
-      "type": "image/svg+xml",
-      "sizes": "192x192 512x512"
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/",
-  "background_color": "#F8FAFC",
-  "theme_color": "#EA580C",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "lang": "hi"
+  "background_color": "#FFFFFF",
+  "theme_color": "#EA580C",
+  "lang": "hi",
+  "categories": ["government", "utilities", "productivity"]
 }
