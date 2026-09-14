@@ -30,12 +30,13 @@ import {
 
 import { GovServiceItem } from './types/service';
 import { DirectoryEngine, CategoryTab } from './core/directoryEngine';
-import { LeadManager } from './core/leadManager';\nimport { VoiceEngine } from './core/voiceEngine';
+import { LeadManager } from './core/leadManager';
+import { VoiceEngine } from './core/voiceEngine';
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
-  const [selectedStateCode, setSelectedStateCode] = useState('UP'); // उत्तर प्रदेश डिफ़ॉल्ट
+  const [selectedStateCode, setSelectedStateCode] = useState('UP');
   const [selectedService, setSelectedService] = useState<GovServiceItem | null>(null);
   const [checkedDocs, setCheckedDocs] = useState<Record<string, boolean>>({});
   const [isListening, setIsListening] = useState(false);
@@ -46,13 +47,15 @@ export default function App() {
   const [showTrustShieldModal, setShowTrustShieldModal] = useState(false);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [targetLeadService, setTargetLeadService] = useState<GovServiceItem | null>(null);
+  const [showLegalModal, setShowLegalModal] = useState(false);
 
-  // फॉर्म इनपुट
+  // फॉर्म इनपुट स्टेट्स
   const [leadName, setLeadName] = useState('');
   const [leadMobile, setLeadMobile] = useState('');
   const [leadDistrict, setLeadDistrict] = useState('');
   const [hasConsent, setHasConsent] = useState(true);
-  const [leadSubmittedSuccess, setLeadSubmittedSuccess] = useState(false);\n  const [submittedRefId, setSubmittedRefId] = useState('');\n  const [showLegalModal, setShowLegalModal] = useState(false);
+  const [leadSubmittedSuccess, setLeadSubmittedSuccess] = useState(false);
+  const [submittedRefId, setSubmittedRefId] = useState('');
 
   // स्वागत संदेश
   const [voiceBriefing, setVoiceBriefing] = useState(
@@ -61,8 +64,8 @@ export default function App() {
 
   const hasInitiatedAudioRef = useRef(false);
 
-  // शक्तिशाली और सुदृढ़ टेक्स्ट-टू-स्पीच इंजन
-    const speak = useCallback((text: string) => {
+  // वॉइस कंट्रोल हैंडलर्स
+  const speak = useCallback((text: string) => {
     VoiceEngine.speak(
       text,
       () => setIsSpeaking(true),
@@ -75,26 +78,24 @@ export default function App() {
     setIsSpeaking(false);
   }, []);
 
-  const stopSpeaking = useCallback(() => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-    }
-  }, []);
-
-  // मोबाइल ऑटोप्ले अनलॉक: स्क्रीन पर पहले स्पर्श/टच पर तुरंत बोलना शुरू करना
-    // मोबाइल ब्राउज़र ऑडियो अनब्लॉक (पहले टच पर इंजन एक्टिव)
+  // मोबाइल ब्राउज़र ऑडियो अनब्लॉक
   useEffect(() => {
     const unlock = () => {
       VoiceEngine.resumeEngine();
+      if (!hasInitiatedAudioRef.current) {
+        hasInitiatedAudioRef.current = true;
+        speak(voiceBriefing);
+      }
     };
+
     window.addEventListener('click', unlock, { passive: true });
     window.addEventListener('touchstart', unlock, { passive: true });
+
     return () => {
       window.removeEventListener('click', unlock);
       window.removeEventListener('touchstart', unlock);
     };
-  }, []);
+  }, [speak, voiceBriefing]);
 
   const triggerHaptic = (pattern: number[]) => {
     if ('vibrate' in navigator) navigator.vibrate(pattern);
@@ -108,7 +109,6 @@ export default function App() {
     return DirectoryEngine.search(searchQuery, selectedStateCode, selectedCategory);
   }, [searchQuery, selectedStateCode, selectedCategory]);
 
-  // किसी भी सेवा के बारे में संपूर्ण विवरण बोलकर सुनाना (1-टैप वॉइस गाइड)
   const speakServiceDetails = useCallback((service: GovServiceItem, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     triggerHaptic([60]);
@@ -120,7 +120,6 @@ export default function App() {
     speak(speechText);
   }, [speak]);
 
-  // वॉइस सर्च: शुद्ध हिंदी को सुनकर सटीक सेवा ढूंढना व बोलकर बताना
   const handleVoiceSearch = () => {
     triggerHaptic([100]);
     stopSpeaking();
@@ -147,7 +146,7 @@ export default function App() {
         setVoiceBriefing(msg);
         speak(msg);
       } else {
-        const msg = `"${transcript}" से संबंधित ${filteredServices.length} सरकारी सेवाएं नीचे दिखाई जा रही हैं।`;
+        const msg = `"${transcript}" से संबंधित परिणाम नीचे दिखाए जा रहे हैं।`;
         setVoiceBriefing(msg);
         speak(msg);
       }
@@ -156,7 +155,6 @@ export default function App() {
     rec.start();
   };
 
-  // सेवा मोडल खोलना व वॉइस गाइडेंस देना
   const openServiceModal = (service: GovServiceItem) => {
     triggerHaptic([80]);
     setSelectedService(service);
@@ -164,7 +162,6 @@ export default function App() {
     speakServiceDetails(service);
   };
 
-  // श्रेणी बदलने पर बोलकर बताना
   const handleCategoryChange = (cat: CategoryTab) => {
     triggerHaptic([50]);
     setSelectedCategory(cat.key);
@@ -173,7 +170,6 @@ export default function App() {
     speak(msg);
   };
 
-  // राज्य बदलने पर बोलकर बताना
   const handleStateChange = (code: string) => {
     setSelectedStateCode(code);
     triggerHaptic([80]);
@@ -182,7 +178,6 @@ export default function App() {
     speak(msg);
   };
 
-  // दस्तावेज़ चेकलिस्ट टॉगल व वॉइस फीडबैक
   const toggleDocCheck = (docName: string) => {
     triggerHaptic([50]);
     setCheckedDocs((prev) => {
@@ -248,7 +243,7 @@ export default function App() {
       serviceCategory
     });
 
-        setSubmittedRefId(createdLead.referenceId);
+    setSubmittedRefId(createdLead.referenceId);
     setLeadSubmittedSuccess(true);
     const successSpeech = `धन्यवाद ${leadName} जी! आपका सहायता अनुरोध संदर्भ संख्या ${createdLead.referenceId} के साथ सुरक्षित दर्ज हो गया है।`;
     speak(successSpeech);
@@ -268,7 +263,6 @@ export default function App() {
       {/* 1. शीर्ष आधिकारिक हेडर */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2">
-          {/* लोगो व ब्रांडिंग */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <div className="w-9 h-9 sm:w-11 sm:h-11 bg-orange-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white font-black text-lg sm:text-xl shadow-xs">
               से
@@ -289,7 +283,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* दायां भाग: बटन व राज्य चयन */}
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={() => openLeadCaptureForService()}
@@ -310,7 +303,6 @@ export default function App() {
               <span>हेल्पलाइन 1930</span>
             </button>
 
-            {/* राज्य चयन */}
             <div className="relative">
               <select
                 value={selectedStateCode}
@@ -405,7 +397,7 @@ export default function App() {
           </button>
         </div>
 
-        {/* श्रेणियां (टैप करते ही वॉइस गाइडेंस) */}
+        {/* श्रेणियां */}
         <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none -mx-3 px-3 sm:mx-0 sm:px-0">
           {categories.map((cat) => (
             <button
@@ -436,7 +428,7 @@ export default function App() {
           </span>
         </div>
 
-        {/* 174 सेवाओं का रिस्पॉन्सिव ग्रिड (प्रत्येक कार्ड पर 1-टैप वॉइस बटन) */}
+        {/* 174 सेवाओं का रिस्पॉन्सिव ग्रिड */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
           {filteredServices.map((service) => (
             <div
@@ -454,7 +446,6 @@ export default function App() {
                     </h2>
                   </div>
 
-                  {/* 1-टैप कार्ड वॉइस बटन */}
                   <button
                     onClick={(e) => speakServiceDetails(service, e)}
                     title="इस सेवा का पूरा विवरण आवाज़ में सुनें"
@@ -480,7 +471,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* कार्ड बटन */}
               <div className="pt-3 sm:pt-4 border-t border-slate-100 flex flex-col gap-2 mt-3">
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -886,46 +876,7 @@ export default function App() {
         </div>
       )}
 
-      {/* 7. पादलेख */}
-      <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-2.5">
-        <div className="max-w-xl mx-auto p-3 bg-orange-50/70 border border-orange-200 rounded-2xl">
-          <p className="font-black text-slate-900 text-sm">
-            सर्वसेतु AI (राष्ट्रीय डिजिटल नागरिक सेवा सेतु)
-          </p>
-          <p className="text-xs font-bold text-orange-800 mt-1">
-            संस्थापक एवं मुख्य परिकल्पनाकार: <strong>विकास कुमार मिश्रा</strong>
-          </p>
-          <p className="text-[11px] text-slate-600 mt-0.5 flex items-center justify-center gap-1">
-            <MapPin className="w-3 h-3 text-orange-600 inline" />
-            रॉबर्ट्सगंज, सोनभद्र, उत्तर प्रदेश, भारत
-          </p>
-        </div>
-
-                {/* वैधानिक सरकारी अनाबद्धता अस्वीकरण (Statutory Disclaimer - IT Act & DPDP Act Compliant) */}
-        <div className="max-w-3xl mx-auto p-3 bg-slate-100/90 border border-slate-200 rounded-2xl text-[11px] leading-relaxed text-slate-600 text-left space-y-1">
-          <span className="font-black text-slate-800 block">⚖️ वैधानिक अनाबद्धता अस्वीकरण (Non-Affiliation Disclaimer):</span>
-          <p>
-            सर्वसेतु AI एक स्वतंत्र, गैर-सरकारी डिजिटल पब्लिक गुड्स (DPI) नागरिक सेवा एग्रीगेटर पोर्टल है। यह पोर्टल भारत सरकार या किसी भी राज्य सरकार के किसी मंत्रालय या विभाग से आधिकारिक रूप से संबद्ध नहीं है। इस मंच का उद्देश्य केवल नागरिकों को सार्वजनिक रूप से उपलब्ध आधिकारिक सरकारी पोर्टलों (.gov.in / .nic.in) तक सीधी व सुरक्षित पहुंच प्रदान करना है।
-          </p>
-          <div className="flex items-center justify-between pt-1 border-t border-slate-200 text-[10px] font-bold text-slate-500">
-            <span>DPDP Act 2023 व IT Act 2000 (Rule 3) के तहत पूर्णतः सुरक्षित</span>
-            <button
-              onClick={() => setShowLegalModal(true)}
-              className="text-orange-600 hover:underline"
-            >
-              कानूनी नियम व नीतियां देखें ➔
-            </button>
-          </div>
-        </div>
-
-        <p className="font-bold text-slate-500">
-          डिजिटल इंडिया एवं नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप
-        </p>
-        <p className="text-[11px] text-slate-400">
-          सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत 100% सुरक्षित नागरिक मंच
-        </p>
-      </footer>
-      {/* 8. कानूनी नियम, नीतियां व शिकायत निवारण मोडल */}
+      {/* 7. कानूनी नियम एवं नीतियां मोडल */}
       {showLegalModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
           <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-5 space-y-4 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 text-xs text-slate-700">
@@ -979,6 +930,46 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* 8. पादलेख */}
+      <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-3">
+        <div className="max-w-xl mx-auto p-3 bg-orange-50/70 border border-orange-200 rounded-2xl">
+          <p className="font-black text-slate-900 text-sm">
+            सर्वसेतु AI (राष्ट्रीय डिजिटल नागरिक सेवा सेतु)
+          </p>
+          <p className="text-xs font-bold text-orange-800 mt-1">
+            संस्थापक एवं मुख्य परिकल्पनाकार: <strong>विकास कुमार मिश्रा</strong>
+          </p>
+          <p className="text-[11px] text-slate-600 mt-0.5 flex items-center justify-center gap-1">
+            <MapPin className="w-3 h-3 text-orange-600 inline" />
+            रॉबर्ट्सगंज, सोनभद्र, उत्तर प्रदेश, भारत
+          </p>
+        </div>
+
+        {/* वैधानिक सरकारी अनाबद्धता अस्वीकरण */}
+        <div className="max-w-3xl mx-auto p-3 bg-slate-100/90 border border-slate-200 rounded-2xl text-[11px] leading-relaxed text-slate-600 text-left space-y-1">
+          <span className="font-black text-slate-800 block">⚖️ वैधानिक अनाबद्धता अस्वीकरण (Non-Affiliation Disclaimer):</span>
+          <p>
+            सर्वसेतु AI एक स्वतंत्र, गैर-सरकारी डिजिटल पब्लिक गुड्स (DPI) नागरिक सेवा एग्रीगेटर पोर्टल है। यह पोर्टल भारत सरकार या किसी भी राज्य सरकार के किसी मंत्रालय या विभाग से आधिकारिक रूप से संबद्ध नहीं है। इस मंच का उद्देश्य केवल नागरिकों को सार्वजनिक रूप से उपलब्ध आधिकारिक सरकारी पोर्टलों (.gov.in / .nic.in) तक सीधी व सुरक्षित पहुंच प्रदान करना है।
+          </p>
+          <div className="flex items-center justify-between pt-1 border-t border-slate-200 text-[10px] font-bold text-slate-500">
+            <span>DPDP Act 2023 व IT Act 2000 (Rule 3) के तहत पूर्णतः सुरक्षित</span>
+            <button
+              onClick={() => setShowLegalModal(true)}
+              className="text-orange-600 hover:underline"
+            >
+              कानूनी नियम व नीतियां देखें ➔
+            </button>
+          </div>
+        </div>
+
+        <p className="font-bold text-slate-500">
+          डिजिटल इंडिया एवं नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप
+        </p>
+        <p className="text-[11px] text-slate-400">
+          सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत 100% सुरक्षित नागरिक मंच
+        </p>
+      </footer>
     </div>
   );
 }
