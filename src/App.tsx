@@ -736,6 +736,25 @@ export default function App() {
         </button>
       </div>
 
+      {/* नेटिव PWA ऐप इंस्टॉलेशन बॉटम बार */}
+      {!isAppInstalled && deferredPrompt && (
+        <div className="fixed bottom-16 md:bottom-4 left-3 right-3 sm:left-auto sm:right-4 sm:max-w-md z-50 bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xl border border-slate-700 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-5">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <img src="/icon-192.png" alt="सर्वसेतु AI" className="w-10 h-10 rounded-xl bg-white p-0.5 shrink-0" />
+            <div className="min-w-0">
+              <h4 className="text-xs font-black truncate">सर्वसेतु AI ऐप इंस्टॉल करें</h4>
+              <p className="text-[10px] text-slate-300 truncate">बिना ब्राउज़र के सीधे होम स्क्रीन से चलाएं</p>
+            </div>
+          </div>
+          <button
+            onClick={handleInstallPWA}
+            className="px-3.5 py-2 bg-orange-600 hover:bg-orange-500 text-white text-xs font-black rounded-xl shrink-0 shadow-sm active:scale-95 transition"
+          >
+            इंस्टॉल करें (Install)
+          </button>
+        </div>
+      )}
+
       {/* सर्वमित्र AI फ्लोटिंग बटन */}
       <button
         onClick={() => {
