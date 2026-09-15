@@ -3,52 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-    <title>सर्वसेतु AI - राष्ट्रीय डिजिटल नागरिक सेवा सेतु | SarvaSetu</title>
-    
-    <!-- इमरजेंसी ऑटो-कैश रिकवरी (सफेद स्क्रीन से सुरक्षा) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>सर्वसेतु AI - राष्ट्रीय डिजिटल नागरिक सेवा सेतु</title>
+
+    <!-- ऑटोमैटिक कैश-फ्लश स्क्रिप्ट: पुराना डेटा फोन से खुद डिलीट होगा -->
     <script>
       (function() {
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for (var reg of registrations) {
-              // अगर पुराना वर्कर अटका हो तो तुरंत अपडेट ट्रिगर करें
-              reg.update();
-            }
-          });
+        var CURRENT_VER = "sarvasetu_v_1789437312";
+        var storedVer = localStorage.getItem("sarvasetu_deploy_ver");
+        if (storedVer !== CURRENT_VER) {
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              for (var name of names) caches.delete(name);
+            });
+          }
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+              for (var reg of registrations) reg.unregister();
+            });
+          }
+          localStorage.setItem("sarvasetu_deploy_ver", CURRENT_VER);
+          window.location.reload(true);
         }
       })();
     </script>
 
-    <!-- App Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="/manifest.json?v=1789437312" />
     <meta name="theme-color" content="#EA580C" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="सर्वसेतु AI" />
-
-    <!-- SEO -->
-    <meta name="description" content="174+ सरकारी योजनाओं, भूलेख, जाति-आय प्रमाण पत्र, पैन, आधार और राशन कार्ड की सटीक जानकारी व सीधी आधिकारिक पहुंच।" />
-    <link rel="canonical" href="https://sarvasetu.digisone.com/" />
-    <script type="module" crossorigin src="/assets/index-Bhw4v_8V.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-B7RnBaut.css">
+    <script type="module" crossorigin src="/assets/index-BJPbOcbv.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D9Wtih0E.css">
   </head>
   <body class="bg-slate-50">
-    <div id="root">
-      <!-- लोडिंग फॉलबैक (ताकि सफेद स्क्रीन कभी न दिखे) -->
-      <div id="initial-loader" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; background: #f8fafc; color: #0f172a; padding: 20px; text-align: center;">
-        <div style="width: 48px; height: 48px; border: 4px solid #ea580c; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px;"></div>
-        <h2 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 900;">सर्वसेतु AI लोड हो रहा है...</h2>
-        <p style="margin: 0; font-size: 12px; color: #64748b;">राष्ट्रीय डिजिटल नागरिक सेवा सेतु</p>
-        <style>
-          @keyframes spin { to { transform: rotate(360deg); } }
-        </style>
-      </div>
-    </div>
+    <div id="root"></div>
   </body>
 </html>

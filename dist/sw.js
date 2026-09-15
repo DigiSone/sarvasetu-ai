@@ -1,30 +1,19 @@
-const CACHE_VERSION = 'sarvasetu-v3-clean';
+const CACHE_NAME = 'sarvasetu-live-1789437312';
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          return caches.delete(key);
-        })
-      );
-    }).then(() => self.clients.claim())
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', (event) => {
-  // HTML पेजों और मुख्य स्क्रिप्ट्स के लिए हमेशा नेटवर्क से फ्रेश डेटा लाएं
-  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match('/'))
-    );
-    return;
-  }
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+self.addEventListener('fetch', (e) => {
+  // हमेशा लाइव नेटवर्क से नया डेटा लोड करें
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
