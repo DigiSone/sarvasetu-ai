@@ -8,36 +8,33 @@
     <meta http-equiv="Expires" content="0" />
     <title>सर्वसेतु AI - राष्ट्रीय डिजिटल नागरिक सेवा सेतु</title>
 
+    <!-- ऑटोमैटिक कैशे किलर: फोन से पुरानी फाइल्स खुद डिलीट होंगी -->
     <script>
       (function() {
-        var BUILD_ID = "v4_1789440718";
-        var current = localStorage.getItem("sarvasetu_build_v");
-        if (current !== BUILD_ID) {
-          if ('caches' in window) {
+        var CURRENT_DEPLOY = "sarvasetu_clean_1789441292";
+        var lastDeploy = localStorage.getItem("sarvasetu_purge_key");
+        if (lastDeploy !== CURRENT_DEPLOY) {
+          if (window.caches) {
             caches.keys().then(function(names) {
-              for (var name of names) caches.delete(name);
+              for (var i = 0; i < names.length; i++) caches.delete(names[i]);
             });
           }
-          if ('serviceWorker' in navigator) {
+          if (navigator.serviceWorker) {
             navigator.serviceWorker.getRegistrations().then(function(regs) {
-              for (var r of regs) r.unregister();
+              for (var i = 0; i < regs.length; i++) regs[i].unregister();
             });
           }
-          localStorage.setItem("sarvasetu_build_v", BUILD_ID);
+          localStorage.setItem("sarvasetu_purge_key", CURRENT_DEPLOY);
           window.location.reload(true);
         }
       })();
     </script>
 
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
-    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.json?v=1789440718" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=1789441292" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg?v=1789441292" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=1789441292" />
+    <link rel="manifest" href="/manifest.json?v=1789441292" />
     <meta name="theme-color" content="#EA580C" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="सर्वसेतु AI" />
     <script type="module" crossorigin src="/assets/index-BYbVHhH4.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-BOHFz1vk.css">
   </head>

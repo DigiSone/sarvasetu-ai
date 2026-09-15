@@ -1,19 +1,26 @@
-const CACHE_NAME = 'sarvasetu-live-1789437312';
+const CACHE_NAME = 'sarvasetu-purge-1789441292';
 
-self.addEventListener('install', (e) => {
+self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          return caches.delete(key);
+        })
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', (e) => {
-  // हमेशा लाइव नेटवर्क से नया डेटा लोड करें
-  e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+self.addEventListener('fetch', (event) => {
+  // हमेशा लाइव नेटवर्क से नया डेटा लाएं
+  event.respondWith(
+    fetch(event.request, { cache: 'no-store' }).catch(() => {
+      return caches.match(event.request);
+    })
   );
 });
