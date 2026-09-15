@@ -13,7 +13,6 @@
   }
 }
 
-/* बिना स्क्रोलबार के हॉरिजॉन्टल स्क्रोल */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -22,9 +21,27 @@
   scrollbar-width: none;
 }
 
-/* प्रीमियम ग्लास कार्ड इफेक्ट */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* 🖨️ A4 लीगल प्रिंट मीडिया रूल्स: प्रिंट दबाने पर केवल असली दस्तावेज़ निकलेगा */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-docket, #printable-docket * {
+    visibility: visible;
+  }
+  #printable-docket {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 12mm;
+    background: white !important;
+    color: black !important;
+    border: 2px solid #000 !important;
+    box-shadow: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
 }
