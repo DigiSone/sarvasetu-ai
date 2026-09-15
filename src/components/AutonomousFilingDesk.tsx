@@ -14,7 +14,10 @@ import {
   Mail,
   MapPin,
   FileCheck,
-  Camera
+  Camera,
+  Info,
+  Mic,
+  Keyboard
 } from 'lucide-react';
 import { GovServiceItem } from '../types/service';
 import { LeadManager } from '../core/leadManager';
@@ -27,22 +30,28 @@ interface Props {
   services: GovServiceItem[];
   isOpen: boolean;
   onClose: () => void;
+  initialMode?: 'VOICE' | 'TEXT';
 }
 
-export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClose }) => {
+export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClose, initialMode = 'TEXT' }) => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [deskMode, setDeskMode] = useState<'VOICE' | 'TEXT'>(initialMode);
   const [selectedServiceId, setSelectedServiceId] = useState<string>(services[0]?.id || '');
+  const [isListening, setIsListening] = useState(false);
   
+  // आवेदक जानकारी
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [district, setDistrict] = useState('सोनभद्र, उत्तर प्रदेश');
   
+  // विभागीय डायनामिक डेटा
   const [dynamicFormData, setDynamicFormData] = useState<Record<string, string>>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({});
   const [generatedRefId, setGeneratedRefId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // पेमेंट मोडल
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [attachedTxn, setAttachedTxn] = useState<PaymentTransaction | null>(null);
 
@@ -63,6 +72,30 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
     }
   };
 
+  const handleVoiceListenService = () => {
+    VoiceEngine.stop();
+    const SpeechRec = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SpeechRec) {
+      alert('माइक उपलब्ध नहीं है। कृपया सूची में से सेवा चुनें।');
+      return;
+    }
+    const rec = new SpeechRec();
+    rec.lang = 'hi-IN';
+    rec.onstart = () => setIsListening(true);
+    rec.onend = () => setIsListening(false);
+    rec.onresult = (event: any) => {
+      const text = event.results[0][0].transcript.toLowerCase();
+      const matched = services.find(s => s.title.toLowerCase().includes(text) || s.voiceKeywords.some(k => text.includes(k.toLowerCase())));
+      if (matched) {
+        setSelectedServiceId(matched.id);
+        VoiceEngine.speak(`${matched.title} का चयन हुआ।`);
+      } else {
+        VoiceEngine.speak(`कृपया स्पष्ट बोलें जैसे खतौनी, आय या राशन।`);
+      }
+    };
+    rec.start();
+  };
+
   const handleNextToDeptForm = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !mobile) {
@@ -75,7 +108,7 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
       }
     });
     setStep(2);
-    VoiceEngine.speak(`कृपया ${currentService.title} के लिए विभागीय विवरण भरें।`);
+    VoiceEngine.speak(`कृपया ${currentService.title} के लिए आवश्यक विभागीय विवरण भरें।`);
   };
 
   const handleProceedFromDeptForm = (e: React.FormEvent) => {
@@ -112,14 +145,15 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
 
   const shareDocketToCitizenWhatsApp = () => {
     const detailsSummary = Object.entries(dynamicFormData).map(([k, v]) => `• ${v}`).join('%0A');
-    const msg = `*🏛️ सर्वसेतु AI - आधिकारिक नागरिक आवेदन डोकेट*%0A%0A*रेफरेंस टोकन:* ${generatedRefId}%0A*आवेदक का नाम:* ${name}%0A*मोबाइल:* ${mobile}%0A*सेवा:* ${currentService.title}%0A*विभाग:* ${currentService.department}%0A*सरकारी शुल्क:* ${currentService.govtFee}%0A*समय सीमा:* ${currentService.estimatedDays}%0A%0A*दर्ज किया गया विभागीय विवरण:*%0A${detailsSummary}%0A%0A*आधिकारिक पोर्टल लिंक:* ${currentService.officialApplyUrl}%0A%0A_यह पावती सर्वसेतु AI डिजिटल डेस्क द्वारा सत्यापित है।_`;
+    const msg = `*🏛️ सर्वसेतु AI - आधिकारिक नागरिक आवेदन डोकेट*%0A%0A*रेफरेंस टोकन:* ${generatedRefId}%0A*आवेदक:* ${name}%0A*मोबाइल:* ${mobile}%0A*सेवा:* ${currentService.title}%0A*विभाग:* ${currentService.department}%0A*समय सीमा:* ${currentService.estimatedDays}%0A%0A*दर्ज विवरण:*%0A${detailsSummary}%0A%0A*पोर्टल लिंक:* ${currentService.officialApplyUrl}%0A%0A_सर्वसेतु AI डिजिटल डेस्क द्वारा सत्यापित_`;
     window.open(`https://api.whatsapp.com/send?phone=91${mobile}&text=${msg}`, '_blank');
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
       <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[94vh] flex flex-col shadow-2xl border-2 border-orange-500 animate-in fade-in zoom-in-95 text-slate-900">
         
+        {/* शीर्ष पट्टी */}
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-gradient-to-r from-orange-50 to-amber-50 rounded-t-3xl">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-orange-600 text-white flex items-center justify-center font-black shadow-xs">
@@ -127,13 +161,13 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h3 className="text-base font-black text-slate-900">AI ऑटोनॉमस नागरिक सुविधा केंद्र</h3>
+                <h3 className="text-base font-black text-slate-900">सर्वसमावेशी नागरिक सुविधा डेस्क</h3>
                 <span className="text-[10px] font-black uppercase bg-orange-200 text-orange-950 px-2 py-0.5 rounded-md">
                   सम्पूर्ण प्रक्रिया
                 </span>
               </div>
               <span className="text-xs font-bold text-slate-600">
-                हर सेवा के वास्तविक विभागीय प्रपत्र के अनुसार शुरू से अंत तक पूर्ण समाधान
+                174+ सेवाओं का वास्तविक विभागीय प्रपत्र अनुसार शुरू से अंत तक पूर्ण समाधान
               </span>
             </div>
           </div>
@@ -142,6 +176,7 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
           </button>
         </div>
 
+        {/* स्टेप्स बार */}
         <div className="px-5 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-[11px] font-black shrink-0 overflow-x-auto">
           <span className={step >= 1 ? 'text-orange-600' : 'text-slate-400'}>1. सेवा व संपर्क</span>
           <span>➔</span>
@@ -157,8 +192,18 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
         <div className="p-5 overflow-y-auto space-y-4 flex-1 text-xs">
           {step === 1 && (
             <form onSubmit={handleNextToDeptForm} className="space-y-4">
-              <div className="p-3 bg-orange-50/70 border border-orange-200 rounded-2xl text-slate-700 leading-relaxed font-medium">
-                💡 <strong>निर्देश:</strong> जो सरकारी कार्य करवाना है वह चुनें। अगले चरण में उस सेवा के लिए आवश्यक वास्तविक विभागीय डेटा (जैसे खतौनी हेतु तहसील/गाटा संख्या, आय हेतु पिता का नाम/आय) पूछा जाएगा।
+              <div className="p-3 bg-orange-50/80 border border-orange-200 rounded-2xl flex items-center justify-between gap-2">
+                <p className="text-slate-700 font-medium">
+                  💡 <strong>निर्देश:</strong> जो काम करवाना है वह चुनें। खतौनी/बिल में कोई फ़ाइल अपलोड नहीं लगेगी; सीधे गाटा/तहसील/खाता सं. पूछा जाएगा।
+                </p>
+                <button
+                  type="button"
+                  onClick={handleVoiceListenService}
+                  className={`p-2 rounded-xl text-white font-bold flex items-center gap-1 shrink-0 ${isListening ? 'bg-red-600 animate-pulse' : 'bg-orange-600 hover:bg-orange-700'}`}
+                >
+                  <Mic className="w-4 h-4" />
+                  <span className="hidden sm:inline">{isListening ? 'सुन रहे...' : 'बोलकर चुनें'}</span>
+                </button>
               </div>
 
               <div>
@@ -421,29 +466,65 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
                 </div>
               </div>
 
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-2">
-                <div>
-                  <span className="font-black text-amber-950 block text-xs">आधिकारिक विभागीय पोर्टल लिंक:</span>
-                  <span className="text-[10px] text-slate-600 block truncate max-w-[280px]">{currentService.officialApplyUrl}</span>
+              {/* आधिकारिक सरकारी पोर्टल व कैप्चा गाइडेंस कार्ड */}
+              <div className="p-3.5 bg-amber-50 border-2 border-amber-300 rounded-2xl space-y-2">
+                <div className="flex items-start gap-2 text-amber-950 font-bold text-xs">
+                  <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-black block">सरकारी पोर्टल व सुरक्षा कैप्चा निर्देश:</span>
+                    <p className="text-[11px] text-amber-900 font-medium leading-relaxed mt-0.5">
+                      सरकारी सर्वर सुरक्षा नियमों के अनुसार, नीचे दिए गए बटन पर टैप करने के बाद आधिकारिक पोर्टल पर केवल स्क्रीन पर दिख रहा <strong>कैप्चा कोड (CAPTCHA)</strong> डालकर 1 सेकंड में अपनी मूल खतौनी / रसीद सीधे देखें व डाउनलोड करें।
+                    </p>
+                  </div>
                 </div>
-                <a href={currentService.officialApplyUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs flex items-center gap-1 shadow-xs shrink-0">
-                  <span>पोर्टल पर देखें</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+
+                <div className="flex items-center justify-between gap-2 pt-1 border-t border-amber-200/80">
+                  <span className="text-[10px] text-slate-600 truncate max-w-[260px]">{currentService.officialApplyUrl}</span>
+                  <a
+                    href={currentService.officialApplyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-xs shrink-0 active:scale-95"
+                  >
+                    <span>पोर्टल पर सीधे देखें</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
 
+              {/* एक्शन बटन्स (प्रिंट व WhatsApp) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                <button type="button" onClick={() => window.print()} className="py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-black text-xs transition flex items-center justify-center gap-2 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-black text-xs transition flex items-center justify-center gap-2 shadow-sm"
+                >
                   <Printer className="w-4 h-4 text-orange-400" />
                   <span>A4 प्रिंट निकालें (Print Docket)</span>
                 </button>
-                <button type="button" onClick={shareDocketToCitizenWhatsApp} className="py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs transition flex items-center justify-center gap-2 shadow-sm">
+
+                <button
+                  type="button"
+                  onClick={shareDocketToCitizenWhatsApp}
+                  className="py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs transition flex items-center justify-center gap-2 shadow-sm"
+                >
                   <Share2 className="w-4 h-4 text-white" />
                   <span>नागरिक के WhatsApp पर भेजें</span>
                 </button>
               </div>
 
-              <button type="button" onClick={() => { setStep(1); setName(''); setMobile(''); setDynamicFormData({}); setUploadedFiles({}); onClose(); }} className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep(1);
+                  setName('');
+                  setMobile('');
+                  setDynamicFormData({});
+                  setUploadedFiles({});
+                  onClose();
+                }}
+                className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold"
+              >
                 प्रक्रिया पूर्ण करें (Done & Close)
               </button>
             </div>
