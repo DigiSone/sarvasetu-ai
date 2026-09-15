@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Production builds & Caches
+dist/
+build/
+.cache/
+.vite/
+
+# Temporary and local scripts
+auto_sync.py
+*.pyc
+__pycache__/
+*.log
+
+# Environment and OS
+.env
+.env.local
+.DS_Store
+Thumbs.db
