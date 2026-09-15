@@ -1,34 +1,86 @@
 {
-  "name": "सर्वसेतु AI - राष्ट्रीय डिजिटल नागरिक सेवा सेतु",
-  "short_name": "सर्वसेतु AI",
-  "description": "174+ सरकारी योजनाओं व सेवाओं का आधिकारिक नागरिक सुविधा मंच",
-  "start_url": "/",
-  "id": "/",
-  "scope": "/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#FFFFFF",
-  "theme_color": "#EA580C",
-  "icons": [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": "2.4.0",
+  "registryId": "sarvasetu-core-prod-in-south-1",
+  "timestamp": 1773792000,
+  "signature": "MEQCID3k8d8QYpB...[ECDSA_SHA256_BASE64_SIGNATURE]...kPx=",
+  "signingKeyId": "did:india:gov:sec:key-2026-v1",
+  "minCoreVersion": "1.8.0",
+  "edgeBaseUrl": "https://cdn.sarvasetu.gov.in/bundles",
+  "services": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "id": "gov.up.revenue.bhulekh",
+      "department": "Department of Revenue, Uttar Pradesh",
+      "name": "UP Bhulekh Land Records Engine",
+      "category": "LAND_REVENUE",
+      "activeVersion": "3.12.4",
+      "releaseChannel": "production",
+      "runtimeEngine": "hermes-v0.12",
+      "entrypoint": "index.bundle.hbc",
+      "integrity": {
+        "algorithm": "SHA-256",
+        "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "signature": "3045022100a789ef...[RAW_ECDSA_BUNDLE_SIGNATURE]...02206bc891"
+      },
+      "bundleMetadata": {
+        "compressedSizeBytes": 1845230,
+        "uncompressedSizeBytes": 4928112,
+        "compressionFormat": "br",
+        "minAppSdkLevel": 34
+      },
+      "routing": {
+        "edgePath": "/gov.up.revenue.bhulekh/v3.12.4/index.bundle.hbc.br",
+        "fallbackEndpoints": [
+          "https://cdn-mirror.nic.in/sarvasetu/gov.up.revenue.bhulekh/v3.12.4/index.bundle.hbc.br",
+          "https://edge.sdc.up.gov.in/bundles/gov.up.revenue.bhulekh/v3.12.4/index.bundle.hbc.br"
+        ]
+      },
+      "permissions": [
+        "LOCATION_COARSE",
+        "OFFLINE_STORAGE",
+        "DIGILOCKER_EXCHANGE"
+      ],
+      "lifecycle": {
+        "mandatoryUpdate": true,
+        "autoPurgePrevious": true,
+        "ttlSeconds": 604800
+      }
     },
     {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/maskable-icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "id": "gov.in.epfo.passbook",
+      "department": "Employees Provident Fund Organisation",
+      "name": "EPFO Member Passbook & Claims",
+      "category": "LABOUR_EMPLOYMENT",
+      "activeVersion": "2.4.1",
+      "releaseChannel": "production",
+      "runtimeEngine": "hermes-v0.12",
+      "entrypoint": "index.bundle.hbc",
+      "integrity": {
+        "algorithm": "SHA-256",
+        "hash": "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b",
+        "signature": "3046022100c812fd...[RAW_ECDSA_BUNDLE_SIGNATURE]...022100df738b"
+      },
+      "bundleMetadata": {
+        "compressedSizeBytes": 2109480,
+        "uncompressedSizeBytes": 5891200,
+        "compressionFormat": "br",
+        "minAppSdkLevel": 34
+      },
+      "routing": {
+        "edgePath": "/gov.in.epfo.passbook/v2.4.1/index.bundle.hbc.br",
+        "fallbackEndpoints": [
+          "https://cdn-mirror.nic.in/sarvasetu/gov.in.epfo.passbook/v2.4.1/index.bundle.hbc.br"
+        ]
+      },
+      "permissions": [
+        "OFFLINE_STORAGE",
+        "BIOMETRIC_AUTH"
+      ],
+      "lifecycle": {
+        "mandatoryUpdate": false,
+        "autoPurgePrevious": true,
+        "ttlSeconds": 1209600
+      }
     }
-  ],
-  "categories": ["government", "utilities", "productivity"],
-  "prefer_related_applications": false
+  ]
 }
