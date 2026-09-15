@@ -8,23 +8,22 @@
     <meta http-equiv="Expires" content="0" />
     <title>सर्वसेतु AI - राष्ट्रीय डिजिटल नागरिक सेवा सेतु</title>
 
-    <!-- ऑटोमैटिक कैश-फ्लश स्क्रिप्ट: पुराना डेटा फोन से खुद डिलीट होगा -->
     <script>
       (function() {
-        var CURRENT_VER = "sarvasetu_v_1789437312";
-        var storedVer = localStorage.getItem("sarvasetu_deploy_ver");
-        if (storedVer !== CURRENT_VER) {
+        var BUILD_ID = "v4_1789440718";
+        var current = localStorage.getItem("sarvasetu_build_v");
+        if (current !== BUILD_ID) {
           if ('caches' in window) {
             caches.keys().then(function(names) {
               for (var name of names) caches.delete(name);
             });
           }
           if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-              for (var reg of registrations) reg.unregister();
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+              for (var r of regs) r.unregister();
             });
           }
-          localStorage.setItem("sarvasetu_deploy_ver", CURRENT_VER);
+          localStorage.setItem("sarvasetu_build_v", BUILD_ID);
           window.location.reload(true);
         }
       })();
@@ -33,7 +32,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.json?v=1789437312" />
+    <link rel="manifest" href="/manifest.json?v=1789440718" />
     <meta name="theme-color" content="#EA580C" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -42,6 +41,6 @@
   </head>
   <body class="bg-slate-50">
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx?v=1789437312"></script>
+    <script type="module" src="/src/main.tsx?v=1789440718"></script>
   </body>
 </html>

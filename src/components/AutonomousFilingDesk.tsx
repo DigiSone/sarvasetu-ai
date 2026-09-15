@@ -17,7 +17,8 @@ import {
   Camera,
   Info,
   Mic,
-  Keyboard
+  Copy,
+  Check
 } from 'lucide-react';
 import { GovServiceItem } from '../types/service';
 import { LeadManager } from '../core/leadManager';
@@ -30,28 +31,25 @@ interface Props {
   services: GovServiceItem[];
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'VOICE' | 'TEXT';
+  initialVoiceMode?: boolean;
 }
 
-export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClose, initialMode = 'TEXT' }) => {
+export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClose, initialVoiceMode = false }) => {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-  const [deskMode, setDeskMode] = useState<'VOICE' | 'TEXT'>(initialMode);
   const [selectedServiceId, setSelectedServiceId] = useState<string>(services[0]?.id || '');
   const [isListening, setIsListening] = useState(false);
   
-  // आवेदक जानकारी
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [district, setDistrict] = useState('सोनभद्र, उत्तर प्रदेश');
   
-  // विभागीय डायनामिक डेटा
   const [dynamicFormData, setDynamicFormData] = useState<Record<string, string>>({});
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({});
   const [generatedRefId, setGeneratedRefId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasCopiedData, setHasCopiedData] = useState(false);
 
-  // पेमेंट मोडल
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [attachedTxn, setAttachedTxn] = useState<PaymentTransaction | null>(null);
 
@@ -88,9 +86,9 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
       const matched = services.find(s => s.title.toLowerCase().includes(text) || s.voiceKeywords.some(k => text.includes(k.toLowerCase())));
       if (matched) {
         setSelectedServiceId(matched.id);
-        VoiceEngine.speak(`${matched.title} का चयन हुआ।`);
+        VoiceEngine.speak(`${matched.title} सेवा का चयन हुआ।`);
       } else {
-        VoiceEngine.speak(`कृपया स्पष्ट बोलें जैसे खतौनी, आय या राशन।`);
+        VoiceEngine.speak('कृपया सेवा का नाम स्पष्ट बोलें जैसे खतौनी, आय या राशन।');
       }
     };
     rec.start();
@@ -117,7 +115,7 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
       setShowCheckoutModal(true);
     } else {
       setStep(3);
-      VoiceEngine.speak(`कृपया आवश्यक मूल कागज़ात संलग्न करें।`);
+      VoiceEngine.speak('कृपया आवश्यक मूल कागज़ात संलग्न करें।');
     }
   };
 
@@ -143,14 +141,27 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
     VoiceEngine.speak(`बधाई ${name} जी! आपका ${currentService.title} का सम्पूर्ण डोकेट संदर्भ संख्या ${refId} के साथ तैयार हो गया है।`);
   };
 
-  const shareDocketToCitizenWhatsApp = () => {
-    const detailsSummary = Object.entries(dynamicFormData).map(([k, v]) => `• ${v}`).join('%0A');
-    const msg = `*🏛️ सर्वसेतु AI - आधिकारिक नागरिक आवेदन डोकेट*%0A%0A*रेफरेंस टोकन:* ${generatedRefId}%0A*आवेदक:* ${name}%0A*मोबाइल:* ${mobile}%0A*सेवा:* ${currentService.title}%0A*विभाग:* ${currentService.department}%0A*समय सीमा:* ${currentService.estimatedDays}%0A%0A*दर्ज विवरण:*%0A${detailsSummary}%0A%0A*पोर्टल लिंक:* ${currentService.officialApplyUrl}%0A%0A_सर्वसेतु AI डिजिटल डेस्क द्वारा सत्यापित_`;
+  const copyDataForGovPortal = () => {
+    const lines = [
+      `सेवा: ${currentService.title}`,
+      `आवेदक: ${name}`,
+      `मोबाइल: ${mobile}`,
+      ...Object.entries(dynamicFormData).map(([_, v]) => `${v}`)
+    ];
+    navigator.clipboard.writeText(lines.join('\n'));
+    setHasCopiedData(true);
+    VoiceEngine.speak('विभागीय डेटा कॉपी हो गया है। सरकारी पोर्टल पर सीधे पेस्ट करें।');
+    setTimeout(() => setHasCopiedData(false), 2500);
+  };
+
+  const shareDocketWhatsApp = () => {
+    const detailsSummary = Object.entries(dynamicFormData).map(([_, v]) => `• ${v}`).join('%0A');
+    const msg = `*🏛️ सर्वसेतु AI - आधिकारिक नागरिक आवेदन डोकेट*%0A%0A*रेफरेंस टोकन:* ${generatedRefId}%0A*आवेदक:* ${name}%0A*मोबाइल:* ${mobile}%0A*सेवा:* ${currentService.title}%0A*विभाग:* ${currentService.department}%0A*समय सीमा:* ${currentService.estimatedDays}%0A%0A*दर्ज विवरण:*%0A${detailsSummary}%0A%0A*आधिकारिक पोर्टल:* ${currentService.officialApplyUrl}%0A%0A_सर्वसेतु AI डिजिटल डेस्क द्वारा सत्यापित_`;
     window.open(`https://api.whatsapp.com/send?phone=91${mobile}&text=${msg}`, '_blank');
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
       <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[94vh] flex flex-col shadow-2xl border-2 border-orange-500 animate-in fade-in zoom-in-95 text-slate-900">
         
         {/* शीर्ष पट्टी */}
@@ -163,11 +174,11 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
               <div className="flex items-center gap-1.5">
                 <h3 className="text-base font-black text-slate-900">सर्वसमावेशी नागरिक सुविधा डेस्क</h3>
                 <span className="text-[10px] font-black uppercase bg-orange-200 text-orange-950 px-2 py-0.5 rounded-md">
-                  सम्पूर्ण प्रक्रिया
+                  सम्पूर्ण समाधान
                 </span>
               </div>
               <span className="text-xs font-bold text-slate-600">
-                174+ सेवाओं का वास्तविक विभागीय प्रपत्र अनुसार शुरू से अंत तक पूर्ण समाधान
+                174+ सेवाओं का वास्तविक विभागीय प्रपत्र अनुसार शुरू से अंत तक पूर्ण कार्य
               </span>
             </div>
           </div>
@@ -236,7 +247,7 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="उदा. राम लखन मौर्य"
-                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-orange-500"
+                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-orange-500"
                     />
                   </div>
                 </div>
@@ -252,7 +263,7 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value)}
                       placeholder="उदा. 9876543210"
-                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-orange-500 font-mono"
+                      className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-orange-500 font-mono"
                     />
                   </div>
                 </div>
@@ -357,7 +368,7 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
                   पीछे जाएं
                 </button>
                 <button type="submit" className="flex-1 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs transition active:scale-95 shadow-md flex items-center justify-center gap-2 text-sm">
-                  <span>{schema.isDirectLookup || schema.requiredUploads.length === 0 ? 'सत्यापित करें व अंतिम डोकेट जनरेट करें' : 'अगला: आवश्यक कागज़ात संलग्न करें'}</span>
+                  <span>{schema.isDirectLookup || schema.requiredUploads.length === 0 ? 'सत्यापित करें व अंतिम डोकेट बनाएं' : 'अगला: आवश्यक कागज़ात संलग्न करें'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -405,7 +416,7 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
                 </button>
                 <button type="button" onClick={() => setShowCheckoutModal(true)} disabled={isSubmitting} className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black transition active:scale-95 shadow-md flex items-center justify-center gap-2 text-sm">
                   <FileCheck className="w-4 h-4 text-emerald-200" />
-                  <span>{isSubmitting ? 'प्रक्रिया पूर्ण हो रही...' : 'सत्यापन व सम्पूर्ण डोकेट जनरेट करें'}</span>
+                  <span>{isSubmitting ? 'प्रक्रिया पूर्ण हो रही...' : 'सत्यापन व सम्पूर्ण डोकेट बनाएं'}</span>
                 </button>
               </div>
             </div>
@@ -441,9 +452,19 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
                 </div>
 
                 <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1 text-xs">
-                  <span className="font-black text-slate-900 block text-[11px] mb-1">✓ दर्ज की गई वास्तविक विभागीय प्रविष्टियां:</span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-black text-slate-900 text-[11px]">✓ दर्ज की गई वास्तविक विभागीय प्रविष्टियां:</span>
+                    <button
+                      type="button"
+                      onClick={copyDataForGovPortal}
+                      className="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-black flex items-center gap-1 transition"
+                    >
+                      {hasCopiedData ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-amber-300" />}
+                      <span>{hasCopiedData ? 'कॉपी हुआ!' : 'पोर्टल हेतु डेटा कॉपी करें'}</span>
+                    </button>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
-                    {Object.entries(dynamicFormData).map(([k, v], idx) => (
+                    {Object.entries(dynamicFormData).map(([_, v], idx) => (
                       <div key={idx} className="flex gap-1">
                         <span className="text-slate-500 font-bold">•</span>
                         <span className="font-medium text-slate-900">{v}</span>
@@ -466,14 +487,14 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
                 </div>
               </div>
 
-              {/* आधिकारिक सरकारी पोर्टल व कैप्चा गाइडेंस कार्ड */}
+              {/* आधिकारिक सरकारी पोर्टल व कैप्चा निर्देश */}
               <div className="p-3.5 bg-amber-50 border-2 border-amber-300 rounded-2xl space-y-2">
                 <div className="flex items-start gap-2 text-amber-950 font-bold text-xs">
                   <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-black block">सरकारी पोर्टल व सुरक्षा कैप्चा निर्देश:</span>
                     <p className="text-[11px] text-amber-900 font-medium leading-relaxed mt-0.5">
-                      सरकारी सर्वर सुरक्षा नियमों के अनुसार, नीचे दिए गए बटन पर टैप करने के बाद आधिकारिक पोर्टल पर केवल स्क्रीन पर दिख रहा <strong>कैप्चा कोड (CAPTCHA)</strong> डालकर 1 सेकंड में अपनी मूल खतौनी / रसीद सीधे देखें व डाउनलोड करें।
+                      सरकारी सर्वर सुरक्षा नियमों के अनुसार, नीचे दिए गए बटन पर टैप करने के बाद आधिकारिक पोर्टल पर केवल स्क्रीन पर दिख रहा <strong>कैप्चा कोड (CAPTCHA)</strong> दर्ज करके 1 सेकंड में अपनी मूल खतौनी / रसीद सीधे देखें व डाउनलोड करें।
                     </p>
                   </div>
                 </div>
@@ -505,7 +526,7 @@ export const AutonomousFilingDesk: React.FC<Props> = ({ services, isOpen, onClos
 
                 <button
                   type="button"
-                  onClick={shareDocketToCitizenWhatsApp}
+                  onClick={shareDocketWhatsApp}
                   className="py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs transition flex items-center justify-center gap-2 shadow-sm"
                 >
                   <Share2 className="w-4 h-4 text-white" />

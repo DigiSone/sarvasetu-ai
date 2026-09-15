@@ -1362,7 +1362,25 @@ export default function App() {
         </div>
 
         <p className="font-bold text-slate-500">
-          डिजिटल इंडिया एवं नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप
+                  {/* मैनुअल कैशे फ्लश बटन */}
+        <div className="pt-2">
+          <button
+            onClick={() => {
+              localStorage.clear();
+              if ('caches' in window) {
+                caches.keys().then((keys) => Promise.all(keys.map(k => caches.delete(k))));
+              }
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach(r => r.unregister()));
+              }
+              window.location.reload();
+            }}
+            className="px-3 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-[11px] font-bold text-slate-700"
+          >
+            🔄 ताज़ा वर्शन लोड करें (Clear Phone Cache)
+          </button>
+        </div>
+        <p className="font-bold text-slate-500 mt-2">डिजिटल इंडिया एवं नेशनल डिजिटल पब्लिक गुड्स (DPI) मानकों के अनुरूप</p>
         </p>
         <p className="text-[11px] text-slate-400">
           सूचना प्रौद्योगिकी अधिनियम 2000 एवं DPDP Act 2023 के तहत 100% सुरक्षित नागरिक मंच
