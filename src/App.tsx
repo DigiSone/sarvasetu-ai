@@ -367,7 +367,7 @@ export default function App() {
                   सर्वसेतु AI
                 </h1>
                 <span className="text-[9px] sm:text-[10px] font-black uppercase bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded-md">
-                  DPI Gateway
+                  DPI Gateway | v2.5 स्मार्ट फॉर्म्स
                 </span>
               </div>
               <span className="text-[10px] sm:text-[11px] font-bold text-emerald-700 flex items-center gap-1">
