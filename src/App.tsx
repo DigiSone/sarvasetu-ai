@@ -84,7 +84,7 @@ export default function App() {
   const [leadSubmittedSuccess, setLeadSubmittedSuccess] = useState(false);
 
   const [voiceBriefing, setVoiceBriefing] = useState(
-    'प्रणाम! सर्वसेतु AI में आपका स्वागत है। संस्थापक: विकास कुमार मिश्रा, रॉबर्ट्सगंज, सोनभद्र, उत्तर प्रदेश। नीचे किसी भी सरकारी सेवा पर टैप करें या माइक दबाकर बोलें।'
+    'प्रणाम! सर्वसेतु AI में आपका स्वागत है। किसी भी सरकारी सेवा या दस्तावेज़ के लिए नीचे बोलें या खोजें।'
   );
 
   const hasInitiatedAudioRef = useRef(false);
@@ -459,7 +459,7 @@ export default function App() {
             </div>
             <div className="flex items-center gap-1 text-[10px] sm:text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-xl">
               <MapPin className="w-3 h-3 text-orange-600 shrink-0" />
-              <span>संस्थापक: <strong>विकास कुमार मिश्रा</strong> (रॉबर्ट्सगंज, सोनभद्र)</span>
+              <span>राष्ट्रीय डिजिटल नागरिक सेवा सेतु • 100% पारदर्शी</span>
             </div>
           </div>
 
@@ -1332,18 +1332,10 @@ export default function App() {
 
       {/* 14. पादलेख */}
       <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-600 space-y-3">
-        <div className="max-w-xl mx-auto p-3 bg-orange-50/70 border border-orange-200 rounded-2xl">
-          <p className="font-black text-slate-900 text-sm">
-            सर्वसेतु AI (राष्ट्रीय डिजिटल नागरिक सेवा सेतु)
-          </p>
-          <p className="text-xs font-bold text-orange-800 mt-1">
-            संस्थापक एवं मुख्य परिकल्पनाकार: <strong>विकास कुमार मिश्रा</strong>
-          </p>
-          <p className="text-[11px] text-slate-600 mt-0.5 flex items-center justify-center gap-1">
-            <MapPin className="w-3 h-3 text-orange-600 inline" />
-            रॉबर्ट्सगंज, सोनभद्र, उत्तर प्रदेश, भारत
-          </p>
-        </div>
+        {/* सूक्ष्म निर्माण संदर्भ */}
+        <p className="text-[11px] text-slate-500 font-medium text-center">
+          परिकल्पना एवं निर्माण: <span className="text-slate-700 font-bold">विकास कुमार मिश्रा</span> (रॉबर्ट्सगंज) • डिजिटल पब्लिक गुड्स
+        </p>
 
         <div className="max-w-3xl mx-auto p-3 bg-slate-100/90 border border-slate-200 rounded-2xl text-[11px] leading-relaxed text-slate-600 text-left space-y-1">
           <span className="font-black text-slate-800 block">⚖️ वैधानिक अनाबद्धता अस्वीकरण (Non-Affiliation Disclaimer):</span>
