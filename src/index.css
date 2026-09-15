@@ -3,8 +3,28 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply antialiased text-slate-900 bg-slate-50 selection:bg-orange-200;
-    touch-action: manipulation;
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans Devanagari', sans-serif;
   }
+  body {
+    @apply bg-slate-900 text-slate-100 antialiased overflow-x-hidden selection:bg-orange-500 selection:text-white;
+  }
+}
+
+/* बिना स्क्रोलबार के हॉरिजॉन्टल स्क्रोल */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* प्रीमियम ग्लास कार्ड इफेक्ट */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
