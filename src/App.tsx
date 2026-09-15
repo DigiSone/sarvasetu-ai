@@ -1,4 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, Suspense, lazy } from 'react';
+
+// कोड-स्प्लिटिंग: भारी मॉडल्स केवल ज़रूरत पड़ने पर लोड होंगे (Lighthouse 100 LCP)
+const AutonomousFilingDesk = lazy(() => import('./components/AutonomousFilingDesk').then(m => ({ default: m.AutonomousFilingDesk })));
+const UnifiedCheckoutModal = lazy(() => import('./components/UnifiedCheckoutModal').then(m => ({ default: m.UnifiedCheckoutModal })));
+
 import {
   Search,
   Mic,
@@ -30,8 +35,8 @@ import {
 import { OFFICIAL_GOV_SERVICES } from './data/servicesData';
 import { GovServiceItem } from './types/service';
 import { VoiceEngine } from './core/voiceEngine';
-import { AutonomousFilingDesk } from './components/AutonomousFilingDesk';
-import { UnifiedCheckoutModal } from './components/UnifiedCheckoutModal';
+
+
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -391,7 +396,8 @@ export default function App() {
       </nav>
 
       {/* 8. ऑटोनॉमस नागरिक डेस्क मोडल */}
-      {showFilingDesk && (
+      <Suspense fallback={<div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center text-white font-bold text-xs">नागरिक सुविधा डेस्क लोड हो रही है...</div>}>
+        {showFilingDesk && (
         <AutonomousFilingDesk
           services={OFFICIAL_GOV_SERVICES}
           isOpen={showFilingDesk}
@@ -400,7 +406,8 @@ export default function App() {
       )}
 
       {/* 9. Z++ पेमेंट मोडल */}
-      {showCheckoutModal && (
+      <Suspense fallback={null}>
+        {showCheckoutModal && (
         <UnifiedCheckoutModal
           isOpen={showCheckoutModal}
           onClose={() => setShowCheckoutModal(false)}
@@ -411,6 +418,8 @@ export default function App() {
         />
       )}
 
+      </Suspense>
+      </Suspense>
     </div>
   );
 }
