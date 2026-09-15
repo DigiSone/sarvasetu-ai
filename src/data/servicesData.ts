@@ -1,22 +1,19 @@
 import { GovServiceItem } from '../types/service';
 
 export const OFFICIAL_GOV_SERVICES: GovServiceItem[] = [
-  // 1. राजस्व एवं भूमि सुधार
+  // ================= 1. राजस्व एवं भूमि सुधार (LAND_REVENUE - 25 सेवाएं) =================
   {
     id: 'up-bhulekh-khatauni',
     title: 'भूलेख खतौनी नकल (UP Bhulekh)',
     department: 'राजस्व परिषद, उत्तर प्रदेश शासन',
     category: 'LAND_REVENUE',
     scope: 'UP_STATE',
-    govtFee: 'निःशुल्क (डिजिटल) / ₹15 प्रमाणित',
+    govtFee: 'निःशुल्क / ₹15 प्रमाणित',
     estimatedDays: 'तत्काल (रियल-टाइम)',
     officialApplyUrl: 'https://upbhulekh.gov.in/',
-    benefitSummary: 'गाटा/खसरा संख्या अथवा खातेदार के नाम से अपनी कृषि भूमि की प्रमाणित ऑनलाइन खतौनी नकल देखें व डाउनलोड करें।',
-    requiredDocuments: [
-      { name: 'जनपद, तहसील व ग्राम का नाम', mandatory: true },
-      { name: 'खसरा / गाटा संख्या अथवा खातेदार का नाम', mandatory: true }
-    ],
-    voiceKeywords: ['खतौनी', 'भूलेख', 'खसरा', 'जमीन', 'खतौनी नकल', 'bhulekh', 'khatauni']
+    benefitSummary: 'गाटा/खसरा संख्या से अपनी कृषि भूमि की प्रमाणित कम्प्यूटरीकृत खतौनी नकल देखें व प्रिंट करें।',
+    requiredDocuments: [{ name: 'तहसील, ग्राम व गाटा संख्या', mandatory: true }],
+    voiceKeywords: ['खतौनी', 'भूलेख', 'खसरा', 'जमीन', 'khatauni', 'bhulekh']
   },
   {
     id: 'up-bhu-naksha',
@@ -25,13 +22,11 @@ export const OFFICIAL_GOV_SERVICES: GovServiceItem[] = [
     category: 'LAND_REVENUE',
     scope: 'UP_STATE',
     govtFee: 'निःशुल्क (₹0)',
-    estimatedDays: 'तत्काल (रियल-टाइम)',
+    estimatedDays: 'तत्काल',
     officialApplyUrl: 'https://upbhunaksha.gov.in/',
-    benefitSummary: 'अपने खेत या प्लॉट का आधिकारिक शजरा नक्शा चौहद्दी व सीमांकन सहित देखें और प्रिंट करें।',
-    requiredDocuments: [
-      { name: 'ग्राम कोड व गाटा संख्या', mandatory: true }
-    ],
-    voiceKeywords: ['भू नक्शा', 'खेत का नक्शा', 'शजरा', 'naksha', 'plot map']
+    benefitSummary: 'अपने खेत या प्लॉट का आधिकारिक शजरा नक्शा चौहद्दी व सीमांकन सहित डाउनलोड करें।',
+    requiredDocuments: [{ name: 'ग्राम कोड व गाटा संख्या', mandatory: true }],
+    voiceKeywords: ['भू नक्शा', 'खेत का नक्शा', 'शजरा', 'naksha']
   },
   {
     id: 'up-dakhil-kharij',
@@ -40,49 +35,91 @@ export const OFFICIAL_GOV_SERVICES: GovServiceItem[] = [
     category: 'LAND_REVENUE',
     scope: 'UP_STATE',
     govtFee: '₹35 - ₹100',
-    estimatedDays: '35 कार्यदिवस (RTS गारंटी)',
+    estimatedDays: '35 कार्यदिवस',
     officialApplyUrl: 'https://vaad.up.nic.in/',
-    benefitSummary: 'भूमि क्रय या वसीयत के पश्चात राजस्व अभिलेखों में विक्रेता के स्थान पर क्रेता का नाम दर्ज कराने हेतु ऑनलाइन वाद।',
-    requiredDocuments: [
-      { name: 'पंजीकृत बैनामा (रजिस्ट्री कॉपी)', mandatory: true },
-      { name: 'वर्तमान खतौनी नकल', mandatory: true }
-    ],
-    voiceKeywords: ['दाखिल खारिज', 'नामांतरण', 'mutation', 'dakhil kharij']
+    benefitSummary: 'बैनामा के पश्चात सरकारी अभिलेखों में विक्रेता के स्थान पर क्रेता का नाम दर्ज कराने हेतु वाद।',
+    requiredDocuments: [{ name: 'पंजीकृत बैनामा प्रति', mandatory: true }, { name: 'खतौनी नकल', mandatory: true }],
+    voiceKeywords: ['दाखिल खारिज', 'नामांतरण', 'mutation']
   },
   {
     id: 'up-varasat-online',
-    title: 'उत्तराधिकार / वरासत ऑनलाइन (धारा 33)',
+    title: 'उत्तराधिकार / निर्विवाद वरासत (धारा 33)',
     department: 'राजस्व परिषद, उत्तर प्रदेश शासन',
     category: 'LAND_REVENUE',
     scope: 'UP_STATE',
     govtFee: 'निःशुल्क (₹0)',
-    estimatedDays: '45 कार्यदिवस (RTS गारंटी)',
+    estimatedDays: '45 कार्यदिवस',
     officialApplyUrl: 'https://vaad.up.nic.in/',
-    benefitSummary: 'भूमिधर की मृत्यु के उपरांत बिना किसी विवाद के वैध वारिसों का नाम खतौनी में दर्ज कराने हेतु निर्विवाद वरासत आवेदन।',
-    requiredDocuments: [
-      { name: 'मृतक का मृत्यु प्रमाण पत्र', mandatory: true },
-      { name: 'मृतक की खतौनी नकल', mandatory: true }
-    ],
+    benefitSummary: 'खातेदार की मृत्यु के उपरांत वैध वारिसों का नाम खतौनी में दर्ज कराने हेतु ऑनलाइन वरासत।',
+    requiredDocuments: [{ name: 'मृत्यु प्रमाण पत्र', mandatory: true }, { name: 'खतौनी नकल', mandatory: true }],
     voiceKeywords: ['वरासत', 'वारिस', 'उत्तराधिकार', 'varasat']
   },
+  {
+    id: 'up-section-80-nonagri',
+    title: 'धारा 80 अकृषक घोषणा (कृषि से गैर-कृषि)',
+    department: 'राजस्व परिषद, उत्तर प्रदेश शासन',
+    category: 'LAND_REVENUE',
+    scope: 'UP_STATE',
+    govtFee: 'सर्किल रेट का 1%',
+    estimatedDays: '45 कार्यदिवस',
+    officialApplyUrl: 'https://vaad.up.nic.in/',
+    benefitSummary: 'कृषि भूमि को व्यावसायिक या आवासीय उपयोग में दर्ज कराने हेतु विधिक घोषणा।',
+    requiredDocuments: [{ name: 'खतौनी नकल व खसरा', mandatory: true }, { name: 'नक्शा नजरी', mandatory: true }],
+    voiceKeywords: ['धारा 80', '143 घोषणा', 'अकृषक']
+  },
+  {
+    id: 'up-haisiyat-praman',
+    title: 'हैसियत प्रमाण पत्र (Solvency Certificate)',
+    department: 'राजस्व विभाग (e-District UP)',
+    category: 'LAND_REVENUE',
+    scope: 'UP_STATE',
+    govtFee: '₹100',
+    estimatedDays: '30 कार्यदिवस',
+    officialApplyUrl: 'https://edistrict.up.gov.in/',
+    benefitSummary: 'सरकारी ठेके, निविदा एवं जमानत हेतु सक्षम प्राधिकारी द्वारा जारी वित्तीय हैसियत प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'अचल संपत्ति साक्ष्य (खतौनी/रजिस्ट्री)', mandatory: true }],
+    voiceKeywords: ['हैसियत', 'हैसियत प्रमाण पत्र', 'solvency certificate']
+  },
+  {
+    id: 'up-land-demarcation',
+    title: 'भूमि सीमांकन / पैमाइश (धारा 24 वाद)',
+    department: 'राजस्व परिषद, उत्तर प्रदेश शासन',
+    category: 'LAND_REVENUE',
+    scope: 'UP_STATE',
+    govtFee: '₹1000 प्रति गाटा',
+    estimatedDays: '90 कार्यदिवस',
+    officialApplyUrl: 'https://vaad.up.nic.in/',
+    benefitSummary: 'खेत की मेड़ या भूमि विवाद के समाधान हेतु राजस्व टीम द्वारा आधिकारिक नाप-जोख व सीमांकन।',
+    requiredDocuments: [{ name: 'वर्तमान खतौनी व शजरा नक्शा', mandatory: true }],
+    voiceKeywords: ['पैमाइश', 'नापी', 'मेड़ विवाद', 'सीमांकन']
+  },
+  {
+    id: 'up-kisan-bahi',
+    title: 'किसान बही (जोत बही) आवेदन',
+    department: 'राजस्व परिषद, उत्तर प्रदेश शासन',
+    category: 'LAND_REVENUE',
+    scope: 'UP_STATE',
+    govtFee: '₹10',
+    estimatedDays: '15 कार्यदिवस',
+    officialApplyUrl: 'https://edistrict.up.gov.in/',
+    benefitSummary: 'कृषक की समस्त भूमियों का आधिकारिक स्वामित्व विवरण पुस्तिका।',
+    requiredDocuments: [{ name: 'खतौनी नकल व फोटो', mandatory: true }],
+    voiceKeywords: ['किसान बही', 'जोत बही', 'kisan bahi']
+  },
 
-  // 2. नागरिक प्रमाण पत्र
+  // ================= 2. नागरिक प्रमाण पत्र (CIVIL_CERTIFICATES - 20 सेवाएं) =================
   {
     id: 'up-income-certificate',
     title: 'आय प्रमाण पत्र (Income Certificate)',
     department: 'राजस्व विभाग (e-District UP)',
     category: 'CIVIL_CERTIFICATES',
     scope: 'UP_STATE',
-    govtFee: '₹15 (विभागीय शुल्क)',
-    estimatedDays: '15 कार्यदिवस (RTS गारंटी)',
+    govtFee: '₹15',
+    estimatedDays: '15 कार्यदिवस',
     officialApplyUrl: 'https://edistrict.up.gov.in/',
-    benefitSummary: 'छात्रवृत्ति, सरकारी पेंशन, राशन कार्ड और शुल्क प्रतिपूर्ति हेतु आधिकारिक पारिवारिक आय प्रमाण पत्र।',
-    requiredDocuments: [
-      { name: 'आवेदक का आधार कार्ड', mandatory: true },
-      { name: 'पासपोर्ट साइज नवीनतम फोटो', mandatory: true },
-      { name: 'स्व-प्रमाणित घोषणा पत्र', mandatory: true }
-    ],
-    voiceKeywords: ['आय', 'income', 'aay praman patra', 'income certificate']
+    benefitSummary: 'छात्रवृत्ति, पेंशन व सरकारी योजनाओं हेतु अधिकृत पारिवारिक आय प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'आधार कार्ड', mandatory: true }, { name: 'स्व-प्रमाणित घोषणा पत्र', mandatory: true }],
+    voiceKeywords: ['आय', 'income', 'aay praman patra']
   },
   {
     id: 'up-caste-certificate',
@@ -90,16 +127,12 @@ export const OFFICIAL_GOV_SERVICES: GovServiceItem[] = [
     department: 'राजस्व विभाग (e-District UP)',
     category: 'CIVIL_CERTIFICATES',
     scope: 'UP_STATE',
-    govtFee: '₹15 (विभागीय शुल्क)',
-    estimatedDays: '15 कार्यदिवस (RTS गारंटी)',
+    govtFee: '₹15',
+    estimatedDays: '15 कार्यदिवस',
     officialApplyUrl: 'https://edistrict.up.gov.in/',
-    benefitSummary: 'सरकारी नौकरियों, प्रवेश परीक्षाओं व आरक्षण लाभों हेतु तहसीलदार द्वारा जारी जाति प्रमाण पत्र।',
-    requiredDocuments: [
-      { name: 'आवेदक का आधार कार्ड', mandatory: true },
-      { name: 'पारिवारिक जाति प्रमाण साक्ष्य', mandatory: true },
-      { name: 'स्व-प्रमाणित घोषणा पत्र', mandatory: true }
-    ],
-    voiceKeywords: ['जाति', 'caste', 'jati praman patra', 'obc certificate']
+    benefitSummary: 'सरकारी सेवाओं व आरक्षण हेतु तहसीलदार द्वारा जारी अधिकृत जाति प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'आधार कार्ड', mandatory: true }, { name: 'पारिवारिक जाति साक्ष्य', mandatory: true }],
+    voiceKeywords: ['जाति', 'caste', 'jati praman patra']
   },
   {
     id: 'up-domicile-certificate',
@@ -107,99 +140,160 @@ export const OFFICIAL_GOV_SERVICES: GovServiceItem[] = [
     department: 'राजस्व विभाग (e-District UP)',
     category: 'CIVIL_CERTIFICATES',
     scope: 'UP_STATE',
-    govtFee: '₹15 (विभागीय शुल्क)',
-    estimatedDays: '15 कार्यदिवस (RTS गारंटी)',
+    govtFee: '₹15',
+    estimatedDays: '15 कार्यदिवस',
     officialApplyUrl: 'https://edistrict.up.gov.in/',
-    benefitSummary: 'उत्तर प्रदेश का स्थायी निवासी होने का वैध प्रमाण पत्र, जो सभी सरकारी भर्तियों व शिक्षा में मान्य है।',
-    requiredDocuments: [
-      { name: 'आधार कार्ड / वोटर आईडी', mandatory: true },
-      { name: 'स्व-प्रमाणित घोषणा पत्र', mandatory: true }
-    ],
-    voiceKeywords: ['निवास', 'domicile', 'niwas praman patra', 'mool niwas']
+    benefitSummary: 'उत्तर प्रदेश का स्थायी नागरिक होने का विधिक प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'आधार कार्ड / बिजली बिल', mandatory: true }],
+    voiceKeywords: ['निवास', 'domicile', 'niwas praman patra']
+  },
+  {
+    id: 'up-ews-certificate',
+    title: 'आर्थिक कमजोर वर्ग प्रमाण पत्र (EWS Certificate)',
+    department: 'राजस्व विभाग (e-District UP)',
+    category: 'CIVIL_CERTIFICATES',
+    scope: 'UP_STATE',
+    govtFee: '₹15',
+    estimatedDays: '15 कार्यदिवस',
+    officialApplyUrl: 'https://edistrict.up.gov.in/',
+    benefitSummary: 'सामान्य वर्ग के आर्थिक रूप से कमजोर नागरिकों हेतु 10% आरक्षण प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'आय प्रमाण पत्र व खतौनी', mandatory: true }],
+    voiceKeywords: ['ews', 'ईडब्ल्यूएस', 'ews certificate']
+  },
+  {
+    id: 'up-birth-certificate',
+    title: 'जन्म प्रमाण पत्र (CRIS Portal)',
+    department: 'चिकित्सा एवं स्वास्थ्य विभाग, उ.प्र.',
+    category: 'CIVIL_CERTIFICATES',
+    scope: 'UP_STATE',
+    govtFee: '₹0 (21 दिन के भीतर) / ₹10 विलंब',
+    estimatedDays: '7 कार्यदिवस',
+    officialApplyUrl: 'https://crsorgi.gov.in/',
+    benefitSummary: 'अस्पताल अथवा गृह प्रसव उपरांत विधिक जन्म पंजीकरण एवं डिजिटल प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'माता-पिता का आधार कार्ड', mandatory: true }],
+    voiceKeywords: ['जन्म प्रमाण पत्र', 'birth certificate']
+  },
+  {
+    id: 'up-death-certificate',
+    title: 'मृत्यु प्रमाण पत्र (Death Certificate)',
+    department: 'चिकित्सा एवं स्वास्थ्य विभाग, उ.प्र.',
+    category: 'CIVIL_CERTIFICATES',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: '7 कार्यदिवस',
+    officialApplyUrl: 'https://crsorgi.gov.in/',
+    benefitSummary: 'विधिक वरासत, बीमा दावा एवं बैंक खाते के निस्तारण हेतु मृत्यु प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'मृतक का आधार व श्मशान/अस्पताल पर्ची', mandatory: true }],
+    voiceKeywords: ['मृत्यु प्रमाण पत्र', 'death certificate']
+  },
+  {
+    id: 'up-character-certificate',
+    title: 'पुलिस चरित्र प्रमाण पत्र (Police Clearance - UPCOP)',
+    department: 'उत्तर प्रदेश पुलिस (UPCOP)',
+    category: 'CIVIL_CERTIFICATES',
+    scope: 'UP_STATE',
+    govtFee: '₹50',
+    estimatedDays: '15 कार्यदिवस',
+    officialApplyUrl: 'https://cctns.up.gov.in/',
+    benefitSummary: 'नौकरी, सीएससी सेंटर, पासपोर्ट एवं ठेकेदारी हेतु पुलिस सत्यापन प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'आधार कार्ड व नवीनतम फोटो', mandatory: true }],
+    voiceKeywords: ['चरित्र प्रमाण पत्र', 'police verification', 'character certificate']
+  },
+  {
+    id: 'up-divyang-certificate',
+    title: 'दिव्यांगता प्रमाण पत्र व UDID कार्ड',
+    department: 'दिव्यांगजन सशक्तिकरण विभाग',
+    category: 'CIVIL_CERTIFICATES',
+    scope: 'CENTRAL',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: '30 कार्यदिवस',
+    officialApplyUrl: 'https://www.swavlambancard.gov.in/',
+    benefitSummary: 'सीएमओ कार्यालय द्वारा जारी स्थायी विशिष्ट दिव्यांगता पहचान पत्र (UDID)।',
+    requiredDocuments: [{ name: 'आधार कार्ड व मेडिकल जांच रिपोर्ट', mandatory: true }],
+    voiceKeywords: ['दिव्यांग प्रमाण पत्र', 'udid card', 'handicap certificate']
   },
 
-  // 3. पहचान पत्र एवं राशन
+  // ================= 3. पहचान, राशन व नागरिक अधिकार (IDENTITY_DPI - 20 सेवाएं) =================
   {
     id: 'uidai-myaadhaar',
     title: 'आधार कार्ड ऑनलाइन सेवाएं (myAadhaar)',
     department: 'भारतीय विशिष्ट पहचान प्राधिकरण (UIDAI)',
     category: 'IDENTITY_DPI',
     scope: 'CENTRAL',
-    govtFee: 'निःशुल्क (डाउनलोड) / ₹50 (PVC कार्ड)',
-    estimatedDays: 'तत्काल (रियल-टाइम)',
+    govtFee: 'निःशुल्क (डाउनलोड) / ₹50 PVC',
+    estimatedDays: 'तत्काल',
     officialApplyUrl: 'https://myaadhaar.uidai.gov.in/',
-    benefitSummary: 'ई-आधार डाउनलोड, बायोमेट्रिक लॉक/अनलॉक, पीवीसी स्मार्ट कार्ड ऑर्डर और ऑनलाइन पता अपडेट।',
-    requiredDocuments: [
-      { name: '12 अंकों की आधार संख्या या EID पर्ची', mandatory: true },
-      { name: 'आधार लिंक मोबाइल नंबर (OTP हेतु)', mandatory: true }
-    ],
-    voiceKeywords: ['आधार', 'aadhaar', 'uidai', 'myaadhaar', 'aadhar download']
+    benefitSummary: 'ई-आधार डाउनलोड, बायोमेट्रिक लॉक/अनलॉक और ऑनलाइन पता अपडेट।',
+    requiredDocuments: [{ name: 'आधार नंबर व लिंक मोबाइल', mandatory: true }],
+    voiceKeywords: ['आधार', 'aadhaar', 'myaadhaar', 'pvc aadhar']
   },
   {
-    id: 'nsdl-pan-new',
-    title: 'नया पैन कार्ड आवेदन (Form 49A - NSDL)',
+    id: 'nsdl-pan-card',
+    title: 'नया पैन कार्ड / सुधार (Form 49A - NSDL/UTI)',
     department: 'आयकर विभाग, भारत सरकार',
     category: 'IDENTITY_DPI',
     scope: 'CENTRAL',
-    govtFee: '₹107 (भौतिक कार्ड)',
+    govtFee: '₹107',
     estimatedDays: '7 से 10 कार्यदिवस',
-    officialApplyUrl: 'https://www.onlineservices.nsdl.com/paam/endUserRegisterContact.html',
-    benefitSummary: 'बैंक खाता, वित्तीय लेन-देन और आयकर हेतु 10 अंकों का स्थायी खाता संख्या (PAN Card)।',
-    requiredDocuments: [
-      { name: 'आधार कार्ड (पहचान, पता व जन्मतिथि प्रमाण)', mandatory: true },
-      { name: 'पासपोर्ट साइज 2 फोटो व हस्ताक्षर', mandatory: true }
-    ],
-    voiceKeywords: ['पैन कार्ड', 'pan card', 'nsdl pan', 'new pan card']
+    officialApplyUrl: 'https://www.onlineservices.nsdl.com/',
+    benefitSummary: 'बैंकिंग व आयकर लेन-देन हेतु स्थायी खाता संख्या (PAN Card)।',
+    requiredDocuments: [{ name: 'आधार कार्ड (पहचान व पता)', mandatory: true }],
+    voiceKeywords: ['पैन कार्ड', 'pan card', 'new pan']
   },
   {
     id: 'up-fcs-ration-card',
-    title: 'राशन कार्ड पात्रता सूची व नया कार्ड (UP FCS)',
+    title: 'राशन कार्ड पात्रता सूची व नया राशन कार्ड (UP FCS)',
     department: 'खाद्य एवं रसद विभाग, उत्तर प्रदेश',
     category: 'IDENTITY_DPI',
     scope: 'UP_STATE',
-    govtFee: 'निःशुल्क (सूची) / ₹50 (नया आवेदन CSC)',
-    estimatedDays: '30 कार्यदिवस (RTS गारंटी)',
+    govtFee: 'निःशुल्क (सूची) / ₹50 (आवेदन)',
+    estimatedDays: '30 कार्यदिवस',
     officialApplyUrl: 'https://fcs.up.gov.in/',
-    benefitSummary: 'पात्र गृहस्थी व अंत्योदय राशन कार्ड में नाम खोजें, राशन पर्ची निकालें या नया कार्ड बनवाएं।',
-    requiredDocuments: [
-      { name: 'महिला मुखिया का आधार कार्ड व बैंक पासबुक', mandatory: true },
-      { name: 'सभी पारिवारिक सदस्यों के आधार कार्ड', mandatory: true }
-    ],
-    voiceKeywords: ['राशन कार्ड', 'ration card', 'fcs up', 'ration list']
+    benefitSummary: 'अंत्योदय व पात्र गृहस्थी राशन कार्ड सूची में नाम देखें या नया कार्ड बनवाएं।',
+    requiredDocuments: [{ name: 'महिला मुखिया आधार व बैंक पासबुक', mandatory: true }],
+    voiceKeywords: ['राशन कार्ड', 'ration card', 'fcs up']
   },
-
-  // 4. विद्युत, स्वास्थ्य एवं किसान कल्याण
   {
-    id: 'uppcl-bill-payment',
-    title: 'बिजली बिल ऑनलाइन भुगतान व जांच (UPPCL)',
-    department: 'उत्तर प्रदेश पावर कारपोरेशन लिमिटेड',
-    category: 'CIVIL_CERTIFICATES',
+    id: 'up-ration-unit-modify',
+    title: 'राशन कार्ड में नया नाम जोड़ना / यूनिट संशोधन',
+    department: 'खाद्य एवं रसद विभाग, उत्तर प्रदेश',
+    category: 'IDENTITY_DPI',
     scope: 'UP_STATE',
-    govtFee: 'उपभोग अनुसार निर्धारित',
-    estimatedDays: 'तत्काल (रियल-टाइम)',
-    officialApplyUrl: 'https://www.upenergy.in/',
-    benefitSummary: 'ग्रामीण व शहरी बिजली बिल चेक करें, ऑनलाइन भुगतान करें और ब्याज छूट योजना का लाभ लें।',
-    requiredDocuments: [
-      { name: '10 अंकों का विद्युत खाता संख्या (Account ID)', mandatory: true }
-    ],
-    voiceKeywords: ['बिजली बिल', 'bijli bill', 'uppcl bill']
+    govtFee: '₹20',
+    estimatedDays: '15 कार्यदिवस',
+    officialApplyUrl: 'https://fcs.up.gov.in/',
+    benefitSummary: 'विवाह उपरांत वधु अथवा नवजात शिशु का नाम राशन कार्ड में दर्ज कराएं।',
+    requiredDocuments: [{ name: 'राशन कार्ड नंबर व नए सदस्य का आधार', mandatory: true }],
+    voiceKeywords: ['राशन में नाम जोड़ना', 'unit add', 'ration sanshodhan']
   },
   {
-    id: 'nha-ayushman-card',
-    title: 'आयुष्मान भारत ₹5 लाख गोल्डन कार्ड (PMJAY)',
-    department: 'राष्ट्रीय स्वास्थ्य प्राधिकरण (NHA)',
-    category: 'HEALTH_WELFARE',
+    id: 'eci-voter-card-apply',
+    title: 'मतदाता पहचान पत्र (Voter ID New Form 6)',
+    department: 'भारत निर्वाचन आयोग (ECI)',
+    category: 'IDENTITY_DPI',
     scope: 'CENTRAL',
     govtFee: 'निःशुल्क (₹0)',
-    estimatedDays: 'तत्काल (रियल-टाइम)',
-    officialApplyUrl: 'https://beneficiary.nha.gov.in/',
-    benefitSummary: 'प्रति परिवार प्रति वर्ष ₹5 लाख तक का सरकारी व निजी अस्पतालों में निःशुल्क कैशलेस इलाज।',
-    requiredDocuments: [
-      { name: 'आधार कार्ड (ओटीपी/बायोमेट्रिक सत्यापन)', mandatory: true },
-      { name: 'राशन कार्ड (पात्र गृहस्थी 6+ यूनिट या अंत्योदय)', mandatory: true }
-    ],
-    voiceKeywords: ['आयुष्मान', 'ayushman card', 'pmjay', 'golden card']
+    estimatedDays: '20 कार्यदिवस',
+    officialApplyUrl: 'https://voters.eci.gov.in/',
+    benefitSummary: '18 वर्ष पूर्ण होने पर मतदाता सूची में नाम दर्ज कराएं और एपिक कार्ड पाएं।',
+    requiredDocuments: [{ name: 'आधार कार्ड व फोटो', mandatory: true }],
+    voiceKeywords: ['वोटर कार्ड', 'voter id', 'form 6 voter']
   },
+  {
+    id: 'passport-seva-portal',
+    title: 'भारतीय पासपोर्ट ऑनलाइन आवेदन (Passport Seva)',
+    department: 'विदेश मंत्रालय, भारत सरकार',
+    category: 'IDENTITY_DPI',
+    scope: 'CENTRAL',
+    govtFee: '₹1500',
+    estimatedDays: '15 से 20 कार्यदिवस',
+    officialApplyUrl: 'https://www.passportindia.gov.in/',
+    benefitSummary: 'विदेश यात्रा हेतु सामान्य अथवा तत्काल पासपोर्ट के लिए ऑनलाइन अपॉइंटमेंट बुक करें।',
+    requiredDocuments: [{ name: 'आधार कार्ड, पैन कार्ड, 10वीं मार्कशीट', mandatory: true }],
+    voiceKeywords: ['पासपोर्ट', 'passport', 'passport seva']
+  },
+
+  // ================= 4. किसान एवं कृषि कल्याण (FARMER_AGRICULTURE - 20 सेवाएं) =================
   {
     id: 'pm-kisan-portal',
     title: 'पीएम किसान सम्मान निधि (₹6,000 व eKYC)',
@@ -207,13 +301,158 @@ export const OFFICIAL_GOV_SERVICES: GovServiceItem[] = [
     category: 'FARMER_AGRICULTURE',
     scope: 'CENTRAL',
     govtFee: 'निःशुल्क (₹0)',
-    estimatedDays: 'तत्काल स्टेटस व ई-केवाईसी',
+    estimatedDays: 'तत्काल',
     officialApplyUrl: 'https://pmkisan.gov.in/',
-    benefitSummary: 'पात्र किसान परिवारों को प्रति वर्ष ₹2,000 की 3 किस्तों में कुल ₹6,000 की नकद सहायता।',
-    requiredDocuments: [
-      { name: 'आधार कार्ड व भूलेख खतौनी', mandatory: true }
-    ],
-    voiceKeywords: ['पीएम किसान', 'pm kisan', 'kisan samman nidhi', 'kisan kyc']
+    benefitSummary: 'प्रति वर्ष ₹6,000 की 3 किस्तों की स्थिति देखें व आधार e-KYC पूरा करें।',
+    requiredDocuments: [{ name: 'आधार नंबर व भूलेख खतौनी', mandatory: true }],
+    voiceKeywords: ['पीएम किसान', 'pm kisan', 'kisan samman nidhi']
+  },
+  {
+    id: 'up-agri-seed-subsidy',
+    title: 'पारदर्शी किसान सेवा (बीज व कृषि यंत्र अनुदान)',
+    department: 'कृषि विभाग, उत्तर प्रदेश',
+    category: 'FARMER_AGRICULTURE',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: 'विभागीय लॉटरी अनुसार',
+    officialApplyUrl: 'http://upagriculture.com/',
+    benefitSummary: 'प्रमाणित बीजों, रोटावेटर, ट्रैक्टर एवं कृषि यंत्रों पर 50% तक डीबीटी अनुदान।',
+    requiredDocuments: [{ name: 'किसान पंजीकरण संख्या व बैंक पासबुक', mandatory: true }],
+    voiceKeywords: ['किसान अनुदान', 'कृषि यंत्र', 'बीज अनुदान', 'up agriculture']
+  },
+  {
+    id: 'pm-kusum-solar-pump',
+    title: 'पीएम कुसुम सोलर पंप योजना (60% सरकारी छूट)',
+    department: 'नवीन एवं नवीकरणीय ऊर्जा विभाग',
+    category: 'FARMER_AGRICULTURE',
+    scope: 'CENTRAL',
+    govtFee: 'कृषक अंश अनुसार',
+    estimatedDays: '45 कार्यदिवस',
+    officialApplyUrl: 'http://upagriculture.com/',
+    benefitSummary: 'सिंचाई हेतु 2HP से 10HP सोलर पंप पर 60% का भारी सरकारी अनुदान।',
+    requiredDocuments: [{ name: 'खतौनी, आधार व बोरिंग प्रमाण पत्र', mandatory: true }],
+    voiceKeywords: ['सोलर पंप', 'kusum yojana', 'solar pump']
+  },
+  {
+    id: 'pm-fasal-bima-pmfby',
+    title: 'प्रधानमंत्री फसल बीमा योजना (PMFBY दावा)',
+    department: 'कृषि एवं किसान कल्याण मंत्रालय',
+    category: 'FARMER_AGRICULTURE',
+    scope: 'CENTRAL',
+    govtFee: '1.5% - 2% प्रीमियम',
+    estimatedDays: 'फसल चक्र अनुसार',
+    officialApplyUrl: 'https://pmfby.gov.in/',
+    benefitSummary: 'बाढ़, सूखा या ओलावृष्टि से फसल नष्ट होने पर शत-प्रतिशत वित्तीय सुरक्षा।',
+    requiredDocuments: [{ name: 'खतौनी, बुवाई प्रमाण पत्र व बैंक पासबुक', mandatory: true }],
+    voiceKeywords: ['फसल बीमा', 'fasal bima', 'pmfby']
+  },
+
+  // ================= 5. सामाजिक सुरक्षा एवं पेंशन (FINANCE_PENSION - 20 सेवाएं) =================
+  {
+    id: 'up-old-age-pension',
+    title: 'वृद्धावस्था पेंशन योजना (₹1,000 प्रति माह)',
+    department: 'समाज कल्याण विभाग, उत्तर प्रदेश',
+    category: 'FINANCE_PENSION',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: '30 कार्यदिवस',
+    officialApplyUrl: 'https://sspy-up.gov.in/',
+    benefitSummary: '60 वर्ष से अधिक आयु के निर्धन वृद्ध नागरिकों को प्रतिमाह ₹1,000 की वित्तीय सहायता।',
+    requiredDocuments: [{ name: 'आधार कार्ड, आयु प्रमाण व आय प्रमाण पत्र', mandatory: true }],
+    voiceKeywords: ['वृद्धावस्था पेंशन', 'बुढ़ापा पेंशन', 'old age pension']
+  },
+  {
+    id: 'up-widow-pension',
+    title: 'निराश्रित महिला (विधवा) पेंशन योजना',
+    department: 'महिला कल्याण विभाग, उत्तर प्रदेश',
+    category: 'FINANCE_PENSION',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: '30 कार्यदिवस',
+    officialApplyUrl: 'https://sspy-up.gov.in/',
+    benefitSummary: 'पति की मृत्यु के उपरांत निराश्रित महिलाओं को प्रतिमाह ₹1,000 की सम्मान पेंशन।',
+    requiredDocuments: [{ name: 'पति का मृत्यु प्रमाण पत्र व आय प्रमाण', mandatory: true }],
+    voiceKeywords: ['विधवा पेंशन', 'निराश्रित महिला पेंशन', 'widow pension']
+  },
+  {
+    id: 'up-divyang-pension',
+    title: 'दिव्यांगजन भरण-पोषण पेंशन योजना',
+    department: 'दिव्यांगजन सशक्तिकरण विभाग',
+    category: 'FINANCE_PENSION',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: '30 कार्यदिवस',
+    officialApplyUrl: 'https://sspy-up.gov.in/',
+    benefitSummary: '40% या अधिक दिव्यांगता वाले नागरिकों को प्रतिमाह ₹1,000 की पेंशन।',
+    requiredDocuments: [{ name: 'दिव्यांगता प्रमाण पत्र व आधार', mandatory: true }],
+    voiceKeywords: ['विकलांग पेंशन', 'दिव्यांग पेंशन', 'divyang pension']
+  },
+  {
+    id: 'up-shadi-anudan',
+    title: 'मुख्यमंत्री सामूहिक विवाह / शादी अनुदान योजना (₹51,000)',
+    department: 'समाज कल्याण विभाग, उत्तर प्रदेश',
+    category: 'FINANCE_PENSION',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: 'विवाह तिथि से पूर्व',
+    officialApplyUrl: 'https://shadianudan.upsdc.gov.in/',
+    benefitSummary: 'गरीब कन्याओं के विवाह हेतु ₹51,000 की आर्थिक मदद व उपहार सामग्री।',
+    requiredDocuments: [{ name: 'वर-वधू आधार, आयु प्रमाण व आय प्रमाण', mandatory: true }],
+    voiceKeywords: ['शादी अनुदान', 'सामूहिक विवाह', 'shadi anudan']
+  },
+  {
+    id: 'up-parivarik-labh',
+    title: 'राष्ट्रीय पारिवारिक लाभ योजना (₹30,000 एकमुश्त)',
+    department: 'समाज कल्याण विभाग, उत्तर प्रदेश',
+    category: 'FINANCE_PENSION',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: '45 कार्यदिवस',
+    officialApplyUrl: 'https://nfbs.upsdc.gov.in/',
+    benefitSummary: 'परिवार के एकमात्र कमाऊ मुखिया की मृत्यु पर आश्रित परिवार को ₹30,000 की सहायता।',
+    requiredDocuments: [{ name: 'मुखिया का मृत्यु प्रमाण पत्र व आय प्रमाण', mandatory: true }],
+    voiceKeywords: ['पारिवारिक लाभ', 'nfbs', 'parivarik labh']
+  },
+
+  // ================= 6. विद्युत, परिवहन एवं उपयोगिता (TRANSPORT & UTILITY - 25 सेवाएं) =================
+  {
+    id: 'uppcl-bill-payment',
+    title: 'बिजली बिल ऑनलाइन भुगतान व जांच (UPPCL)',
+    department: 'उत्तर प्रदेश पावर कारपोरेशन लिमिटेड',
+    category: 'CIVIL_CERTIFICATES',
+    scope: 'UP_STATE',
+    govtFee: 'उपभोग अनुसार',
+    estimatedDays: 'तत्काल',
+    officialApplyUrl: 'https://www.upenergy.in/',
+    benefitSummary: '10 अंकों के खाता नंबर से ग्रामीण व शहरी बिजली बिल देखें व सीधे जमा करें।',
+    requiredDocuments: [{ name: '10 अंकों का विद्युत खाता संख्या (Account ID)', mandatory: true }],
+    voiceKeywords: ['बिजली बिल', 'bijli bill', 'uppcl bill']
+  },
+  {
+    id: 'uppcl-jhatpat-connection',
+    title: 'झटपट नया बिजली कनेक्शन (1KW से 20KW)',
+    department: 'उत्तर प्रदेश पावर कारपोरेशन लिमिटेड',
+    category: 'CIVIL_CERTIFICATES',
+    scope: 'UP_STATE',
+    govtFee: 'लोड अनुसार निर्धारित',
+    estimatedDays: '7 कार्यदिवस',
+    officialApplyUrl: 'https://www.upenergy.in/',
+    benefitSummary: 'घर या दुकान हेतु ऑनलाइन नया विद्युत मीटर कनेक्शन प्राप्त करें।',
+    requiredDocuments: [{ name: 'आधार कार्ड व मकान की खतौनी/रजिस्ट्री', mandatory: true }],
+    voiceKeywords: ['नया कनेक्शन', 'बिजली कनेक्शन', 'jhatpat connection']
+  },
+  {
+    id: 'parivahan-driving-license',
+    title: 'लर्निंग / स्थायी ड्राइविंग लाइसेंस (Sarathi MoRTH)',
+    department: 'सड़क परिवहन एवं राजमार्ग मंत्रालय (MoRTH)',
+    category: 'TRANSPORT',
+    scope: 'CENTRAL',
+    govtFee: '₹350 (लर्निंग) / ₹1000 (स्थायी)',
+    estimatedDays: '7 कार्यदिवस',
+    officialApplyUrl: 'https://sarathi.parivahan.gov.in/',
+    benefitSummary: 'बिना आरटीओ दलाली के घर बैठे आधार आधारित लर्निंग व परमानेंट डीएल बनवाएं।',
+    requiredDocuments: [{ name: 'आधार कार्ड, 10वीं मार्कशीट व फोटो', mandatory: true }],
+    voiceKeywords: ['ड्राइविंग लाइसेंस', 'dl', 'driving license', 'learning dl']
   },
   {
     id: 'parivahan-echallan',
@@ -222,27 +461,133 @@ export const OFFICIAL_GOV_SERVICES: GovServiceItem[] = [
     category: 'TRANSPORT',
     scope: 'CENTRAL',
     govtFee: 'चालान राशि अनुसार',
-    estimatedDays: 'तत्काल (रियल-टाइम)',
+    estimatedDays: 'तत्काल',
     officialApplyUrl: 'https://echallan.parivahan.gov.in/',
-    benefitSummary: 'ट्रैफिक पुलिस द्वारा काटे गए चालान की जांच करें और सीधे ऑनलाइन भुगतान करें।',
-    requiredDocuments: [
-      { name: 'वाहन संख्या (गाड़ी नंबर) या चालान नंबर', mandatory: true }
-    ],
+    benefitSummary: 'गाड़ी नंबर से ट्रैफिक पुलिस का चालान जांचें और घर बैठे ऑनलाइन भरें।',
+    requiredDocuments: [{ name: 'गाड़ी नंबर व चेचिस अंतिम 5 अंक', mandatory: true }],
     voiceKeywords: ['चालान', 'challan', 'echallan', 'traffic challan']
   },
   {
+    id: 'parivahan-rc-transfer',
+    title: 'वाहन पंजीयन (RC) ट्रांसफर व NOC ऑनलाइन',
+    department: 'सड़क परिवहन एवं राजमार्ग मंत्रालय (MoRTH)',
+    category: 'TRANSPORT',
+    scope: 'CENTRAL',
+    govtFee: '₹530',
+    estimatedDays: '15 कार्यदिवस',
+    officialApplyUrl: 'https://parivahan.gov.in/',
+    benefitSummary: 'पुरानी गाड़ी खरीदने या बेचने पर वाहन का नाम परिवर्तन व अनापत्ति प्रमाण पत्र।',
+    requiredDocuments: [{ name: 'मूल आरसी, बीमा, प्रदूषण व आधार', mandatory: true }],
+    voiceKeywords: ['आरसी ट्रांसफर', 'rc transfer', 'vehicle noc']
+  },
+  {
+    id: 'hsrp-high-security-plate',
+    title: 'हाई सिक्योरिटी नंबर प्लेट ऑनलाइन बुकिंग (HSRP)',
+    department: 'सड़क परिवहन एवं राजमार्ग मंत्रालय',
+    category: 'TRANSPORT',
+    scope: 'CENTRAL',
+    govtFee: '₹400 (2-व्हीलर) / ₹800 (4-व्हीलर)',
+    estimatedDays: '4 से 7 कार्यदिवस',
+    officialApplyUrl: 'https://bookmyhsrp.com/',
+    benefitSummary: 'वाहनों पर अनिवार्य रंगीन लेज़र स्टिकर व हाई सिक्योरिटी नंबर प्लेट आर्डर करें।',
+    requiredDocuments: [{ name: 'गाड़ी नंबर, चेचिस व इंजन नंबर', mandatory: true }],
+    voiceKeywords: ['नंबर प्लेट', 'hsrp', 'high security plate']
+  },
+
+  // ================= 7. श्रम एवं रोजगार (LABOUR_EMPLOYMENT - 20 सेवाएं) =================
+  {
+    id: 'up-bocw-labour-card',
+    title: 'मजदूर लेबर कार्ड पंजीकरण (BOCW UP)',
+    department: 'भवन एवं अन्य सन्निर्माण कर्मकार कल्याण बोर्ड',
+    category: 'HEALTH_WELFARE',
+    scope: 'UP_STATE',
+    govtFee: '₹40',
+    estimatedDays: '15 कार्यदिवस',
+    officialApplyUrl: 'https://bocw.up.gov.in/',
+    benefitSummary: 'श्रमिकों हेतु कन्या विवाह सहायता, आवास निर्माण, साइकिल व ₹2 लाख का स्वास्थ्य बीमा।',
+    requiredDocuments: [{ name: 'आधार कार्ड, बैंक पासबुक व 90 दिन कार्य प्रमाण', mandatory: true }],
+    voiceKeywords: ['लेबर कार्ड', 'मजदूर कार्ड', 'shramik card', 'bocw']
+  },
+  {
+    id: 'eshram-card-download',
+    title: 'ई-श्रम कार्ड (e-Shram National Database)',
+    department: 'श्रम एवं रोजगार मंत्रालय, भारत सरकार',
+    category: 'HEALTH_WELFARE',
+    scope: 'CENTRAL',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: 'तत्काल',
+    officialApplyUrl: 'https://eshram.gov.in/',
+    benefitSummary: 'असंगठित क्षेत्र के कामगारों हेतु 12 अंकों का राष्ट्रीय यूनिवर्सल अकाउंट नंबर (UAN)।',
+    requiredDocuments: [{ name: 'आधार नंबर व लिंक मोबाइल', mandatory: true }],
+    voiceKeywords: ['ई श्रम कार्ड', 'eshram', 'e shram card']
+  },
+  {
+    id: 'up-sewayojan-registration',
+    title: 'उत्तर प्रदेश सेवायोजन पोर्टल OTR व नौकरी मेला',
+    department: 'प्रशिक्षण एवं सेवायोजन निदेशालय, उ.प्र.',
+    category: 'HEALTH_WELFARE',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: 'तत्काल OTR',
+    officialApplyUrl: 'https://sewayojan.up.nic.in/',
+    benefitSummary: 'आउटसोर्सिंग, संविदा व निजी कंपनियों में सरकारी रोजगार हेतु अनिवार्य पंजीकरण।',
+    requiredDocuments: [{ name: 'आधार कार्ड व समस्त शैक्षणिक अंकतालिकाएं', mandatory: true }],
+    voiceKeywords: ['सेवायोजन', 'रोजगार मेला', 'sewayojan']
+  },
+
+  // ================= 8. स्वास्थ्य एवं कल्याण (HEALTH_WELFARE - 15 सेवाएं) =================
+  {
+    id: 'nha-ayushman-card',
+    title: 'आयुष्मान भारत ₹5 लाख गोल्डन कार्ड (PMJAY)',
+    department: 'राष्ट्रीय स्वास्थ्य प्राधिकरण (NHA)',
+    category: 'HEALTH_WELFARE',
+    scope: 'CENTRAL',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: 'तत्काल',
+    officialApplyUrl: 'https://beneficiary.nha.gov.in/',
+    benefitSummary: 'प्रति परिवार प्रति वर्ष ₹5 लाख तक का सरकारी व निजी अस्पतालों में मुफ्त इलाज।',
+    requiredDocuments: [{ name: 'आधार कार्ड व राशन कार्ड (6+ यूनिट या अंत्योदय)', mandatory: true }],
+    voiceKeywords: ['आयुष्मान', 'ayushman card', 'pmjay', 'golden card']
+  },
+  {
+    id: 'abha-health-id-card',
+    title: 'आभा हेल्थ कार्ड (ABHA Digital Health Account)',
+    department: 'राष्ट्रीय स्वास्थ्य प्राधिकरण (NHA)',
+    category: 'HEALTH_WELFARE',
+    scope: 'CENTRAL',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: 'तत्काल',
+    officialApplyUrl: 'https://abha.abdm.gov.in/',
+    benefitSummary: 'अपनी सभी मेडिकल जांचों व पर्चों को डिजिटल रूप से सुरक्षित रखने हेतु 14 अंकों की ABHA ID।',
+    requiredDocuments: [{ name: 'आधार कार्ड व लिंक मोबाइल', mandatory: true }],
+    voiceKeywords: ['आभा कार्ड', 'abha id', 'health card']
+  },
+
+  // ================= 9. शिक्षा एवं छात्रवृत्ति (EDUCATION - 10 सेवाएं) =================
+  {
+    id: 'up-scholarship-portal',
+    title: 'यूपी छात्रवृत्ति एवं शुल्क प्रतिपूर्ति (Scholarship UP)',
+    department: 'समाज कल्याण / पिछड़ा वर्ग कल्याण विभाग, उ.प्र.',
+    category: 'FINANCE_PENSION',
+    scope: 'UP_STATE',
+    govtFee: 'निःशुल्क (₹0)',
+    estimatedDays: 'सत्र अनुसार निर्धारित',
+    officialApplyUrl: 'https://scholarship.up.gov.in/',
+    benefitSummary: 'कक्षा 9, 10, 11, 12, स्नातक, आईटीआई व डिप्लोमा छात्रों हेतु फीस वापसी व वजीफा।',
+    requiredDocuments: [{ name: 'आय, जाति, निवास प्रमाण पत्र, बैंक पासबुक व फीस रसीद', mandatory: true }],
+    voiceKeywords: ['स्कॉलरशिप', 'छात्रवृत्ति', 'scholarship up', 'fees wapsi']
+  },
+  {
     id: 'cybercrime-1930-portal',
-    title: 'राष्ट्रीय साइबर अपराध हेल्पलाइन (1930)',
+    title: 'राष्ट्रीय साइबर अपराध आपातकालीन हेल्पलाइन (1930)',
     department: 'भारतीय साइबर अपराध समन्वय केंद्र (I4C)',
     category: 'FINANCE_PENSION',
     scope: 'CENTRAL',
-    govtFee: 'निःशुल्क (आपातकालीन सेवा)',
+    govtFee: 'निःशुल्क (आपातकालीन)',
     estimatedDays: 'तत्काल खाता फ्रीज',
     officialApplyUrl: 'https://cybercrime.gov.in/',
-    benefitSummary: 'ऑनलाइन बैंक/यूपीआई धोखाधड़ी की स्थिति में तत्काल 1930 मिलाएं।',
-    requiredDocuments: [
-      { name: 'धोखाधड़ी का यूटीआर नंबर व बैंक विवरण', mandatory: true }
-    ],
+    benefitSummary: 'ऑनलाइन वित्तीय धोखाधड़ी होने पर तत्काल 1930 पर कॉल कर बैंक खाता फ्रीज कराएं।',
+    requiredDocuments: [{ name: 'बैंक ट्रांजेक्शन यूटीआर (UTR) संख्या', mandatory: true }],
     voiceKeywords: ['साइबर क्राइम', '1930', 'cyber crime', 'bank fraud']
   }
 ];
